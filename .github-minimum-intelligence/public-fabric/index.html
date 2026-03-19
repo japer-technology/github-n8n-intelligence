@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GitHub n8n Intelligence</title>
+<meta name="description" content="n8n workflow automation running entirely on GitHub — Issues for conversation, Git for storage, Actions for execution.">
+<meta name="theme-color" content="#0d1117">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<meta property="og:type" content="website">
+<meta property="og:title" content="GitHub n8n Intelligence">
+<meta property="og:description" content="n8n workflow automation on GitHub infrastructure.">
+<meta property="og:image" content="https://raw.githubusercontent.com/japer-technology/github-minimum-intelligence/main/.github-minimum-intelligence/logo.png">
+<style>
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#0d1117;--surface:#161b22;--border:#30363d;--text:#e6edf3;--muted:#8b949e;--accent:#58a6ff;--accent2:#bc8cff;--accent3:#3fb950;--glow:rgba(88,166,255,.15);--radius:12px}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+  .page{max-width:960px;margin:0 auto;padding:2rem 1.5rem 4rem}
+  .hero{text-align:center;padding:3rem 0 2rem}
+  .hero-logo{width:min(360px,80vw);border-radius:var(--radius);filter:drop-shadow(0 0 40px rgba(88,166,255,.25))}
+  .hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:.8rem 0 .4rem}
+  .hero .slug{font-family:monospace;color:var(--muted);font-size:.95rem}
+  .hero .tagline{max-width:640px;margin:1.2rem auto 0;color:var(--muted);font-size:1.05rem}
+  .badges{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-top:1rem}
+  .badge{display:inline-flex;align-items:center;gap:.35rem;padding:.3rem .7rem;border-radius:999px;font-size:.78rem;font-weight:600;border:1px solid var(--border);background:var(--surface);color:var(--muted)}
+  .badge .dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+  .dot--blue{background:var(--accent)}.dot--green{background:var(--accent3)}.dot--purple{background:var(--accent2)}
+  section{margin-top:2.5rem}
+  .section-title{font-size:1.15rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+  .section-title::before{content:"";width:4px;height:1.1em;border-radius:2px;background:var(--accent)}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.4rem 1.6rem;margin-bottom:1rem}
+  .card h3{font-size:1.05rem;margin-bottom:.5rem}
+  .card p{color:var(--muted);font-size:.92rem}
+  .grid{display:grid;gap:1rem}.grid-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .dep-table{width:100%;border-collapse:collapse;font-size:.88rem}
+  .dep-table th{text-align:left;color:var(--accent);padding:.5rem .6rem;border-bottom:1px solid var(--border);font-weight:600}
+  .dep-table td{padding:.5rem .6rem;color:var(--muted);border-bottom:1px solid var(--border)}
+  .lifecycle{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:.6rem}
+  .lifecycle span{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:.4rem .85rem;font-size:.82rem;font-weight:600;color:var(--text)}
+  .lifecycle span::after{content:"→";color:var(--accent);margin-left:.6rem}
+  .lifecycle span:last-child::after{content:"✓";color:var(--accent3)}
+  footer{text-align:center;margin-top:3rem;padding-top:2rem;border-top:1px solid var(--border);color:var(--muted);font-size:.82rem}
+  footer a{color:var(--accent);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="page" id="app">
+  <noscript>
+    <header class="hero">
+      <h1 style="color:var(--accent)">GitHub n8n Intelligence</h1>
+      <p class="slug">japer-technology / github-n8n-intelligence</p>
+      <p class="tagline">n8n workflow automation running entirely on GitHub. Please enable JavaScript to view the full interactive page.</p>
+    </header>
+  </noscript>
+</div>
+<script>
+(function(){
+  "use strict";
+  function esc(s){var d=document.createElement("div");d.appendChild(document.createTextNode(s));return d.innerHTML}
+  function render(data){
+    if(data.meta&&data.meta.title)document.title=data.meta.title;
+    var h=data.hero,html='<header class="hero">';
+    html+='<img class="hero-logo" src="'+esc(h.logoUrl)+'" alt="'+esc(h.logoAlt)+'" width="360" height="360">';
+    html+="<h1>"+esc(h.title)+"</h1>";
+    html+='<p class="slug">'+esc(h.slug)+"</p>";
+    html+='<p class="tagline">'+h.tagline+"</p>";
+    if(h.badges){html+='<div class="badges">';h.badges.forEach(function(b){html+='<span class="badge"><span class="dot dot--'+esc(b.color)+'"></span>'+esc(b.label)+"</span>"});html+="</div>"}
+    html+="</header>";
+    data.sections.forEach(function(s){
+      html+='<section><div class="section-title">'+s.title+"</div>";
+      if(s.grid)html+='<div class="grid '+esc(s.grid)+'">';
+      s.cards.forEach(function(c){
+        html+='<div class="card">';
+        if(c.heading)html+="<h3>"+c.heading+"</h3>";
+        if(c.content)c.content.forEach(function(b){
+          if(b.type==="paragraph")html+="<p>"+b.html+"</p>";
+          else if(b.type==="table"){
+            html+='<table class="dep-table"><thead><tr>';
+            b.headers.forEach(function(th){html+="<th>"+esc(th)+"</th>"});
+            html+="</tr></thead><tbody>";
+            b.rows.forEach(function(r){html+="<tr>";r.forEach(function(c){html+="<td>"+c+"</td>"});html+="</tr>"});
+            html+="</tbody></table>"
+          }else if(b.type==="lifecycle"){
+            html+='<div class="lifecycle">';
+            b.steps.forEach(function(s){html+="<span>"+esc(s)+"</span>"});
+            html+="</div>"
+          }
+        });
+        html+="</div>"
+      });
+      if(s.grid)html+="</div>";
+      html+="</section>"
+    });
+    var f=data.footer;
+    html+='<footer><p><a href="'+esc(f.repoUrl)+'" target="_blank">'+esc(f.repoName)+"</a> · "+esc(f.tagline)+"</p></footer>";
+    document.getElementById("app").innerHTML=html
+  }
+  fetch("status.json").then(function(r){return r.json()}).then(render).catch(function(e){
+    document.getElementById("app").innerHTML='<p style="text-align:center;padding:4rem;color:var(--muted)">Unable to load. '+esc(e.message)+"</p>"
+  })
+})();
+</script>
+</body>
+</html>

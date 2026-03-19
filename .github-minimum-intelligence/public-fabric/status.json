@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "title": "GitHub n8n Intelligence",
+    "generated": "2026-03-19T00:00:00Z"
+  },
+  "theme": {},
+  "hero": {
+    "logoUrl": "https://raw.githubusercontent.com/japer-technology/github-minimum-intelligence/main/.github-minimum-intelligence/logo.png",
+    "logoAlt": "n8n Intelligence",
+    "title": "GitHub n8n Intelligence",
+    "slug": "japer-technology / github-n8n-intelligence",
+    "tagline": "n8n workflow automation running entirely on GitHub — Issues for conversation, Git for storage, Actions for execution, Secrets for credentials.",
+    "badges": [
+      { "label": "MIT License", "color": "green" },
+      { "label": "AI Assisted", "color": "blue" },
+      { "label": "n8n Powered", "color": "purple" }
+    ]
+  },
+  "sections": [
+    {
+      "title": "What Is This?",
+      "grid": "grid-2",
+      "cards": [
+        {
+          "heading": "n8n on GitHub",
+          "content": [
+            {
+              "type": "paragraph",
+              "html": "Run n8n's 400+ integration nodes entirely on GitHub Actions. Workflows are JSON files in Git, executed headlessly, with results committed back to the repository."
+            }
+          ]
+        },
+        {
+          "heading": "AI Agent Interface",
+          "content": [
+            {
+              "type": "paragraph",
+              "html": "Describe automations in natural language via GitHub Issues. The AI agent builds and executes n8n workflows, posting results as comments."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "The Four Primitives",
+      "cards": [
+        {
+          "content": [
+            {
+              "type": "table",
+              "headers": ["Primitive", "Role", "n8n Mapping"],
+              "rows": [
+                ["GitHub Actions", "Compute", "Replaces n8n server — <code>n8n execute</code> on Actions runner"],
+                ["Git", "Storage", "Workflow JSON in repo replaces database"],
+                ["GitHub Issues", "Interface", "Replaces Vue.js editor for interaction"],
+                ["GitHub Secrets", "Credentials", "Replaces n8n's encrypted credential store"]
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Quick Start",
+      "cards": [
+        {
+          "content": [
+            {
+              "type": "lifecycle",
+              "steps": [
+                "Copy workflow YAML",
+                "Add API key secret",
+                "Run installer",
+                "Open an issue"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "footer": {
+    "repoUrl": "https://github.com/japer-technology/github-n8n-intelligence",
+    "repoName": "github-n8n-intelligence",
+    "tagline": "n8n workflow automation on GitHub infrastructure"
+  }
+}
