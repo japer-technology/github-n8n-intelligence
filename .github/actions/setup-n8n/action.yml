@@ -1,0 +1,30 @@
+name: 'Setup n8n'
+description: 'Install and configure n8n for GitHub Actions execution'
+inputs:
+  n8n-version:
+    description: 'n8n version to install'
+    default: 'latest'
+  encryption-key:
+    description: 'N8N_ENCRYPTION_KEY for credential decryption'
+    required: false
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22.x'
+
+    - name: Install n8n
+      shell: bash
+      run: npm install -g n8n@${{ inputs.n8n-version }}
+
+    - name: Configure environment
+      shell: bash
+      run: |
+        if [ -n "${{ inputs.encryption-key }}" ]; then
+          echo "N8N_ENCRYPTION_KEY=${{ inputs.encryption-key }}" >> "$GITHUB_ENV"
+        fi
+        echo "DB_TYPE=sqlite" >> "$GITHUB_ENV"
+        echo "N8N_USER_FOLDER=${{ github.workspace }}/.n8n" >> "$GITHUB_ENV"
+        mkdir -p "${{ github.workspace }}/.n8n"
