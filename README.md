@@ -4,6 +4,6 @@
 
 <p align="center">
   <picture>
-    <img src="https://raw.githubusercontent.com/japer-technology/github-n8n-intelligence/main/.github-n8n-intelligence/GITHUB-N8N.png" alt="n8n Intelligence" width="500">
+    <img src="https://github.com/japer-technology/github-n8n-intelligence/blob/main/.github-n8n-intelligence/GITHUB-N8N.png" alt="n8n Intelligence" width="500">
   </picture>
 </p>
