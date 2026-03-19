@@ -6,9 +6,9 @@ A Githubified n8n workflow automation platform powered by the GitHub Minimum Int
 
 ## Installation
 
-1. Copy [`.github/workflows/github-minimum-intelligence-agent.yml`](../.github/workflows/github-minimum-intelligence-agent.yml) into your repo's `.github/workflows/` directory.
+1. Copy [`.github/workflows/github-n8n-intelligence-agent.yml`](../.github/workflows/github-n8n-intelligence-agent.yml) into your repo's `.github/workflows/` directory.
 2. Add the LLM API key `OPENAI_API_KEY` as a **repository secret** under **[Settings → Secrets and variables → Actions]**. Any [supported LLM provider](#supported-providers) can work but to quick start OpenAI GPT 5.4 is pre-configured.
-3. Go to **[Actions → github-minimum-intelligence-agent → Run workflow]** to install the agent files automatically, subsequent runs perform upgrades.
+3. Go to **[Actions → github-n8n-intelligence-agent → Run workflow]** to install the agent files automatically, subsequent runs perform upgrades.
 4. Open an issue — the agent will reply.
 <p align="center">
   <picture>
@@ -108,7 +108,7 @@ The AI agent (powered by GitHub Minimum Intelligence) adds a conversational inte
 ```
 .github/
   workflows/
-    github-minimum-intelligence-agent.yml  # AI agent workflow
+    github-n8n-intelligence-agent.yml  # AI agent workflow
     n8n-execute.yml                        # n8n workflow executor
   actions/
     setup-n8n/
@@ -126,7 +126,7 @@ credentials/                               # Credential templates (no secrets)
   github-api.template.json
   slack-webhook.template.json
 
-.github-minimum-intelligence/              # AI agent layer (GMI)
+.github-n8n-intelligence/              # AI agent layer (GMI)
   .pi/
     skills/
       n8n-workflow-builder/                # Skill: build n8n workflows from natural language
@@ -144,7 +144,7 @@ credentials/                               # Credential templates (no secrets)
 
 ## Configuration
 
-**Change the model** — edit `.github-minimum-intelligence/.pi/settings.json`:
+**Change the model** — edit `.github-n8n-intelligence/.pi/settings.json`:
 
 <details>
 <summary><strong>OpenAI - GPT-5.4 (default)</strong></summary>

@@ -1,6 +1,6 @@
-### [GitHub n8n Intelligence](.github-minimum-intelligence/README.md)
+### [GitHub n8n Intelligence](.github-n8n-intelligence/README.md)
 
-#### READ THIS [.github-minimum-intelligence/README.md](.github-minimum-intelligence/README.md)
+#### READ THIS [.github-n8n-intelligence/README.md](.github-n8n-intelligence/README.md)
 
 <p align="center">
   <picture>

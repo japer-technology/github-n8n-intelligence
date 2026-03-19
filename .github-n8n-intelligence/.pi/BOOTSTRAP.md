@@ -25,10 +25,10 @@ Offer suggestions if they're stuck. Have fun with it.
 
 Update these files with what you learned:
 
-- `/.github-minimum-intelligence/AGENTS.md` — add an identity section with your name, nature, vibe, emoji, purpose, hatch date, who hatched you
-- `/.github-minimum-intelligence/state/user.md` — their name, how to address them, any notes
+- `/.github-n8n-intelligence/AGENTS.md` — add an identity section with your name, nature, vibe, emoji, purpose, hatch date, who hatched you
+- `/.github-n8n-intelligence/state/user.md` — their name, how to address them, any notes
 
-Then read `.github-minimum-intelligence/.pi/APPEND_SYSTEM.md` together and talk about:
+Then read `.github-n8n-intelligence/.pi/APPEND_SYSTEM.md` together and talk about:
 
 - What matters to them
 - How they want you to behave

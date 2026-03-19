@@ -29,7 +29,7 @@ Open a [GitHub Issue](../../issues) describing:
 
 1. Fork the repository and create a branch from `main`.
 2. Make your changes in small, reviewable increments.
-3. Test locally with `cd .github-minimum-intelligence && bun install` and verify dependencies install cleanly.
+3. Test locally with `cd .github-n8n-intelligence && bun install` and verify dependencies install cleanly.
 4. Open a pull request with a clear description of what changed and why.
 
 ---
@@ -37,7 +37,7 @@ Open a [GitHub Issue](../../issues) describing:
 ## Project Structure
 
 ```
-.github-minimum-intelligence/       # Core agent framework
+.github-n8n-intelligence/       # Core agent framework
   .pi/                              # Agent personality, skills, and LLM config
   install/                          # Default templates for agent identity and settings
   lifecycle/                        # Agent orchestrator and runtime hooks
@@ -45,7 +45,7 @@ Open a [GitHub Issue](../../issues) describing:
 
 .github/                            # GitHub Actions workflows and issue templates
   workflows/
-    github-minimum-intelligence-agent.yml  # AI agent workflow
+    github-n8n-intelligence-agent.yml  # AI agent workflow
     n8n-execute.yml                        # n8n workflow executor
 
 workflows/                          # n8n workflow definitions (JSON)
@@ -66,7 +66,7 @@ See the [README](README.md#project-structure) for a detailed breakdown of every 
 2. Clone the repository.
 3. Install dependencies:
    ```bash
-   cd .github-minimum-intelligence && bun install
+   cd .github-n8n-intelligence && bun install
    ```
 4. Add an LLM API key as a repository secret (see [Supported Providers](README.md#supported-providers)).
 
@@ -77,7 +77,7 @@ See the [README](README.md#project-structure) for a detailed breakdown of every 
 - **Documentation** is Markdown. Use tables, clear headings, and concise language consistent with existing files.
 - **Code** is TypeScript, executed with Bun.
 - **n8n Workflows** are JSON files in `workflows/`.
-- **Skills** are self-contained Markdown files in `.github-minimum-intelligence/.pi/skills/`.
+- **Skills** are self-contained Markdown files in `.github-n8n-intelligence/.pi/skills/`.
 - **Commit messages** should be short and descriptive. Every commit is permanent and auditable.
 
 ---
