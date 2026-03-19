@@ -1,0 +1,33 @@
+{
+  "name": "GitHub Issue Triage",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "start-node",
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "functionCode": "const issue = $input.all()[0]?.json || {};\nconst title = (issue.title || '').toLowerCase();\nlet label = 'triage';\nif (title.includes('bug') || title.includes('error') || title.includes('broken')) label = 'bug';\nelse if (title.includes('feature') || title.includes('request') || title.includes('enhance')) label = 'enhancement';\nelse if (title.includes('docs') || title.includes('documentation')) label = 'documentation';\nreturn [{ json: { ...issue, suggestedLabel: label } }];"
+      },
+      "id": "triage-node",
+      "name": "Triage Logic",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [460, 300]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [{ "node": "Triage Logic", "type": "main", "index": 0 }]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
