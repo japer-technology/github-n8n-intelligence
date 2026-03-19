@@ -69,7 +69,7 @@ async function fetchJSON(url, retries = MAX_RETRIES) {
   }
 }
 
-/** Sanitise a workflow name into a safe filename component. */
+/** Sanitize a workflow name into a safe filename component. */
 function slugify(name) {
   return name
     .replace(/[^a-zA-Z0-9]+/g, "_")
