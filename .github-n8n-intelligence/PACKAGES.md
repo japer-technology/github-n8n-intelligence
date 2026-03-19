@@ -58,7 +58,7 @@ These are referenced in `.github/workflows/`:
 | [actions/cache@v5](https://github.com/actions/cache) | agent | Caches `node_modules` keyed on the `bun.lock` hash to speed up dependency installation. |
 | [actions/setup-node@v4](https://github.com/actions/setup-node) | n8n-execute | Installs Node.js for n8n CLI execution. |
 | [actions/configure-pages@v5](https://github.com/actions/configure-pages) | agent | Configures GitHub Pages deployment. |
-| [actions/upload-pages-artifact@v4](https://github.com/actions/upload-pages-artifact) | agent | Uploads the static site artifact from `.github-minimum-intelligence/public-fabric/`. |
+| [actions/upload-pages-artifact@v4](https://github.com/actions/upload-pages-artifact) | agent | Uploads the static site artifact from `.github-n8n-intelligence/public-fabric/`. |
 | [actions/deploy-pages@v4](https://github.com/actions/deploy-pages) | agent | Deploys the uploaded artifact to GitHub Pages. |
 
 ## LLM Provider Dependencies (one required)
