@@ -10,9 +10,10 @@ A Githubified n8n workflow automation platform powered by the GitHub Minimum Int
 2. Add the LLM API key `OPENAI_API_KEY` as a **repository secret** under **[Settings → Secrets and variables → Actions]**. Any [supported LLM provider](#supported-providers) can work but to quick start OpenAI GPT 5.4 is pre-configured.
 3. Go to **[Actions → github-n8n-intelligence-agent → Run workflow]** to install the agent files automatically, subsequent runs perform upgrades.
 4. Open an issue — the agent will reply.
+
 <p align="center">
   <picture>
-    <img src="https://raw.githubusercontent.com/japer-technology/github-minimum-intelligence/main/.github-minimum-intelligence/logo.png" alt="n8n Intelligence" width="500">
+    <img src="https://github.com/japer-technology/github-n8n-intelligence/blob/main/.github-n8n-intelligence/GITHUB-N8N.png" alt="n8n Intelligence" width="500">
   </picture>
 </p>
 
@@ -271,6 +272,6 @@ If you plan to use this for anything private, **make the repo private**. Public 
 
 <p align="center">
   <picture>
-    <img src="https://raw.githubusercontent.com/japer-technology/github-minimum-intelligence/main/.github-minimum-intelligence/logo.png" alt="n8n Intelligence" width="500">
+    <img src="https://github.com/japer-technology/github-n8n-intelligence/blob/main/.github-n8n-intelligence/GITHUB-N8N.png" alt="n8n Intelligence" width="500">
   </picture>
 </p>
