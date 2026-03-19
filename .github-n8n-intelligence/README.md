@@ -111,6 +111,7 @@ The AI agent (powered by GitHub Minimum Intelligence) adds a conversational inte
   workflows/
     github-n8n-intelligence-agent.yml  # AI agent workflow
     n8n-execute.yml                        # n8n workflow executor
+    fetch-n8n-templates.yml                # Fetch n8n community templates
   actions/
     setup-n8n/
       action.yml                           # Reusable action: install and configure n8n
@@ -120,6 +121,13 @@ workflows/                                 # n8n workflow definitions (JSON)
     github-issue-triage.json               # Example: auto-triage issues
   utilities/
     hello-world.json                       # Example: hello world test
+  templates/                               # Official n8n community templates
+    catalog.json                           # Searchable index of all templates
+    0042_Send_Slack_message_on_new_star.json
+    …                                      # 400+ workflow template files
+
+scripts/
+  fetch-n8n-templates.mjs                  # Fetch all templates from n8n.io API
 
 executions/                                # Execution logs (Git-tracked)
 
@@ -230,6 +238,41 @@ Requires `OPENROUTER_API_KEY`.
 | DeepSeek | `openrouter` | `deepseek/deepseek-r1` | `OPENROUTER_API_KEY` |
 | Mistral | `mistral` | `mistral-large-latest` | `MISTRAL_API_KEY` |
 | Groq | `groq` | `deepseek-r1-distill-llama-70b` | `GROQ_API_KEY` |
+
+---
+
+## n8n Workflow Template Library
+
+The repository automatically captures the full n8n community workflow template library (400+ workflows) from [n8n.io/workflows](https://n8n.io/workflows).
+
+### How It Works
+
+The **Fetch n8n Workflow Templates** action (`fetch-n8n-templates.yml`) runs `scripts/fetch-n8n-templates.mjs`, which:
+
+1. Queries the n8n templates API to discover every published workflow template.
+2. Downloads each complete workflow definition (nodes, connections, settings).
+3. Saves each workflow as a JSON file in `workflows/templates/`.
+4. Writes `workflows/templates/catalog.json` — a searchable index of every template.
+
+### Triggering a Fetch
+
+```bash
+# Manual — fetch all new templates (resume mode)
+gh workflow run fetch-n8n-templates.yml
+
+# Manual — full re-fetch
+gh workflow run fetch-n8n-templates.yml -f resume=false
+```
+
+The action also runs automatically every **Sunday at 04:00 UTC**.
+
+### Using Templates
+
+Any template can be executed directly:
+
+```bash
+gh workflow run n8n-execute.yml -f workflow_file=workflows/templates/0042_Send_Slack_message_on_new_star.json
+```
 
 ---
 
