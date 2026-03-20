@@ -8,6 +8,11 @@ on:
         required: false
         type: boolean
         default: true
+      batch_size:
+        description: 'Max templates to download per run (0 = unlimited)'
+        required: false
+        type: number
+        default: 1000
   schedule:
     # Run weekly on Sunday at 04:00 UTC
     - cron: '0 4 * * 0'
@@ -32,6 +37,13 @@ jobs:
           FLAGS=""
           if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ inputs.resume }}" = "true" ]; then
             FLAGS="--resume"
+          fi
+          BATCH="${{ inputs.batch_size }}"
+          if [ -z "$BATCH" ]; then
+            BATCH=1000
+          fi
+          if [ "$BATCH" != "0" ]; then
+            FLAGS="$FLAGS --batch-size $BATCH"
           fi
           node scripts/fetch-n8n-templates.mjs $FLAGS
 
