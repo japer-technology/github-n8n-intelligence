@@ -11,9 +11,11 @@
  *   Detail:  GET https://api.n8n.io/api/workflows/templates/{id}
  *
  * Usage:
- *   node scripts/fetch-n8n-templates.mjs              # fetch all templates
- *   node scripts/fetch-n8n-templates.mjs --resume      # skip already-downloaded
- *   node scripts/fetch-n8n-templates.mjs --dry-run     # list templates without downloading
+ *   node scripts/fetch-n8n-templates.mjs                      # fetch all templates
+ *   node scripts/fetch-n8n-templates.mjs --resume              # skip already-downloaded
+ *   node scripts/fetch-n8n-templates.mjs --batch-size 1000     # download at most 1000
+ *   node scripts/fetch-n8n-templates.mjs --resume --batch-size 1000  # resume, max 1000 new
+ *   node scripts/fetch-n8n-templates.mjs --dry-run             # list templates without downloading
  */
 
 import { writeFileSync, readFileSync, mkdirSync, existsSync, readdirSync } from "fs";
@@ -45,6 +47,17 @@ const RETRY_DELAY_MS = 2000;
 const args = process.argv.slice(2);
 const FLAG_RESUME = args.includes("--resume");
 const FLAG_DRY_RUN = args.includes("--dry-run");
+
+/** Parse --batch-size N from CLI args (0 = unlimited). */
+function parseBatchSize() {
+  const idx = args.indexOf("--batch-size");
+  if (idx !== -1 && args[idx + 1]) {
+    const n = Number(args[idx + 1]);
+    if (Number.isInteger(n) && n > 0) return n;
+  }
+  return 0; // unlimited
+}
+const BATCH_SIZE = parseBatchSize();
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -148,6 +161,12 @@ async function main() {
       continue;
     }
 
+    // Stop when we've hit the batch limit
+    if (BATCH_SIZE > 0 && downloaded >= BATCH_SIZE) {
+      console.log(`\n   🛑 Batch limit reached (${BATCH_SIZE}). Stopping downloads.`);
+      break;
+    }
+
     const slug = slugify(tmpl.name || `workflow_${id}`);
     const filename = `${String(id).padStart(4, "0")}_${slug}.json`;
     const filepath = join(TEMPLATES_DIR, filename);
@@ -226,6 +245,7 @@ async function main() {
   console.log(`   ✅ Downloaded: ${downloaded}`);
   if (skipped) console.log(`   ♻️  Skipped:    ${skipped}`);
   if (failed) console.log(`   ❌ Failed:     ${failed}`);
+  if (BATCH_SIZE > 0) console.log(`   📦 Batch size: ${BATCH_SIZE}`);
   console.log(`   📁 Total in catalog: ${catalog.length}`);
   console.log(`   📂 Location: workflows/templates/`);
   console.log(`   📋 Catalog:  workflows/templates/catalog.json`);
