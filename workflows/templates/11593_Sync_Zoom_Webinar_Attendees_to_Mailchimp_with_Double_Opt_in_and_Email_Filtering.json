@@ -1,0 +1,387 @@
+{
+  "_templateId": 11593,
+  "_templateName": "Sync Zoom Webinar Attendees to Mailchimp with Double Opt-in and Email Filtering",
+  "_templateDescription": "Description\n\nUse this workflow to automatically sync Zoom webinar registrants into Mailchimp, filter out internal contacts, and send double opt-in confirmation emails. Ideal for keeping your newsletter audiences clean, accurate, and enriched with new leads—without manual export/import steps.\n\nAbout Workflow\n\nThis workflow connects Zoom Webinars with Mailchimp via API to automate the onboarding of webinar attendees into your marketing audience.  \nIt retrieves registrant data from Zoom (based on Webinar ID and Occurrence ID), extracts attendee emails, filters out internal domains, checks whether the contact already exists in Mailchimp, and then creates or updates each record.  \nNew contacts receive a double opt-in confirmation email, and all newly added leads are tagged for segmentation inside Mailchimp.\n\nUse Case\n\nPerfect for marketing teams running webinars who need to transfer participants into Mailchimp quickly and reliably.  \nThis automation streamlines attendee follow-up, ensures compliance with double opt-in requirements.\n\nHow it works\n\nManual Trigger – Execute workflow**  \n  The workflow starts manually. You can optionally replace the manual trigger with a Schedule Trigger if you want to automate recurring webinars.\n\nManual Input – Set Webinar ID and Occurrence ID**  \n  The workflow includes a Set node that requires you to enter:\n  webinar_id\n  occurence_id  \n  These define which Zoom webinar instance will be synced.\n\nZoom API – Get Webinar Attendees**  \n  Retrieves registrants for the selected webinar occurrence using the Zoom API.\n\nCode Node – Extract Registrant Emails**  \n  Processes the Zoom API response and extracts the email addresses of all registrants.\n\nFilter Node – Filter Out Internal Emails**  \n  Removes internal/company email addresses by checking that they do not contain your domain.  \n  (This is fully configurable.)\n\nMailchimp – Update a Member**  \n  Attempts to update the contact in Mailchimp based on their email address.  \n  This determines whether the contact already exists.\n\nIF Node – If ID Doesn’t Exist**  \n  Checks if Mailchimp returned an id during the update attempt.  \n  If Mailchimp did not return an ID, the contact is treated as new and continues through the creation + confirmation path.\n\nCode Node – MD5 Hash Email**  \n  Hashes the email using MD5. Mailchimp uses this hash as the unique identifier for list members.\n\nMailchimp – Send Double Opt-In Email**  \n  Creates the contact with “pending” status and sends a double opt-in email.\n\nMailchimp – Add Leads Tag**  \n  Tags the contact with \"Leads\" immediately as part of the creation process.\n\nHow to Use\n\nImport the workflow into your n8n instance\n\nConfigure credentials:\n   Zoom OAuth2 credential  \n   Mailchimp HTTP Basic Auth credential\n\nEnter webinar details:\n   Set webinar_id and occurence_id in the Type in IDs node\n\nAdjust internal email filtering:\n   Update the domain in the “Filter Out Internal Emails” node (e.g., change @yourcompanydomain.com)\n\nConfigure Mailchimp nodes:\n   Replace LIST_ID_HERE with your Mailchimp Audience/List ID  \n   Adjust tags if needed\n\nTest the workflow:\n   Run it with a real webinar and confirm behavior:\n     internal emails are excluded  \n     existing contacts are updated  \n     new contacts receive the double opt-in email  \n     tags are applied correctly\n\nExample Use Cases\n\nAutomated lead generation from webinar attendance  \nKeeping marketing lists clean and external-only  \nRecurring webinars with scheduled syncing  \nEasy double opt-in compliance with no manual steps  \n\nRequirements\n\nZoom account** with API access  \nMailchimp account** with API access  \nn8n instance** with correctly configured credentials  \n\nOptional Enhancements\n\nReplace the manual trigger with a Webhook for recurring syncs  \nAuto-detect the latest webinar ID using a Zoom API call  \nAdd additional filters (e.g., job title, country, language)  \nAdd Slack/email notifications summarizing new leads  \nAdd error-handling paths for retrying failed API calls  \n",
+  "_templateCreatedAt": "2025-12-08T08:39:45.942Z",
+  "_templateTotalViews": 1,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:18:50.634Z",
+  "id": "IdsRFlOwww9fZQlo",
+  "meta": {
+    "instanceId": "ccf4e500c5536799e0925f03390f0fd338e2b5a5bc862f6a57b5552acfdf3861"
+  },
+  "name": "Zoom contacts to Mailchimp double opt in integration",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "d70c0a2d-5210-41d8-93b2-2e1d2a57d187",
+      "name": "Update a member",
+      "type": "n8n-nodes-base.mailchimp",
+      "onError": "continueRegularOutput",
+      "position": [
+        976,
+        416
+      ],
+      "parameters": {
+        "list": "LIST_ID_HERE",
+        "email": "={{ $json.email }}",
+        "operation": "update",
+        "updateFields": {},
+        "authentication": "oAuth2"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4a7b461a-cf25-4012-b117-7fd3428e6666",
+      "name": "Get Webinar Attendees from Zoom",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        208,
+        416
+      ],
+      "parameters": {
+        "url": "=https://api.zoom.us/v2/webinars/{{ $json.webinar_id }}/registrants?occurrence_id={{ $json.occurence_id }}&page_size=300",
+        "options": {},
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "zoomOAuth2Api"
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "35555aa1-6696-4aa3-ad81-74a69087bfb9",
+      "name": "Extract Registrant Emails",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        448,
+        416
+      ],
+      "parameters": {
+        "jsCode": "// Get all input items\nconst items = $input.all();\n\n// Extract emails from all registrants\nconst emails = [];\n\nfor (const item of items) {\n  const registrants = item.json.registrants || [];\n  \n  for (const registrant of registrants) {\n    if (registrant.email) {\n      emails.push(registrant.email);\n    }\n  }\n}\n\n// Return as n8n format - one item per email\nreturn emails.map(email => ({\n  json: {\n    email: email\n  }\n}));"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "62579a13-9f79-4718-873f-f270bfa9edb4",
+      "name": "Filter Out Internal Emails",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        720,
+        416
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "97cf11bb-f8ca-4d30-b9b9-db92fe3fa42e",
+              "operator": {
+                "type": "string",
+                "operation": "notContains"
+              },
+              "leftValue": "={{ $json.email }}",
+              "rightValue": "@yourcompanydomain.com"
+            }
+          ]
+        }
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "468039a4-b1f9-41df-b8cb-f19e62bfdb8a",
+      "name": "MD5 Hash Email",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1488,
+        400
+      ],
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const crypto = require('crypto');\nconst email = $('Filter Out Internal Emails').item.json.email.toLowerCase();\nconst hash = \n  crypto.createHash('md5').update(email).digest('hex');\n\nreturn { hash: hash };"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "3d2142e4-f2bb-44f0-92fe-103f3e4accad",
+      "name": "If ID doesn't exist",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1216,
+        416
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "cb0a2019-f3a1-498f-bc57-b324d6bd9123",
+              "operator": {
+                "type": "string",
+                "operation": "notExists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.id }}",
+              "rightValue": ""
+            }
+          ]
+        }
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "c1d7c737-41fb-4ba6-9d08-d55cc37b7081",
+      "name": "Mailchimp - Send Double Opt in Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1744,
+        400
+      ],
+      "parameters": {
+        "url": "=https://us4.api.mailchimp.com/3.0/lists/LIST_ID_HERE/members/{{$json.hash}}",
+        "method": "PUT",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10
+            }
+          }
+        },
+        "jsonBody": "={\n  \"email_address\": \"{{ $('Filter Out Internal Emails').item.json.email }}\",\n  \"status_if_new\": \"pending\",\n  \"status\": \"pending\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth"
+      },
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "credential-id",
+          "name": "httpBasicAuth Credential"
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "9f967d14-ac27-4334-ac34-df5fd9059054",
+      "name": "Mailchimp - Add Leads Tag",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1952,
+        400
+      ],
+      "parameters": {
+        "url": "=https://us4.api.mailchimp.com/3.0/lists/LIST_ID_HERE/members/{{ $('MD5 Hash Email').item.json.hash }}/tags",
+        "method": "POST",
+        "options": {
+          "batching": {
+            "batch": {
+              "batchSize": 10
+            }
+          }
+        },
+        "jsonBody": "={\n  \"tags\": [\n    {\n      \"name\": \"Leads\",\n      \"status\": \"active\"\n    }\n  ]\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBasicAuth"
+      },
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "credential-id",
+          "name": "httpBasicAuth Credential"
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "6a2ff6d9-e05c-4b9b-a555-6ce661c8625f",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -368,
+        96
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 2496,
+        "height": 560,
+        "content": "## Sync Zoom Webinar Attendees to Mailchimp  \n\n**1) Manual Trigger**   \n**2) Type in IDs** — sets `webinar_id` and `occurrence_id` inputs for Zoom API call  \n**3) Get Webinar Attendees from Zoom** — Fetches registrants using Zoom's API  \n**4) Extract Registrant Emails** — Parses and extracts email addresses via JavaScript  \n**5) Filter Out Internal Emails** — Removes internal company email addresses  \n**6) Update a member — update: member** — Attempts to update the attendee in Mailchimp  \n**7) If ID doesn’t exist** — Checks if the attendee already exists in Mailchimp  \n**8) MD5 Hash Email** — Hashes email for Mailchimp double opt-in  \n**9) Mailchimp - Send Double Opt in Email** — Sends opt-in confirmation email\n**10) Mailchimp - Add Leads Tag** — Tags new contacts with \"Leads\" in Mailchimp"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "be709aa1-f005-4d7b-aec5-330c87280cc0",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1040,
+        96
+      ],
+      "parameters": {
+        "width": 656,
+        "height": 944,
+        "content": "## Sync Zoom Webinar Attendees to Mailchimp  \n**Try out using to sync Zoom webinar attendees into Mailchimp with email validation and tagging.**\n\n### About Workflow  \nThis workflow pulls attendee data from Zoom webinars, filters out internal contacts, and either updates or creates contacts in Mailchimp. It ensures that only valid leads are added by using a double opt-in process.\n\n### Use Case  \nIdeal for marketing teams running recurring webinars who need to manage leads and contact updates in Mailchimp. Helps automate lead tagging and follow-up communications.\n\n### How it works  \n- Query/filter logic  \n=> gets webinar attendees by webinar ID; filters out internal email addresses  \n- Transformations/splits/lookups  \n=> extract emails with JS, hash email for Mailchimp, conditional check if user exists   \n- Final output step  \n=> Sends double opt-in email and tags the lead in Mailchimp\n\n### How to use  \n- Enter the correct Zoom webinar ID manually\n- Set schedule according to your webinar frequency  \n- Customize the internal email filter and Mailchimp tag as needed\n\n### Requirements  \n- Mailchimp account  \n- Zoom account with API access\n\n### Need Help? \n- Reach out through n8n community => https://community.n8n.io/u/easy8.ai\n- Contant our team directly => Easy8.ai\n- Visit our youtube channel => https://www.youtube.com/@easy8ai "
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a88ae5b9-95a7-4f2a-86d9-97994d3c9661",
+      "name": "Type in IDs",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -32,
+        416
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "3d2b3f3d-c9fc-4d98-b8d6-8bd11b5a3266",
+              "name": "webinar_id",
+              "type": "string",
+              "value": "add ID of webinar series"
+            },
+            {
+              "id": "c37660b5-1518-4069-9f52-a529f55e939f",
+              "name": "occurence_id",
+              "type": "string",
+              "value": "add Occurence ID"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "c0c96ec9-ee24-4c4c-b31a-777720b185ac",
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -304,
+        416
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7d452bb4-013e-4569-9278-682065f68ebe",
+  "connections": {
+    "Type in IDs": {
+      "main": [
+        [
+          {
+            "node": "Get Webinar Attendees from Zoom",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MD5 Hash Email": {
+      "main": [
+        [
+          {
+            "node": "Mailchimp - Send Double Opt in Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a member": {
+      "main": [
+        [
+          {
+            "node": "If ID doesn't exist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If ID doesn't exist": {
+      "main": [
+        [
+          {
+            "node": "MD5 Hash Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Registrant Emails": {
+      "main": [
+        [
+          {
+            "node": "Filter Out Internal Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Out Internal Emails": {
+      "main": [
+        [
+          {
+            "node": "Update a member",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Webinar Attendees from Zoom": {
+      "main": [
+        [
+          {
+            "node": "Extract Registrant Emails",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mailchimp - Send Double Opt in Email": {
+      "main": [
+        [
+          {
+            "node": "Mailchimp - Add Leads Tag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Type in IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

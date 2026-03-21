@@ -1,0 +1,400 @@
+{
+  "_templateId": 10772,
+  "_templateName": "Automate Rental Agreements with BoldSign, Google Sheets & Gemini AI",
+  "_templateDescription": "Complete Video Documentation: https://youtu.be/O-bKlX3G7_4\n\nExplanation WITH clean Video timestamps:\n\n\n  Prerequisites: You need a rental agreement document, a BoldSign account (which has a free tier for testing) [00:44], a Google Sheet, and an n8n instance.\n  BoldSign Setup: How to upload your agreement as a template, drag-and-drop the signature and text fields [01:13], get your API key [01:57], and set up a webhook to notify n8n when the agreement is signed or completed [02:13].\n  Workflow Logic: The video walks through the two main flows:\n    Form Submission: A tenant fills out a form, which triggers n8n to save the details to Google Sheets and then call the BoldSign API to send the agreement to both the owner and tenant [03:01].\n    Completion: When both parties sign, BoldSign sends an event to the n8n webhook, which then filters for the \"Completed\" event and updates the Google Sheet [09:12].\n  Bonus: It also covers the Telegram bot setup, which lets an owner ask an AI about the status of agreements [11:52].\n\nPrerequisites\n\nBefore you build this, you'll need a few things:\n\n  An n8n Instance: This can be on n8n.cloud or self-hosted.\n  A Google Sheet: Create a new sheet with columns like Tenant Name, Tenant Email, Property, Estimated Rent per month, contract expiry, and agreement status.\n  A BoldSign Account:\n      An API Key. [01:57]\n      A prepared rental agreement document (like a PDF or .docx).\n      A BoldSign Template created from that document. You'll need to drag and drop the required fields (like signatures, dates, text boxes) onto the template. [01:13]\n  A Telegram Bot (Optional): If you want the AI status checker, you'll need to create a bot with Telegram's BotFather to get an API token.\n  A Google Gemini API Key (Optional): For the AI agent.\n\nIn BoldSign, you would replace the {{...}} and [Date] parts with draggable form fields.\n\nUnderstanding the BoldSign API Node\n\nThe key to sending the agreement is the Send aggrement to Tenant's Email node. This is a standard HTTP Request node, not a special BoldSign node.\n\n  Method: POST\n  URL: https://api.boldsign.com/v1/template/send?templateId=enter-your-template-id\n      This is the official BoldSign API endpoint for sending a document based on a template. You must replace enter-your-template-id with the actual ID of the template you created in BoldSign [07:04].\n  Authentication: Header Auth\n      BoldSign uses an API key in the header. You would create a credential in n8n where the Name is X-API-KEY and the Value is the secret API key you got from your BoldSign account [07:16].\n  Body: The jsonBody is the most important part [08:02]. It's a JSON object that tells BoldSign who to send the agreement to and what data to pre-fill.\n      title: Sets the document title, like \"Rental Agreement - 123 Main St\".\n      roles: This array defines the signers.\n          One role is for the \"Owner\", dynamically filling their name and email from the form data.\n          The second role is for the \"Tenent\" (Tenant), also filling their name and email.\n      existingFormFields & mergeFields: This is where you dynamically insert data into the document. You map the data from your n8n form (like {{ $('Retrive Data from submitted form').item.json.address }}) to the id of the fields you created in your BoldSign template [08:16].\n\nWorkflow Explanation (From Scratch)\n\nThis workflow is actually three separate flows that work together.\n\nFlow 1: New Tenant Onboarding (Form to Agreement)\n\nThis is the main flow that kicks everything off when a new tenant is interested.\n\nNode: Tenant Form (Form Trigger)\n\n      What it is: This node creates a public web form [03:10]. This is the starting point.\n      From Scratch: You'd drag in a Form Trigger node. You add fields for \"Your Name\" (tenant's name) and \"Your Email\" (tenant's email).\n      This Workflow: It also cleverly uses hidden fields [03:18] to store the owner's details, the property address, and the rent. This is a simple way to manage a single property. For multiple properties, you might use a database or a Google Sheet lookup.\n\nNode: Retrive Data from submitted form (Set)\n\n      What it is: This node takes the messy data from the form and organizes it into clean, named variables (like tenant_name, address, estimated_rent) [05:25].\n      From Scratch: It's good practice to do this so the rest of your workflow is easy to read. It also calculates the expiry_date as one year from today.\n\nNode: Save the tenant Details (Google Sheets)\n\n      What it is: This logs the new tenant in your Google Sheet before the agreement is sent [05:51].\n      From Scratch: You'd set this to \"Append or Update\" mode. It maps the variables ( tenant_name, tenant_email, etc.) to the correct columns in your sheet.\n\nNode: Send aggrement to Tenant's Email (HTTP Request)\n\n      What it is: This is the BoldSign API call we just detailed. It takes all the data and sends the official signing request to both the owner's and tenant's email addresses [06:47].\n\nNode: Update Agreement Status (Google Sheets)\n\n      What it is: After the email is successfully sent, this node finds the row you just created (using the tenant's email as a key) and updates the agreement status column to \"Pending Signing\" [08:55]. This is great for tracking.\n\nFlow 2: Handling Signed Agreements (Webhook)\n\nThis flow listens for activity. It doesn't run on a schedule; it waits for BoldSign to tell it something happened.\n\nNode: Webhook (Webhook Trigger)\n\n      What it is: This node generates a unique URL [02:45]. You copy this URL and paste it into your BoldSign account's webhook settings [09:28].\n      From Scratch: Now, any time an event happens in BoldSign (like the document is viewed, signed, or completed), BoldSign will send a data packet to this URL, triggering the workflow.\n\nNode: If (If)\n\n      What it is: This is a filter. The webhook gets all events, but we only care about the final one [10:49].\n      From Scratch: It's set to check the incoming data from the webhook. It looks at a header called x-boldsign-event and only continues if the value equals \"Completed\" [11:02]. This means it will ignore the \"Signed\" event (when just one person signs) and only proceed when both parties have signed.\n\nNode: Retrieve Tenant Email (Set)\n\n      What it is: This node digs into the large JSON data packet from the webhook to find the tenant's email [11:17].\n      From Scratch: It uses a JavaScript .find() function to look through the signerDetails and pull the email for the person whose role was \"Tenent\" (Tenant). This gives us the unique key to update our spreadsheet.\n\nNode: Update Agreement Status as completed (Google Sheets)\n\n      What it is: The final step\\! Just like in Flow 1, this node finds the correct row in the Google Sheet (using the tenant's email) and updates the agreement status column to \"Completed\" [11:32].\n\nFlow 3: AI-Powered Status Bot (Telegram)\n\nThis is a bonus flow that lets the owner \"chat\" with the Google Sheet.\n\nNode: Telegram Trigger\n\n      What it is: This listens for any new message sent to your Telegram bot [11:52].\n\nNode: AI Agent (Langchain Agent)\n\n      What it is: This is the \"brain\". It takes the message.text from the Telegram user [12:30].\n      From Scratch: Its prompt tells it to be a helpful assistant for rental agreements and to use the tools it's given.\n\nNode: Google Gemini Chat Model (Google Gemini)\n\n      What it is: This is the Large Language Model (LLM) that the agent uses to think and form sentences.\n\nNode: Fetch Rental Agreements (Google Sheets Tool)\n\n      What it is: This is not a regular node, but a Tool plugged into the AI Agent [12:35].\n      From Scratch: You give the AI agent this \"tool\" and tell it: \"This tool, named 'Fetch Rental Agreements', can get all the data from the Google Sheet.\" When the user asks, \"What's the status of Jane Doe's agreement?\", the AI knows it must use this tool to get the sheet data before it can answer.\n\nNode: Send a text message (Telegram)\n\n      What it is: This takes the final output from the AI Agent and sends it as a reply to the user in Telegram.",
+  "_templateCreatedAt": "2025-11-12T18:28:07.026Z",
+  "_templateTotalViews": 1,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:19:13.083Z",
+  "meta": {
+    "instanceId": "93f396852104089b8670e7494b0f3668b420464668ae4a8c1d6b4b5799f8e3ef"
+  },
+  "nodes": [
+    {
+      "id": "17b26dbb-bd93-46a1-8466-c7c122a1e695",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -864,
+        1040
+      ],
+      "webhookId": "b603604b-8b1c-492f-9bc9-66633493f0e6",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "ce95b2c0-6541-4ac7-b568-0f6ea0a6c6cb",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -656,
+        1040
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "556443a3-2649-402d-bd20-629a7b5ca14f",
+      "name": "Retrive Data from submitted form",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -656,
+        272
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "8f1f7603-c00a-4600-9aec-3e741091e3d6",
+      "name": "Retrieve Tenant Email",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -384,
+        1024
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "7d66ba62-8b23-4858-97a4-dbe57e46185f",
+      "name": "Save the tenant Details",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -480,
+        272
+      ],
+      "parameters": {},
+      "typeVersion": 4.7
+    },
+    {
+      "id": "c891368d-0485-42e5-922d-4c17ccecd804",
+      "name": "Update Agreement Status",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -32,
+        272
+      ],
+      "parameters": {},
+      "typeVersion": 4.7
+    },
+    {
+      "id": "1630c51e-4e77-4259-8401-7edd63a0d57b",
+      "name": "Update Agreement Status as completed",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -144,
+        1024
+      ],
+      "parameters": {},
+      "typeVersion": 4.7
+    },
+    {
+      "id": "595102da-32f5-4c23-a6d7-150728a2edd5",
+      "name": "Send aggrement to Tenant's Email",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -224,
+        272
+      ],
+      "parameters": {},
+      "typeVersion": 4.3
+    },
+    {
+      "id": "5e7c5348-16df-41cc-b231-615ecf068456",
+      "name": "Tenant Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -832,
+        272
+      ],
+      "webhookId": "f88a3beb-c148-413c-a3bb-a316b43c9658",
+      "parameters": {},
+      "typeVersion": 2.3
+    },
+    {
+      "id": "93bbad57-de1b-4c84-afbe-40cb7e9a249d",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        960,
+        624
+      ],
+      "webhookId": "04f90bad-8222-4705-a440-4a0bba3665ab",
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "f6447ad7-d917-43d0-ba35-f3693fc1f4f8",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1312,
+        624
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "fb7d2916-ce92-4009-9c8d-1c7cf2219812",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        1280,
+        864
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "a69f2200-a777-4a1e-a52d-65d39b3c179c",
+      "name": "Fetch Rental Agreements",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "position": [
+        1536,
+        864
+      ],
+      "parameters": {},
+      "typeVersion": 4.7
+    },
+    {
+      "id": "08cdb173-8f39-44f6-9721-c1cc394701db",
+      "name": "Send a text message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1920,
+        624
+      ],
+      "webhookId": "1db53c53-4553-41ed-8c7e-bb2103751033",
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "f58d91c1-b384-4d70-8992-22eb63ac32ae",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1392,
+        32
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "01c09654-a4ec-4b42-b0a7-f4b9b528ad8d",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -912,
+        144
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "7c9678d4-b88d-44fc-ad35-cb573ec07212",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        144
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "063cef46-002b-4584-8265-145a203ba46d",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1392,
+        816
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "10fae120-77e4-476f-af7a-a56240f71525",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -928,
+        864
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "76eeea63-6205-4e62-bea1-7af2c3c4bd67",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -432,
+        864
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a9624e8a-541f-4d55-a7ee-34206c3ac1dc",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        416
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "06a8bb36-0042-4924-91eb-2e13550cc926",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        896,
+        480
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Retrieve Tenant Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tenant Form": {
+      "main": [
+        [
+          {
+            "node": "Retrive Data from submitted form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Tenant Email": {
+      "main": [
+        [
+          {
+            "node": "Update Agreement Status as completed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Rental Agreements": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save the tenant Details": {
+      "main": [
+        [
+          {
+            "node": "Send aggrement to Tenant's Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrive Data from submitted form": {
+      "main": [
+        [
+          {
+            "node": "Save the tenant Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send aggrement to Tenant's Email": {
+      "main": [
+        [
+          {
+            "node": "Update Agreement Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

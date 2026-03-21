@@ -1,0 +1,217 @@
+{
+  "_templateId": 7142,
+  "_templateName": "Voice to Podcast Script Generator with OpenAI & Notion via Telegram",
+  "_templateDescription": "Automated Podcast Note-Taker for Notion 🎙️⚡\nTransform voice notes into polished podcast scripts—automatically!\n\n✨ What It Does\nThis n8n workflow instantly converts Telegram voice messages into structured podcast content in Notion, including:\n✅ AI-generated transcripts (via OpenAI Whisper)\n✅ Smart content analysis (extracts titles, hooks, CTAs, and summaries)\n✅ Ready-to-use script outlines (with sections for hooks, key points, transitions & more)\n✅ Dual Notion integration (saves metadata to a database + full script to a page)\n\n🚀 Perfect For\n✔ Podcasters who brainstorm via voice notes\n✔ Content teams that need fast turnarounds\n✔ Solo creators who want to streamline scripting\n\n⚙️ How It Works\nSend a voice note to your Telegram bot\n\nAI transcribes & analyzes the content\n\nAuto-generates a script outline (under 1800 chars for Notion compatibility)\n\nSaves to Notion—neatly organized for editing or publishing\n\n🔧 Technical Details\nTools Used: n8n, OpenAI (Whisper + GPT), Notion, Telegram\n\nOutputs:\n\nNotion Database: Title, topic, quote, CTA\n\nNotion Page: Full script outline (Markdown formatted)\n\nSmart Limits: Ensures content fits Notion’s API constraints\n\n💡 Why Buy?\nSave hours per episode on manual note-taking\n\nNever lose ideas—voice notes become searchable, structured content\n\nProfessional scripts with consistent formatting\n\n📦 What’s Included\nReady-to-import n8n workflow file (JSON)\n\nSetup guide (step-by-step instructions)\n\nTips for customization (e.g., tweaking AI prompts)\n\nPrice: $XX (one-time payment)",
+  "_templateCreatedAt": "2025-08-07T16:17:31.695Z",
+  "_templateTotalViews": 3,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:17:08.411Z",
+  "id": "CUShv5juR1lOq54t",
+  "meta": {
+    "instanceId": "e899363d447179cae55336f533b264bf7639597e931bf3873bf4820e8fab8a8a",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Podcast Note taker",
+  "tags": [
+    {
+      "id": "5Dy8j7lMcAn1HRbT",
+      "name": "ai",
+      "createdAt": "2025-08-07T14:54:03.371Z",
+      "updatedAt": "2025-08-07T14:54:03.371Z"
+    },
+    {
+      "id": "HwV8ZQSlaN3KPIDF",
+      "name": "podcast",
+      "createdAt": "2025-08-07T14:54:03.415Z",
+      "updatedAt": "2025-08-07T14:54:03.415Z"
+    },
+    {
+      "id": "jf2bud55poSLJyqM",
+      "name": "notion",
+      "createdAt": "2025-08-07T14:54:03.382Z",
+      "updatedAt": "2025-08-07T14:54:03.382Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "19119c32-99b0-4fa7-b655-69ce430b783f",
+      "name": "Save to Notion",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        472,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "c9420cb8-d628-42b9-a9c9-cb862a2b4b9e",
+      "name": "Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -940,
+        240
+      ],
+      "webhookId": "a74d881f-a918-4cc1-aa4e-9cdeebd9fce5",
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "905c3f91-639d-4590-97ce-660740852129",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -1160,
+        240
+      ],
+      "webhookId": "23ebcf45-acf7-4256-9fd7-2d8b9b59fc74",
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "4d67f26f-3705-4745-8b78-1ddabca602e7",
+      "name": "Transcribe Audio",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        -720,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "5af64b63-3eb5-4496-b0c4-497d9036e9e1",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -124,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "c17a9389-3db7-4487-889c-18783429dcaf",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        -500,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "fd0bdc84-3cfe-49c0-87f8-4f0af1df5db1",
+      "name": "Generate Script Outline",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        96,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "24f01ee2-2d81-444d-b765-dd2f762d8cc5",
+      "name": "Save to Notion1",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        680,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "630607cf-61aa-4d29-b9dc-e397dcaf7604",
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Generate Script Outline",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Notion": {
+      "main": [
+        [
+          {
+            "node": "Save to Notion1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save to Notion1": {
+      "main": [
+        []
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Audio": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Script Outline": {
+      "main": [
+        [
+          {
+            "node": "Save to Notion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

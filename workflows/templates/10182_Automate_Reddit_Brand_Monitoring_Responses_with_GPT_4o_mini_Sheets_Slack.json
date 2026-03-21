@@ -1,0 +1,602 @@
+{
+  "_templateId": 10182,
+  "_templateName": "Automate Reddit Brand Monitoring & Responses with GPT-4o-mini, Sheets & Slack",
+  "_templateDescription": "How it Works\n\nThis workflow automates intelligent Reddit marketing by monitoring brand mentions, analyzing sentiment with AI, and engaging authentically with communities. Every 24 hours, the system searches Reddit for posts containing your configured brand keywords across all subreddits, finding up to 50 of the newest mentions to analyze.\n\nEach discovered post is sent to OpenAI's GPT-4o-mini model for comprehensive analysis. The AI evaluates sentiment (positive/neutral/negative), assigns an engagement score (0-100), determines relevance to your brand, and generates contextual, helpful responses that add genuine value to the conversation. It also classifies the response type (educational/supportive/promotional) and provides reasoning for whether engagement is appropriate.\n\nThe workflow intelligently filters posts using a multi-criteria system: only posts that are relevant to your brand, score above 60 in engagement quality, and warrant a response type other than \"pass\" proceed to engagement. This prevents spam and ensures every interaction is meaningful.\n\nSelected posts are processed one at a time through a loop to respect Reddit's rate limits. For each worthy post, the AI-generated comment is posted, and complete interaction data is logged to Google Sheets including timestamp, post details, sentiment, engagement scores, and success status. This creates a permanent audit trail and analytics database.\n\nAt the end of each run, the workflow aggregates all data into a comprehensive daily summary report with total posts analyzed, comments posted, engagement rate, sentiment breakdown, and the top 5 engagement opportunities ranked by score. This report is automatically sent to Slack with formatted metrics, giving your team instant visibility into your Reddit marketing performance.\n\nWho is this for?\n\nBrand managers and marketing teams** needing automated social listening and engagement on Reddit\nCommunity managers** responsible for authentic brand presence across multiple subreddits\nStartup founders and growth marketers** who want to scale Reddit marketing without hiring a team\nPR and reputation teams** monitoring brand sentiment and responding to discussions in real-time\nProduct marketers** seeking organic engagement opportunities in product-related communities\nAny business** that wants to build authentic Reddit presence while avoiding spammy marketing tactics\n\nSetup Steps\n\nSetup time:** Approx. 30-40 minutes (credential configuration, keyword setup, Google Sheets creation, Slack integration)\nRequirements:**\n    Reddit account with OAuth2 application credentials (create at reddit.com/prefs/apps)\n    OpenAI API key with GPT-4o-mini access\n    Google account with a new Google Sheet for tracking interactions\n    Slack workspace with posting permissions to a marketing/monitoring channel\n    Brand keywords and subreddit strategy prepared\n\nCreate Reddit OAuth Application: Visit reddit.com/prefs/apps, create a \"script\" type app, and obtain your client ID and secret\nConfigure Reddit Credentials in n8n: Add Reddit OAuth2 credentials with your app credentials and authorize access\nSet up OpenAI API: Obtain API key from platform.openai.com and configure in n8n OpenAI credentials\nCreate Google Sheet: Set up a new sheet with columns: timestamp, postId, postTitle, subreddit, postUrl, sentiment, engagementScore, responseType, commentPosted, reasoning\nConfigure these nodes:\n    Brand Keywords Config: Edit the JavaScript code to include your brand name, product names, and relevant industry keywords\n    Search Brand Mentions: Adjust the limit (default 50) and sort preference based on your needs\n    AI Post Analysis: Customize the prompt to match your brand voice and engagement guidelines\n    Filter Engagement-Worthy: Adjust the engagementScore threshold (default 60) based on your quality standards\n    Loop Through Posts: Configure max iterations and batch size for rate limit compliance\n    Log to Google Sheets: Replace YOUR_SHEET_ID with your actual Google Sheets document ID\n    Send Slack Report: Replace YOUR_CHANNEL_ID with your Slack channel ID\nTest the workflow: Run manually first to verify all connections work and adjust AI prompts\nActivate for daily runs: Once tested, activate the Schedule Trigger to run automatically every 24 hours\n\nNode Descriptions (10 words each)\n\nDaily Marketing Check - Schedule trigger runs workflow every 24 hours automatically daily\nBrand Keywords Config - JavaScript code node defining brand keywords to monitor Reddit\nSearch Brand Mentions - Reddit node searches all subreddits for brand keyword mentions\nAI Post Analysis - OpenAI analyzes sentiment, relevance, generates contextual helpful comment responses\nFilter Engagement-Worthy - Conditional node filters only high-quality relevant posts worth engaging\nLoop Through Posts - Split in batches processes each post individually respecting limits\nPost Helpful Comment - Reddit node posts AI-generated comment to worthy Reddit discussions\nLog to Google Sheets - Appends all interaction data to spreadsheet for permanent tracking\nGenerate Daily Summary - JavaScript aggregates metrics, sentiment breakdown, generates comprehensive daily report\nSend Slack Report - Posts formatted daily summary with metrics to team Slack channel",
+  "_templateCreatedAt": "2025-10-25T21:00:15.098Z",
+  "_templateTotalViews": 3,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:17:04.338Z",
+  "meta": {
+    "instanceId": "db30e8ae4100235addbd4638770997b7ef11878d049073c888ba440ca84c55fc"
+  },
+  "nodes": [
+    {
+      "id": "947d8563-99c3-40bb-9fef-13f482cb8567",
+      "name": "Daily Marketing Check",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "notes": "Runs every 24 hours to scan Reddit for brand mentions and engagement opportunities",
+      "position": [
+        -1456,
+        32
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "70d74090-8308-4ff8-995a-afa2b3e53448",
+      "name": "Search Brand Mentions",
+      "type": "n8n-nodes-base.reddit",
+      "notes": "Searches Reddit for posts mentioning your brand, products, or relevant keywords",
+      "position": [
+        -1008,
+        32
+      ],
+      "parameters": {
+        "limit": 50,
+        "keyword": "={{ $json.brandKeyword }}",
+        "location": "allReddit",
+        "operation": "search",
+        "additionalFields": {
+          "sort": "new"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "958f4ae4-caf9-46ee-9ab5-e7a5f7cf9da9",
+      "name": "Brand Keywords Config",
+      "type": "n8n-nodes-base.code",
+      "notes": "Configure your brand name and relevant keywords to monitor",
+      "position": [
+        -1232,
+        32
+      ],
+      "parameters": {
+        "jsCode": "// Configure your brand monitoring keywords\nconst brandKeywords = [\n  \"YourBrandName\",\n  \"your-product-name\",\n  \"industry-keyword\"\n];\n\n// Return array of keywords to search\nreturn brandKeywords.map(keyword => ({\n  json: {\n    brandKeyword: keyword\n  }\n}));"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "f9fda183-58fe-4b81-a7b3-7ddecaba3ba7",
+      "name": "AI Post Analysis",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "notes": "Uses AI to analyze sentiment, relevance, and generate contextual responses",
+      "position": [
+        -800,
+        32
+      ],
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "options": {
+          "temperature": 0.7
+        },
+        "messages": {
+          "values": [
+            {}
+          ]
+        }
+      },
+      "typeVersion": 1.4
+    },
+    {
+      "id": "95982fd8-f412-475e-b4a5-6aaa69ec3b58",
+      "name": "Filter Engagement-Worthy",
+      "type": "n8n-nodes-base.if",
+      "notes": "Only engages with posts that are relevant, high-quality, and appropriate",
+      "position": [
+        -576,
+        32
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "combineOperation": "all"
+          },
+          "conditions": [
+            {
+              "id": "condition-relevant",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              },
+              "leftValue": "={{ $json.isRelevant }}",
+              "rightValue": true
+            },
+            {
+              "id": "condition-score",
+              "operator": {
+                "type": "number",
+                "operation": "gt"
+              },
+              "leftValue": "={{ $json.engagementScore }}",
+              "rightValue": 60
+            },
+            {
+              "id": "condition-type",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              },
+              "leftValue": "={{ $json.responseType }}",
+              "rightValue": "pass"
+            }
+          ]
+        }
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "71b6a70e-fe6a-4f6e-a5c9-c90181696e56",
+      "name": "Loop Through Posts",
+      "type": "n8n-nodes-base.splitInBatches",
+      "notes": "Process each post one at a time to avoid rate limits",
+      "position": [
+        -352,
+        -48
+      ],
+      "parameters": {
+        "options": {}
+      },
+      "typeVersion": 3
+    },
+    {
+      "id": "1e154007-38ff-4201-8576-972c99bb9197",
+      "name": "Post Helpful Comment",
+      "type": "n8n-nodes-base.reddit",
+      "notes": "Posts AI-generated helpful comment to engage with the community",
+      "position": [
+        -128,
+        -48
+      ],
+      "parameters": {
+        "postId": "={{ $('Search Brand Mentions').item.json.data.id }}",
+        "resource": "postComment",
+        "commentText": "={{ $('AI Post Analysis').item.json.suggestedResponse }}"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "dcfe45e5-64ec-4d91-abd2-3472b45fb4dc",
+      "name": "Log to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "notes": "Tracks all Reddit interactions in a Google Sheet for analysis",
+      "position": [
+        96,
+        -48
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "postId": "={{ $('Search Brand Mentions').item.json.data.id }}",
+            "postUrl": "=https://reddit.com{{ $('Search Brand Mentions').item.json.data.permalink }}",
+            "postTitle": "={{ $('Search Brand Mentions').item.json.data.title }}",
+            "reasoning": "={{ $('AI Post Analysis').item.json.reasoning }}",
+            "sentiment": "={{ $('AI Post Analysis').item.json.sentiment }}",
+            "subreddit": "={{ $('Search Brand Mentions').item.json.data.subreddit }}",
+            "timestamp": "={{ $now.toISO() }}",
+            "responseType": "={{ $('AI Post Analysis').item.json.responseType }}",
+            "commentPosted": "={{ $json.success ? 'Yes' : 'Failed' }}",
+            "engagementScore": "={{ $('AI Post Analysis').item.json.engagementScore }}"
+          },
+          "schema": [
+            {
+              "id": "timestamp",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "timestamp",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "postId",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "postId",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "postTitle",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "postTitle",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "subreddit",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "subreddit",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "postUrl",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "postUrl",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "sentiment",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "sentiment",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "engagementScore",
+              "type": "number",
+              "display": true,
+              "required": false,
+              "displayName": "engagementScore",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "responseType",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "responseType",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "commentPosted",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "commentPosted",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "reasoning",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "reasoning",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": []
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "id",
+          "value": "Sheet1"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_SHEET_ID"
+        }
+      },
+      "typeVersion": 4.5
+    },
+    {
+      "id": "0c7a75ed-891c-45dd-95fc-c86c0e07862e",
+      "name": "Generate Daily Summary",
+      "type": "n8n-nodes-base.code",
+      "notes": "Aggregates all data into a comprehensive daily report",
+      "position": [
+        320,
+        32
+      ],
+      "parameters": {
+        "jsCode": "// Aggregate all processed items\nconst items = $input.all();\n\nconst totalPosts = items.length;\nconst postsEngaged = items.filter(i => i.json.commentPosted === 'Yes').length;\nconst sentimentBreakdown = items.reduce((acc, item) => {\n  const sentiment = item.json.sentiment || 'unknown';\n  acc[sentiment] = (acc[sentiment] || 0) + 1;\n  return acc;\n}, {});\n\nconst avgScore = items.reduce((sum, item) => sum + (item.json.engagementScore || 0), 0) / totalPosts;\n\nconst topPosts = items\n  .sort((a, b) => (b.json.engagementScore || 0) - (a.json.engagementScore || 0))\n  .slice(0, 5)\n  .map(item => ({\n    title: item.json.postTitle,\n    subreddit: item.json.subreddit,\n    score: item.json.engagementScore,\n    url: item.json.postUrl\n  }));\n\nreturn [{\n  json: {\n    summary: {\n      totalPosts,\n      postsEngaged,\n      engagementRate: `${((postsEngaged / totalPosts) * 100).toFixed(1)}%`,\n      avgEngagementScore: avgScore.toFixed(1),\n      sentimentBreakdown,\n      topPosts,\n      reportDate: new Date().toISOString().split('T')[0]\n    }\n  }\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "59090839-871e-4fd1-bd07-251104e4115f",
+      "name": "Send Slack Report",
+      "type": "n8n-nodes-base.slack",
+      "notes": "Sends comprehensive daily report to Slack with metrics and top opportunities",
+      "position": [
+        528,
+        32
+      ],
+      "webhookId": "671ce43f-0973-4fc1-96ce-d0df355db33b",
+      "parameters": {
+        "text": "=📊 *Reddit Brand Marketing Daily Report*\n\n*Date:* {{ $json.summary.reportDate }}\n\n*Overall Performance:*\n• Posts Analyzed: {{ $json.summary.totalPosts }}\n• Comments Posted: {{ $json.summary.postsEngaged }}\n• Engagement Rate: {{ $json.summary.engagementRate }}\n• Avg Engagement Score: {{ $json.summary.avgEngagementScore }}/100\n\n*Sentiment Breakdown:*\n{{ Object.entries($json.summary.sentimentBreakdown).map(([k,v]) => `• ${k}: ${v} posts`).join('\\n') }}\n\n*Top 5 Engagement Opportunities:*\n{{ $json.summary.topPosts.map((post, i) => `${i+1}. ${post.title}\\n   📍 r/${post.subreddit} | Score: ${post.score}\\n   🔗 ${post.url}`).join('\\n\\n') }}\n\n✅ All interactions logged to Google Sheets",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_CHANNEL_ID"
+        },
+        "otherOptions": {}
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "6b53e5f2-79c8-41f9-b779-5efbe6aeaf37",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1904,
+        -112
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 347,
+        "height": 469,
+        "content": "## Reddit Brand Marketing Workflow\n\n**Purpose:** Automate Reddit monitoring and engagement for brand marketing\n\n**Features:**\n- Daily automated scans\n- AI-powered sentiment analysis\n- Smart comment generation\n- Engagement tracking\n- Daily Slack reports\n\n**Setup Required:**\n1. Reddit OAuth credentials\n2. OpenAI API key\n3. Google Sheets document\n4. Slack channel\n5. Configure brand keywords in Code node"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4b1cf549-13f1-4acb-bc92-226fc8275380",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1488,
+        -112
+      ],
+      "parameters": {
+        "width": 176,
+        "height": 112,
+        "content": "Schedule trigger runs workflow every 24 hours automatically daily\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "61e35218-b58c-42b7-a369-71b42c4d64ef",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1264,
+        -112
+      ],
+      "parameters": {
+        "width": 176,
+        "height": 112,
+        "content": "JavaScript code node defining brand keywords to monitor Reddit\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "b9a32a51-137c-48e1-83aa-82d64001e52f",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1040,
+        -112
+      ],
+      "parameters": {
+        "width": 176,
+        "height": 112,
+        "content": "Reddit node searches all subreddits for brand keyword mentions\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "9ca8ec09-cd5d-440b-ba21-3f4c69b62a73",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        -112
+      ],
+      "parameters": {
+        "width": 320,
+        "height": 112,
+        "content": "OpenAI analyzes sentiment, relevance, generates contextual helpful comment responses + Conditional node filters only high-quality relevant posts worth engaging\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "b1e5a451-6954-479c-a225-d9c3bfddc55e",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -384,
+        -192
+      ],
+      "parameters": {
+        "width": 176,
+        "height": 112,
+        "content": "Split in batches processes each post individually respecting limits"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "dafc1ea5-66a4-4bc0-a6e5-9c954295071b",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        -192
+      ],
+      "parameters": {
+        "width": 176,
+        "height": 112,
+        "content": "Reddit node posts AI-generated comment to worthy Reddit discussions"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2e85a5e7-61df-4969-8012-ddb4a1336178",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        64,
+        -192
+      ],
+      "parameters": {
+        "width": 176,
+        "height": 112,
+        "content": "Appends all interaction data to spreadsheet for permanent tracking\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4529d6c8-87ca-4d11-a609-6463cfe6d236",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        288,
+        -112
+      ],
+      "parameters": {
+        "width": 176,
+        "height": 112,
+        "content": "JavaScript aggregates metrics, sentiment breakdown, generates comprehensive daily report"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ee43aa3b-6acd-40bf-982c-0a667797b886",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        496,
+        -112
+      ],
+      "parameters": {
+        "width": 176,
+        "height": 112,
+        "content": "Posts formatted daily summary with metrics to team Slack channel"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Post Analysis": {
+      "main": [
+        [
+          {
+            "node": "Filter Engagement-Worthy",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Through Posts": {
+      "main": [
+        [
+          {
+            "node": "Post Helpful Comment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Generate Daily Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log to Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Loop Through Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post Helpful Comment": {
+      "main": [
+        [
+          {
+            "node": "Log to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brand Keywords Config": {
+      "main": [
+        [
+          {
+            "node": "Search Brand Mentions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Marketing Check": {
+      "main": [
+        [
+          {
+            "node": "Brand Keywords Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Brand Mentions": {
+      "main": [
+        [
+          {
+            "node": "AI Post Analysis",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Daily Summary": {
+      "main": [
+        [
+          {
+            "node": "Send Slack Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Engagement-Worthy": {
+      "main": [
+        [
+          {
+            "node": "Loop Through Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

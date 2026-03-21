@@ -1,0 +1,346 @@
+{
+  "_templateId": 4754,
+  "_templateName": "Post AI Videos to YouTube with Fal AI Veo3, Google Sheets, and YouTube API",
+  "_templateDescription": "Auto-Post Veo3 Videos on YouTube\n\nAn automated workflow for creating Veo3 videos and posting them to YouTube. \n\nYT Tutorial: https://youtu.be/DXM1VA-vDX4\n\nWorkflow Overview\n\nThe workflow is divided into three main phases:\n\nCreate Veo3 Video\nWait for Video Processing\nPost on YouTube\n\n1. Create Veo3 Video\n\nThis phase handles the initial video creation based on user input.\n\nType Prompt:** A form trigger allows the user to input details for the video, including:\n    Prompt: A simple scenario for the video.\n    Video Style: (e.g., Dialogue, Monologue, Advertisement, Documentary)\n    Aspect Ratio: (e.g., 16:9, 9:16, 1:1)\n    Video Category: A YouTube category for the video.\nGet Specific Prompt:** Based on the selected \"Video Style,\" the workflow fetches specific prompt data from a Google Sheet.\nVideography (AI Refinement):** An AI agent (using OpenRouter's Google Gemini 2.5 Flash model) refines the user's prompt into a detailed \"script-to-screen\" format suitable for video generation.\nMake FAL.AI Request:** The refined prompt is sent to the Fal.ai Veo 3 model via an HTTP request to generate the video. The video duration is fixed at 8 seconds.\nStore Data:** Details of the video request, including the date requested, the refined prompt, and the request URL, are stored in a Google Sheet.\n\n2. Wait for Video Processing\n\nWait 5 mins:** The workflow pauses for 5 minutes. This waiting period is necessary as it typically takes 3-5 minutes for the video to be ready after the generation request.\n\n3. Post on YouTube\n\nThis phase focuses on generating YouTube SEO details and uploading the video.\n\nYT Video SEO (AI Generation):** An AI agent (using OpenRouter's OpenAI GPT-4.1 Mini model) acts as a YouTube SEO specialist and viral content strategist. It generates the following details for the YouTube video:\n    Video Title: A compelling title (less than 6 words).\n    Video Description: A detailed description.\n    Video Tags: Relevant tags to maximize discoverability.\n    YouTube Category: The appropriate YouTube category code based on the user's input.\n    The AI agent is configured to follow guidelines for virality and YouTube's tag limits.\nStructured Output:** Parses the structured JSON output from the AI agent.\nGet Keywords:** Extracts and formats the video tags into a comma-separated list suitable for YouTube.\nFetch Video Credentials:** Fetches the video URL and other credentials from Fal.ai.\nDownload Video:** Downloads the generated video file.\nPost on YouTube:** The video is uploaded to YouTube using the generated title, description, tags, and category.\n\nSetup\n\nTo run this workflow, you need to set up credentials in n8n for:\n\nOpenRouter:** Generate API key from your OpenRouter account.\nGoogle Sheets:** Uses OAuth 2.0. Connect by authenticating your Google account.\nYouTube Data API:** Configure credentials to allow posting videos to YouTube.\n\nIf you do not have an n8n account, follow the tutorial at https://youtu.be/E2yQelHPUdU?feature=shared to get started.\n",
+  "_templateCreatedAt": "2025-06-07T08:20:59.571Z",
+  "_templateTotalViews": 854,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:15:59.598Z",
+  "id": "LhLjl99uI0KRBmce",
+  "meta": {
+    "instanceId": "5b9aff0ecdeb17791c04b93eac72e39e69151cfa63708980e5d936abe9308b8c",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Automatic YT post Veo 3 Video",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "73f3c07c-3b0d-41c5-902e-471cb2154a97",
+      "name": "Store Data",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        200,
+        -80
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "16dc0f5e-4940-4822-8145-903961e239e6",
+      "name": "Type Prompt",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -20,
+        -380
+      ],
+      "webhookId": "0a2fd6c9-41d2-417b-b127-6ee76b8bf9f9",
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "22b7e038-266e-4318-ab9d-c785c1f66ad0",
+      "name": "Wait 5 mins",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        400,
+        -80
+      ],
+      "webhookId": "b9936e8b-f3bc-4286-8dc6-6824561bc026",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "f145ccec-54ed-4e8b-964f-9242f755500d",
+      "name": "Structured Output",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        180,
+        340
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "541336ec-1905-4450-be25-c3e1c87fd4cb",
+      "name": "AI Brain",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "position": [
+        -20,
+        340
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "c6d924d3-e5b3-4b8f-8463-0b69eee36d61",
+      "name": "Get Keywords",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        400,
+        180
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "649bb0b2-994d-49e2-96be-ec3e3690a5c4",
+      "name": "YT Video SEO",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "maxTries": 2,
+      "position": [
+        -20,
+        180
+      ],
+      "parameters": {},
+      "retryOnFail": true,
+      "typeVersion": 1.9,
+      "waitBetweenTries": 3000
+    },
+    {
+      "id": "2e170ba3-abc6-46f4-9c2b-bed7a04a2ee7",
+      "name": "AI_Brain",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "position": [
+        360,
+        -220
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "22e836ad-8f4e-4303-bf23-071ec4d6d46b",
+      "name": "Post on YouTube",
+      "type": "n8n-nodes-base.youTube",
+      "position": [
+        400,
+        520
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "bfaa7f93-843a-4985-983f-3416181ac3b2",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -640,
+        -300
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "972b1cc2-4b1d-4aca-9e23-a61d06d67a61",
+      "name": "Fetch Video Credentials",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -20,
+        520
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "7f5d89f7-5c0d-4c64-aa03-e708888d1b4b",
+      "name": "Get Specific Prompt",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        200,
+        -380
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "7e2b0334-7ee4-4ee0-bea1-5722878e59c1",
+      "name": "Videography",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        400,
+        -380
+      ],
+      "parameters": {},
+      "typeVersion": 1.6
+    },
+    {
+      "id": "30ff24ca-6226-4f12-833b-2dac6c52b627",
+      "name": "Download Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        160,
+        520
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "78b7ee1d-c0cd-46f6-93e1-c2ff8c8b8d02",
+      "name": "Make FAL.AI Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -20,
+        -80
+      ],
+      "parameters": {},
+      "typeVersion": 4
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ceb92dd5-4f85-456a-a770-e22db9285a0b",
+  "connections": {
+    "AI Brain": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "YT Video SEO",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI_Brain": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Videography",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Store Data": {
+      "main": [
+        [
+          {
+            "node": "Wait 5 mins",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Type Prompt": {
+      "main": [
+        [
+          {
+            "node": "Get Specific Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Videography": {
+      "main": [
+        [
+          {
+            "node": "Make FAL.AI Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 5 mins": {
+      "main": [
+        [
+          {
+            "node": "YT Video SEO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Keywords": {
+      "main": [
+        [
+          {
+            "node": "Fetch Video Credentials",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "YT Video SEO": {
+      "main": [
+        [
+          {
+            "node": "Get Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Video": {
+      "main": [
+        [
+          {
+            "node": "Post on YouTube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post on YouTube": {
+      "main": [
+        []
+      ]
+    },
+    "Structured Output": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "YT Video SEO",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Specific Prompt": {
+      "main": [
+        [
+          {
+            "node": "Videography",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Make FAL.AI Request": {
+      "main": [
+        [
+          {
+            "node": "Store Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Video Credentials": {
+      "main": [
+        [
+          {
+            "node": "Download Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,321 @@
+{
+  "_templateId": 6272,
+  "_templateName": "Track Top Social Media Trends with Reddit, Twitter, and GPT-4o to SP/Drive",
+  "_templateDescription": "Who’s it for  \nContent creators, marketers, journalists, and product teams who need a quick, automated snapshot of what the internet is talking about—served as a ready-to-use spreadsheet every morning.\n\nHow it works / What it does  \nManual Trigger / Cron starts the flow.  \nSet Config picks today’s date and a topic keyword (default “Artificial Intelligence”).  \nAPI calls gather trend data:  \n   • Reddit API → /r/artificial “hot” posts.  \n   • Twitter (X) Trends via our own plemeo endpoint or any other social API.  \n   (Add additional sources before the Merge Data node—Instagram, YouTube, TikTok, etc.)  \nAggregate Content concatenates raw titles; AI Agent (GPT-4o) analyses them and returns the top 5 trends in JSON.  \nPrepare Excel formats each trend into rows; Create Excel turns them into an .xlsx file.  \nUpload the file to SharePoint (swap for Google Drive, Dropbox, S3—just replace the node).  \n\nHow to set up  \nImport the template into n8n (cloud or self-hosted).  \nCreate credentials: Reddit OAuth2, OpenAI, and your preferred storage (SharePoint, Drive, etc.).  \nIn Set Config choose your default topic; adjust the cron schedule if required.  \nIf you’re using Google Drive/Dropbox: delete the SharePoint node and add the corresponding upload node instead.  \n(Optional) Add more APIs—duplicate Merge Data inputs and map their results in Aggregate Content.  \nSave & activate. A spreadsheet called social-media-trends.xls appears in your target folder each run.\n\nRequirements  \nn8n 1.33 +  \nReddit app (OAuth2)  \nOpenAI account\nOne storage credential: SharePoint, Google Drive, Dropbox, or any other supported provider\n\nHow to customize  \nChange the number of trends: edit the limit in Aggregate Content and the prompt in AI Agent.  \nWant CSV instead of Excel? Swap Create Excel for Spreadsheet File → to File (CSV).  \nPush trends to Slack/Teams: branch after Prepare Excel and add a chat node.  \nFully serverless? Trigger via webhook instead of manual/cron.",
+  "_templateCreatedAt": "2025-07-22T13:14:05.038Z",
+  "_templateTotalViews": 279,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:14:26.107Z",
+  "id": "WEsO2dwjCaN6NwQT",
+  "meta": {
+    "instanceId": "2cf742429c2e3ee4e5a20069d3d8a75208519303b864f026a79464efa726bd95",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Compile top social-media trends to spreadsheet on SharePoint (or Drive/Dropbox)",
+  "tags": [
+    {
+      "id": "wpMIpESnBZpdPCpj",
+      "name": "Marketing",
+      "createdAt": "2025-06-03T11:38:37.020Z",
+      "updatedAt": "2025-06-03T11:38:37.020Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "a4dd01b9-57d6-41ff-9630-1bc6276f48da",
+      "name": "Reddit API",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -336,
+        48
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "fd03075f-7e22-48a8-b92a-ef397a7d74e6",
+      "name": "Merge Data",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        -96,
+        192
+      ],
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "b5dd36d6-a175-4695-8a02-0e92237bc0d3",
+      "name": "Aggregate Content",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        80,
+        192
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "aa228c26-feb4-4d9e-9535-2da2b4aa3635",
+      "name": "Prepare Excel",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        608,
+        192
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "ada69f9a-3b99-4c41-98df-9fed26498184",
+      "name": "Create Excel",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "position": [
+        832,
+        192
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "f6df2ff4-fd06-4073-bc41-a71d2c614010",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        288,
+        -16
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "9fc152ce-46e6-45c2-8d3f-72a9e34f5b3a",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        288,
+        192
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "302e51be-be21-4883-b62a-21c8fc6c4ca4",
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -768,
+        192
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "c625cc58-a4aa-4090-9b31-53c92fda8d37",
+      "name": "Microsoft SharePoint",
+      "type": "n8n-nodes-base.microsoftSharePoint",
+      "position": [
+        1040,
+        192
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "fd72d6de-d25d-4bb1-922b-8a4f0d3d7bca",
+      "name": "Get Twitter Trends",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -336,
+        320
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "71e4af0b-959f-48ee-9554-73d08a13abc2",
+      "name": "Set Config",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -560,
+        192
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "5915a721-4aca-4f8f-892e-df152dc2b9a0",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -832,
+        -208
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e7497dd8-57ed-4ffd-94a3-f04bb18da3c4",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        112,
+        -336
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0101f056-16c6-41ba-a9cc-c5778d3ca64d",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        720,
+        -112
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "39c76494-1a64-4756-9f20-81c087c24342",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        720,
+        384
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "90332d89-dc21-48da-858b-695d269c8396",
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Prepare Excel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Data": {
+      "main": [
+        [
+          {
+            "node": "Aggregate Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reddit API": {
+      "main": [
+        [
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Config": {
+      "main": [
+        [
+          {
+            "node": "Reddit API",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Twitter Trends",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Excel": {
+      "main": [
+        [
+          {
+            "node": "Microsoft SharePoint",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Excel": {
+      "main": [
+        [
+          {
+            "node": "Create Excel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate Content": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Twitter Trends": {
+      "main": [
+        [
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

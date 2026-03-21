@@ -1,0 +1,277 @@
+{
+  "_templateId": 9355,
+  "_templateName": "Daily Competitor Tweet Summarizer with X API, GPT-5-Nano, and Gmail Delivery",
+  "_templateDescription": "Automated Daily Competitor Tweet Summarizer with X API, GPT-5-Nano, and Gmail\n\nStay on top of your competition with this powerful n8n workflow that automatically fetches and summarizes your competitors’ latest tweets every day. Using the official X (formerly Twitter) API and OpenAI's GPT-5-Nano model, this template extracts insights from public tweets and sends concise summaries directly to your Gmail inbox.\n\nIdeal for marketing teams, product managers, PR professionals, and competitive intelligence analysts, this solution turns noisy social feeds into clear, actionable summaries—automated and customized to your needs.\n\nFeatures\n\nDaily automation: Fetches competitor tweets every 24 hours using X API\nAI summarization: Uses GPT-5-Nano to highlight key insights and themes\nSmart filtering: Cleans and filters tweets for relevance before summarizing\nEmail delivery: Sends summaries to Gmail (or your team’s inbox)\nFully customizable: Modify schedules, accounts, and integrations as needed\n\nSetup Instructions\n\nGet API Keys:\n   X API (Bearer Token) – from developer.x.com\n   OpenAI API Key – from platform.openai.com\n   Gmail OAuth2 credentials (via Google Cloud Console)\n\nConfigure in n8n:\n   Import the workflow\n   Add credentials under the \"Credentials\" tab\n   Set target X usernames and schedule\n\nCustomize Delivery (Optional):\n   Set email subject, recipients\n   Add additional integrations (e.g., Slack, Notion, Sheets)\n\nHow It Works\n\nTrigger: A daily cron node initiates the workflow.\nFetch User ID: The workflow uses the X API to retrieve the user ID based on the provided username. This step is necessary because the tweet retrieval endpoint requires a user ID, not a username.\nFetch Tweets: Using the extracted user ID, the workflow queries the X API for recent tweets from the selected account.\nClean Data: Filters out replies, retweets, and any irrelevant content to ensure only meaningful tweets are summarized.\nSummarize: GPT-4 processes the cleaned tweet content and generates a concise, insightful summary.\nSend Email: The Gmail node sends the final summary to your inbox or chosen recipient.\n\nUse Cases\n\nTrack competitor announcements and marketing messages\nAutomate daily social media briefs for leadership\nMonitor trends in your industry effortlessly\nKeep your team aligned with market developments\n\nRequirements\n\nValid X API credentials (Bearer token)\nOpenAI API key\nGmail OAuth2 credentials\nAccess to n8n (cloud or self-hosted)\n\nDelivery Options\n\nWhile Gmail is the default, you can easily extend the workflow to integrate with:\nSlack\nNotion\nGoogle Sheets\nWebhooks\nAny supported n8n integration\n\nAutomate your competitive intelligence process and stay informed—without lifting a finger.\n",
+  "_templateCreatedAt": "2025-10-07T14:30:21.353Z",
+  "_templateTotalViews": 2,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:20:13.211Z",
+  "id": "EdXR18SX0sWTrnnA",
+  "meta": {
+    "instanceId": "de304cc0a08e5f16eba962ae8dfbab7f4de769c6ac7bdd8219fa8540651d7b04",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Tweets Summarizer",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "642f2b18-6530-49c8-a998-486cfd304bb2",
+      "name": "Get User",
+      "type": "n8n-nodes-base.twitter",
+      "position": [
+        -496,
+        -80
+      ],
+      "parameters": {
+        "user": {
+          "__rl": true,
+          "mode": "username",
+          "value": "your_target_username"
+        },
+        "resource": "user"
+      },
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "credential-id",
+          "name": "twitterOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "890190cc-6830-4f5d-9541-6c8d74d8ee0e",
+      "name": "Message a model",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        272,
+        -80
+      ],
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-nano",
+          "cachedResultName": "GPT-5-NANO"
+        },
+        "options": {},
+        "messages": {
+          "values": [
+            {
+              "content": "=Analyze the recent competitor tweets on X, considering their recent updates and engagement rate.\n\n{{ $json.data.map(t => `Tweet: ${t.text}\\nLikes: ${t.public_metrics.like_count}, Impressions: ${t.public_metrics.impression_count}`).join('\\n\\n') }}\n"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 1.8
+    },
+    {
+      "id": "0e3760b0-afae-4c7b-9a9f-4b20f43689e3",
+      "name": "Send a message",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        784,
+        -80
+      ],
+      "webhookId": "74796e96-74e0-4e60-8b1c-212b372bced1",
+      "parameters": {
+        "sendTo": "user@example.com",
+        "message": "={{ $json.message.content }}",
+        "options": {},
+        "subject": "Latest Competitor Analysis",
+        "emailType": "text"
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "credential-id",
+          "name": "gmailOAuth2 Credential"
+        }
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "c9d970ec-d3d3-418e-821d-23c0b2228af8",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -944,
+        -80
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "5bec126d-97c8-4bf0-b67a-2ce3d5ac02ae",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -592,
+        -304
+      ],
+      "parameters": {
+        "width": 288,
+        "height": 400,
+        "content": "## Step 2\n\nHardcode your competitor's X (formerly Twitter) username in this node. \nThis node will fetch basic profile data to extract the corresponding user ID.\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "126d2909-cde2-4daa-bf93-e51f25d9fcfc",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -176,
+        -304
+      ],
+      "parameters": {
+        "width": 288,
+        "height": 400,
+        "content": "## Step 3\n\nThis node will fetch the 5 most recent posts from your competitor. \nYou can change this number by modifying the `max_results` parameter in this node.\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "6786839b-ed1f-466b-b336-b49bbad1dd82",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        240,
+        -304
+      ],
+      "parameters": {
+        "width": 288,
+        "height": 400,
+        "content": "## Step 4\n\nThis OpenAI node uses the `gpt-5-nano` model to generate a competitor analysis summary based on recent posts. \nYou can tailor the summary to your needs by modifying the prompt.\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f995941a-b4dc-4db1-83b3-4daead61193b",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        -304
+      ],
+      "parameters": {
+        "width": 288,
+        "height": 400,
+        "content": "## Final Step\n\nSend an email to yourself or your team by updating the email address in this node.\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0be06c61-a4c3-4763-b478-705f2930f10b",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1040,
+        -304
+      ],
+      "parameters": {
+        "width": 288,
+        "height": 400,
+        "content": "## Step 1\n\nSet your preferred schedule. The task is currently set to run every day at midnight.\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0d067076-c3a1-42d6-b196-842efa52d5fb",
+      "name": "Fetch Recent Posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -80,
+        -80
+      ],
+      "parameters": {
+        "url": "=https://api.twitter.com/2/users/{{ $json.id }}/tweets ",
+        "options": {},
+        "sendQuery": true,
+        "authentication": "predefinedCredentialType",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "max_results",
+              "value": "5"
+            },
+            {
+              "name": "tweet.fields",
+              "value": "public_metrics,created_at"
+            }
+          ]
+        },
+        "nodeCredentialType": "httpBearerAuth"
+      },
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "credential-id",
+          "name": "httpBearerAuth Credential"
+        }
+      },
+      "typeVersion": 4.2
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "07b834ba-0a7b-4c6f-b99a-2de3adca6056",
+  "connections": {
+    "Get User": {
+      "main": [
+        [
+          {
+            "node": "Fetch Recent Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Recent Posts": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

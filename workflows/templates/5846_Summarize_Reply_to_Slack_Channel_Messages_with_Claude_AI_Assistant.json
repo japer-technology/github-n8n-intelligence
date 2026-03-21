@@ -1,0 +1,262 @@
+{
+  "_templateId": 5846,
+  "_templateName": "Summarize & Reply to Slack Channel Messages with Claude AI Assistant",
+  "_templateDescription": "✨ What It Does\n\nMello is a Claude-powered Slack assistant that helps you stay on top of unread messages across all your channels.\n\nIt:\nSummarizes conversations contextually using Claude AI.\nGenerates reply suggestions and sends them as private (ephemeral) Slack messages.\nLets you respond instantly with one-click AI-suggested replies.\n\nPerfect for busy teams, founders, and anyone looking to reduce Slack noise and save hours each week.\n\n🔧 Setup Instructions\n\nCreate a Slack App\n   Go to Slack API → Your Apps\n   Click Create New App and set it up for your workspace\n   Under OAuth & Permissions, add:\n     Bot Token Scopes: commands, chat:write, channels:history, users:read\n     User Token Scopes: channels:history, chat:write\n   Enable Interactivity, and point the Request URL to your n8n webhook (e.g. /slash-summarize)\n\nAdd Claude API\n   Get an API key from Claude (Anthropic)\n   In n8n, set up the Claude API credential (or switch to OpenAI)\n\nImport This Workflow\n   Go to your n8n instance, click Import, and paste this template\n   Update any placeholders (Slack app, Claude key, webhook URLs)\n   Follow the inline sticky notes for guidance\n\nTest It\n   Type /summarize in any Slack channel\n   Mello will fetch unread messages, summarize them, and show reply buttons in a private message\n\n⏱ Setup time: ~10 minutes\n\n🛠 Workflow Highlights\n\nSlash command trigger (/summarize)\nSlack API integration to fetch messages\nClaude AI for contextual summaries\nReply suggestions with smart buttons\nPrivate Slack delivery (ephemeral messages)\nDesigned to be easily extended (e.g. add support for OpenAI, custom storage)\n\n🔒 Note\n\nThis is a lite preview of the full Mello workflow.\n\n✅ The full version includes:\nSlack reply buttons with thread context\nFull OAuth flow with token storage\nMongoDB integration\nCustom Claude/OpenAI configuration\nHosted version with onboarding, branding & support\n\n💡 Want access to the complete version?  \n📩 Email nina@baloon.dev\n",
+  "_templateCreatedAt": "2025-07-10T14:51:07.609Z",
+  "_templateTotalViews": 6,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:17:59.040Z",
+  "id": "bzmD4zsvg87yluOh",
+  "meta": {
+    "instanceId": "89c4a76f3b1f861aaee41ea79552b376818fcdb9e53de73e911d444609fe7128",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "For Demo on n8n",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "8656e57f-3ad6-44a1-ad07-d2b896eea09f",
+      "name": "Slash Command Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -540,
+        340
+      ],
+      "webhookId": "6a2a08dc-b52f-42ad-9a5c-9372d2fba37e",
+      "parameters": {
+        "path": "summarize",
+        "options": {},
+        "httpMethod": "POST"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "b20487dc-7826-4a9a-9b88-2b4bf169be6a",
+      "name": "Parse Request",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -320,
+        340
+      ],
+      "parameters": {
+        "jsCode": "const { text, user_id, channel_id, token, trigger_id } = $json.body;\nreturn { json: { channel_id, token, user_id } };"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "aac2a2f0-a8ff-4f6c-9a97-f806f3819f65",
+      "name": "Fetch Unread Messages",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -100,
+        340
+      ],
+      "parameters": {
+        "url": "https://slack.com/api/conversations.history",
+        "options": {},
+        "queryParametersUi": {
+          "parameter": [
+            {
+              "name": "channel",
+              "value": "={{ $json.channel_id }}"
+            },
+            {
+              "name": "limit",
+              "value": "20"
+            }
+          ]
+        },
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$json.token}}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "860d23a9-f91e-412a-bed8-c4534ef5f55f",
+      "name": "Prepare Prompt for Claude",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        120,
+        340
+      ],
+      "parameters": {
+        "jsCode": "const messages = $json.messages || [];\nconst formatted = messages.map(m => `[${m.ts}] <@${m.user}>: ${m.text}`).join('\\n');\nreturn { json: { prompt: formatted, channel_id: $json.channel_id, token: $json.token, user_id: $json.user_id } };"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "80e6757b-6090-4e55-b626-10e1f96c5f61",
+      "name": "Claude AI: Summarize",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        340,
+        340
+      ],
+      "parameters": {
+        "messages": {
+          "messageValues": [
+            {
+              "message": "Summarize these Slack messages into grouped threads with brief summaries and 2–3 suggested replies for each."
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "693b8929-6d9e-4567-b1dc-261652148454",
+      "name": "Build Slack Blocks",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        716,
+        340
+      ],
+      "parameters": {
+        "jsCode": "const summary = $json.text;\nreturn { json: {\n  channel: $json.channel_id,\n  user: $json.user_id,\n  token: $json.token,\n  blocks: [\n    { type: 'section', text: { type: 'mrkdwn', text: '*Here\\'s a summary:*\\n' + summary } }\n  ]\n} };"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "da7f7c7a-b121-4337-a854-abd3080af623",
+      "name": "Post to Slack (Ephemeral)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        936,
+        340
+      ],
+      "parameters": {
+        "url": "https://slack.com/api/chat.postEphemeral",
+        "options": {},
+        "headerParametersUi": {
+          "parameter": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{$json.token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "34257270-3be6-4625-b149-60704eeb6002",
+      "name": "Anthropic Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "position": [
+        400,
+        560
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "claude-sonnet-4-20250514",
+          "cachedResultName": "Claude 4 Sonnet"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "anthropicApi": {
+          "id": "credential-id",
+          "name": "anthropicApi Credential"
+        }
+      },
+      "typeVersion": 1.3
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4f30f48a-ea02-4ae4-a096-348915971bde",
+  "connections": {
+    "Parse Request": {
+      "main": [
+        [
+          {
+            "node": "Fetch Unread Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Slack Blocks": {
+      "main": [
+        [
+          {
+            "node": "Post to Slack (Ephemeral)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Claude AI: Summarize",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude AI: Summarize": {
+      "main": [
+        [
+          {
+            "node": "Build Slack Blocks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Unread Messages": {
+      "main": [
+        [
+          {
+            "node": "Prepare Prompt for Claude",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slash Command Webhook": {
+      "main": [
+        [
+          {
+            "node": "Parse Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Prompt for Claude": {
+      "main": [
+        [
+          {
+            "node": "Claude AI: Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

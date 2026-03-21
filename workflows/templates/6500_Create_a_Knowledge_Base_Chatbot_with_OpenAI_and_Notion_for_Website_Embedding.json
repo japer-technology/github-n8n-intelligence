@@ -1,0 +1,170 @@
+{
+  "_templateId": 6500,
+  "_templateName": "Create a Knowledge Base Chatbot with OpenAI and Notion for Website Embedding",
+  "_templateDescription": "This workflow creates an AI chatbot that uses your Notion database as a knowledge base and allows for website embedding (e.g., as a customer support chatbot). The AI agent can automatically query your Notion pages and databases to provide accurate, contextual responses based on your stored content.\n\nWho's it for\n\nThis template is perfect for:\nSupport teams who maintain their knowledge base in Notion\nContent creators and teams managing documentation in Notion databases\nBusinesses looking to make their Notion workspace conversationally accessible\nAnyone who wants to turn their Notion content into an interactive AI assistant\n\nHow it works\n\nThe workflow combines OpenAI's language model with Notion's database capabilities to create a smart chatbot. When users ask questions, the AI agent automatically determines which Notion pages or database entries are relevant and uses that content to generate helpful responses. The system maintains conversation history for natural, contextual interactions.\n\nHow to set up\n\nAdd your credentials:\n   Configure your Notion API integration in the Set & Get Notion Database node\n   Set up your OpenAI API credentials in the OpenAI Chat Model node\n\nConfigure your Notion connection:\n   Click the Set & Get Notion Database node\n   Select your Notion database or page containing your knowledge base content\n   The AI will automatically determine relevant pages - no need to specify individual page IDs\n\nCustomize the AI model:\n   Open the OpenAI Chat Model node\n   Choose your preferred model (GPT-4, GPT-3.5-turbo, etc.)\n   Adjust token limits if needed\n\nTest the chatbot:\n   Click the Chat button to start a conversation\n   Ask questions related to your Notion content\n\nOptional - Make it public:\n   Enable public access in the Chat Trigger node\n   Embed the provided code into your website\n\nRequirements\n\nn8n instance (cloud or self-hosted)\nNotion workspace with databases or pages you want to query\nOpenAI API key with available credits\nNotion API integration with proper permissions\n\nHow to customize the workflow\n\nChange the AI Provider:\nYou can replace the OpenAI Chat Model with other providers like Anthropic Claude, Google Gemini, or local models by swapping the language model node.\n\nAdjust Context Window:\nModify the \"Remember Chat History\" node to increase or decrease how many previous messages the AI remembers (default is 10 interactions).\n\nUpdate System Instructions:\nEdit the Smart AI Agent's system message to change how the assistant behaves or add specific instructions for your use case.\n\nConnect Multiple Databases:\nAdd additional Notion Database nodes to give the AI access to multiple databases or pages within your workspace.\n\nAdd More Tools:\nExtend the AI agent with additional tools like web search, email sending, or integration with other services.\n\nWorkflow Structure\n\nChat Trigger → Smart AI Agent ← OpenAI Chat Model\n                     ↓\n         Set & Get Notion Database\n                     ↑\n           Remember Chat History\n\nThe Smart AI Agent orchestrates the conversation, deciding when to query Notion and how to use the retrieved content in responses. The memory buffer ensures natural conversation flow by maintaining context across interactions.",
+  "_templateCreatedAt": "2025-07-26T22:41:17.659Z",
+  "_templateTotalViews": 3,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:17:08.808Z",
+  "meta": {
+    "instanceId": "cba9e349b601c19a1409b9fd06680aff0a77829be13c8aad9a858d4cea7ff290",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "889783dd-88c8-4344-ab75-26ff93abbc03",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -416,
+        528
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "de6ea262-83f6-4411-bd3a-a594f52e4967",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -128,
+        528
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0dfc989d-7dd2-4b9c-b0d9-245e28a90c68",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        224,
+        528
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "55c51c3f-8c2e-41e5-a956-c5f5f936b21b",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -288,
+        -112
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e8b9d000-d0ac-4574-9db8-7f286dcf5b58",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -336,
+        368
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "6d3f259c-2d95-4d52-b270-c7f0bfb41a69",
+      "name": "Start Chat Conversation",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        -384,
+        144
+      ],
+      "webhookId": "cf1de04f-3e38-426c-89f0-3bdb110a5dcf",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "93e69333-6752-4dc7-85e7-76e2a3140a9e",
+      "name": "Smart AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -128,
+        144
+      ],
+      "parameters": {},
+      "typeVersion": 1.7
+    },
+    {
+      "id": "683ce86c-ee1c-4809-a775-d949a3795354",
+      "name": "Remember Chat History",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        -16,
+        368
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "c0c049f9-81f4-47a4-ad8f-e6a9f1049a99",
+      "name": "Set & Get Notion Database",
+      "type": "n8n-nodes-base.notionTool",
+      "position": [
+        320,
+        368
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Smart AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remember Chat History": {
+      "ai_memory": [
+        [
+          {
+            "node": "Smart AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Chat Conversation": {
+      "main": [
+        [
+          {
+            "node": "Smart AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set & Get Notion Database": {
+      "ai_tool": [
+        [
+          {
+            "node": "Smart AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

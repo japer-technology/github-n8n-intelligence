@@ -1,0 +1,908 @@
+{
+  "_templateId": 5883,
+  "_templateName": "Upload Video & Image Ads to Meta Ads Manager from Google Sheets & Google Drive",
+  "_templateDescription": "Upload Video & Image Ads to Meta Ads Manager from Google Sheets using Google Drive & Meta Graph API\n\nProduct Description\n\nThis n8n workflow automates the process of uploading video and image advertisements to Meta Ads Manager via the Meta Graph API (Facebook Ads) directly from Google Sheets and Google Drive. The workflow monitors a specified Google Drive folder for new assets, extracts file metadata, and creates Facebook ad campaigns with customizable creative elements including multiple text variations, headlines, and descriptions.\n\nThe automation supports both video and image assets, with intelligent handling of single or multiple image creatives. For video assets, it manages the upload process, monitors processing status, and automatically generates preview thumbnails. Image assets can be configured with multiple variations and custom placement targeting across Facebook, Instagram, Messenger, and Audience Network.\n\nKey Features\n\nAutomated Asset Monitoring**: Watches Google Drive folder for new uploads and file updates\nMulti-Format Support**: Handles both video and image advertisements\nFlexible Creative Options**: Supports multiple text variations, headlines, and descriptions\nSmart Image Handling**: Creates single or multi-image creatives based on available assets\nCross-Platform Targeting**: Configures ads for Facebook, Instagram, Messenger, and Audience Network\nStatus Tracking**: Updates Google Sheets with upload progress and ad IDs\nBatch Processing**: Processes multiple ads efficiently with built-in rate limiting\nDirect Sheet Integration**: Upload ads directly from Google Sheets using custom menu\n\nPrerequisites\n\nRequired Accounts & Access\nMeta Developer Account**: Required for Facebook Graph API access\nMeta Business Manager**: Active ad account with appropriate permissions\nGoogle Account**: With access to Google Drive and Google Sheets APIs\nn8n Instance**: Self-hosted or cloud instance with appropriate node packages\n\nTechnical Requirements\nMeta App must be set to \"Live\" status (not Development mode)\nFacebook Graph API v22.0 access\nGoogle Drive API credentials with folder access permissions\nGoogle Sheets API credentials with read/write permissions\n\nSetup Instructions\n\n1. Meta Developer Setup\nCreate a Meta Developer account and register a new app\nGenerate a long-lived access token with the following permissions:\n  ads_management\n  business_management\n  pages_read_engagement\nEnsure your app status is set to \"Live\"\nNote your Ad Account ID, Page ID, and Instagram User ID\n\n2. Google Services Configuration\nCreate a Google Cloud project and enable:\n  Google Drive API\n  Google Sheets API\nGenerate OAuth2 credentials for both services\nCreate a dedicated Google Drive folder for asset uploads\nMake a copy of the Google Sheets template\n\n3. Workflow Configuration\nImport the workflow JSON into your n8n instance\nConfigure the following credentials:\n  Facebook Graph API (using your access token)\n  Google Drive OAuth2 API\n  Google Sheets OAuth2 API\n\n4. Settings Configuration\nUpdate the settings and settings_1 nodes with:\n  Your Google Sheets URL\n  Your Google Drive folder URL\nExecute and pin these settings nodes to preserve configurations\n\n5. Google Sheets Setup\nFill in the \"Settings\" tab of your copied template with:\n  Ad Account IDs\n  Page IDs\n  Instagram User IDs\n  Webhook URL: Copy the webhook URL from your n8n workflow and paste it in the settings tab\nConfigure your ad campaigns in the \"Ready to Upload\" sheet\n\n6. Asset Management\nUpload your video/image assets to the designated Google Drive folder\nEnsure file naming follows your tracking conventions\nUpdate the Google Sheets with corresponding asset information\n\nWorkflow Triggers\n\nThe workflow can be activated through:\nManual Trigger**: For testing and one-time executions\nGoogle Drive Trigger**: Automatic execution when files are added/updated\nWebhook Trigger**: Integration with Google Apps Script for direct sheet control\nCustom Menu Integration**: Upload ads directly from Google Sheets via \"Meta → Upload Ads\" menu option\n\nUsing the Custom Menu\nThe Google Sheets template includes a custom Google Apps Script that adds a \"Meta\" menu to your spreadsheet. To upload ads:\n\nEnsure the webhook URL is correctly configured in the Settings tab\nNavigate to the \"Meta\" menu in your Google Sheet\nClick \"Upload Ads\" to trigger the workflow\nThe workflow will process all ads marked for upload in the \"Ready to Upload\" sheet\n\nFile Support\n\nVideo Assets**: MP4, MOV, AVI formats (uploaded via Meta's video API)\nImage Assets**: JPG, PNG formats with support for multiple creative variations\nLarge File Handling**: Includes workaround for Google Drive virus scanning on large files\n\nImportant Notes\n\nAll ads are created in \"PAUSED\" status for review before activation\nThe workflow includes built-in delays to respect API rate limits\nAsset processing status is monitored and updated in real-time\nMultiple text variations enable A/B testing capabilities\nCustom placement rules optimize ad delivery across different platforms\nWebhook Configuration**: Ensure the webhook URL in your Google Sheets settings matches your n8n workflow webhook endpoint\n\nThis automation significantly reduces manual work in Meta Ads Manager while maintaining full control over creative elements and targeting parameters.",
+  "_templateCreatedAt": "2025-07-11T11:03:15.245Z",
+  "_templateTotalViews": 3,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:17:14.303Z",
+  "id": "v8cndATocxXEg3OZ",
+  "meta": {
+    "instanceId": "1746813392f03a836ae1b60ce6fb98a512b5d5498aca4a9d4df49ccc7e65726f",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Upload Video & Image Ads to Meta Ads Manager from Google Sheets using Google Drive & Meta Graph API",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "a2202ebd-0373-4e73-b30b-8949dfedfbe0",
+      "name": "Get Video Preview Image",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        2700,
+        720
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "e24c76a8-e231-4465-b797-fcbed77c7847",
+      "name": "Create Asset",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1040,
+        260
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "05d086b0-7979-4646-b4ca-b9f74bfa0e45",
+      "name": "Get Ads to Process",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        540,
+        880
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "097bf067-4ae1-48a8-a82e-a97ead807b82",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -180,
+        940
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "8f1beb92-26f1-4fa6-8812-cb13174faff0",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1900,
+        720
+      ],
+      "webhookId": "79108ea9-8def-46c4-9eae-084348dbd30e",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "08b00090-f19c-4ee7-a783-76edac77c6b7",
+      "name": "Video or Image Asset",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        1240,
+        900
+      ],
+      "parameters": {},
+      "typeVersion": 3.2
+    },
+    {
+      "id": "1e3b6cb3-e18e-49db-964e-d3c55010b1ab",
+      "name": "Get image 1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1500,
+        1020
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "de3ebe68-2989-41f4-8172-1c2e732e134c",
+      "name": "Get image ",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2140,
+        1020
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "346c3523-aa74-478f-b6da-b597843c7dea",
+      "name": "Google Drive Folder Updated",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        -220,
+        260
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "29493346-314e-4c25-9c3c-2d639d92a1ab",
+      "name": "Fetch All Files",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        300,
+        260
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "187ddf83-75b7-446a-84b3-38fc2a45f839",
+      "name": "Get Files Metadata",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        560,
+        260
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "260ccf59-f790-4959-81c4-550061415f5e",
+      "name": "Extract File Specs",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        800,
+        260
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "55d04cfc-d13f-4389-979c-9502ec2d0373",
+      "name": "Create Video Ad Creative",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        2940,
+        720
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "de0c62a9-9ce5-48ee-950f-aa874808d3c9",
+      "name": "Create Video Ad",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        3180,
+        720
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "4a84b968-af41-450f-82de-06ddad4c3c69",
+      "name": "Save Video Ad Details",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3460,
+        720
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "79ab59d8-0542-4cf3-b9e6-c72706ee1234",
+      "name": "Check if two or one image",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1900,
+        1020
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "e298f0d5-0c36-4839-8f70-e3033d9529ce",
+      "name": "Upload Ad Image",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        1680,
+        1020
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "aafe76d1-180b-4798-85cd-2730970755bb",
+      "name": "Create Multiple Image Creative",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        2580,
+        1020
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "e943a530-7055-4165-91f1-13042c4bc4f1",
+      "name": "Create Image Creative",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        2360,
+        1260
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "5c324d32-511e-4be8-846b-54d09788e400",
+      "name": "Upload Second Ad Image",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        2360,
+        1020
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "7a307213-2235-4560-8244-632555f326a5",
+      "name": "Create Image Ad",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        3180,
+        1020
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "b6824639-94d2-45c5-aeb3-6d40eddf7fca",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -220,
+        120
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "7a10361d-449d-45db-8ed6-39e4d9370684",
+      "name": "Save Image Ad Details",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3460,
+        1020
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "491c242e-2d35-41e9-87a2-1d8ed4125c69",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        120,
+        700
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "fbe0cfee-f042-45be-8570-5e5a5acf372b",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        -80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "62d72497-f67c-4dce-81be-e4639c805e9a",
+      "name": "Sticky Note11",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -280,
+        680
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f162300e-7ebc-47cc-be7c-50b7fa930672",
+      "name": "settings",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        40,
+        260
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "197ee18f-6ff3-4de5-bfff-92fae133980e",
+      "name": "Sticky Note12",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        60
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a18f9ee0-fbce-4294-b5f5-1b55dae835e4",
+      "name": "settings_1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        180,
+        880
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "d9be4468-d279-46ad-80d4-37cd967f9da2",
+      "name": "Upload Ad Video",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "onError": "continueRegularOutput",
+      "position": [
+        1460,
+        720
+      ],
+      "parameters": {},
+      "typeVersion": 1,
+      "alwaysOutputData": false
+    },
+    {
+      "id": "87beffa2-756b-4bcb-9034-5af946ffa93e",
+      "name": "Get Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1340,
+        460
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "28ab3596-9519-4edf-83da-a2da38933657",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        1660,
+        720
+      ],
+      "parameters": {},
+      "typeVersion": 3.2
+    },
+    {
+      "id": "dd3bba66-e874-48da-b504-ace6c8f3b718",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1500,
+        460
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "1797bc46-693e-4ac9-9e21-f325ea56dcc9",
+      "name": "Upload Ad Video1",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "onError": "continueRegularOutput",
+      "position": [
+        1660,
+        460
+      ],
+      "parameters": {},
+      "typeVersion": 1,
+      "alwaysOutputData": false
+    },
+    {
+      "id": "555c9b83-68f0-4664-8401-cde5238d67b5",
+      "name": "Check if finished processing",
+      "type": "n8n-nodes-base.facebookGraphApi",
+      "position": [
+        2140,
+        700
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "baa319b2-83ee-4050-825b-368838622b03",
+      "name": "If1",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        2320,
+        700
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "43cca0bb-ba0d-49fb-83f4-c702d0bcfc5f",
+      "name": "Wait1",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        2500,
+        780
+      ],
+      "webhookId": "8311990f-a70c-41f8-93e3-c623687400fe",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "8ec25c38-dcf5-4213-a9b6-9bbf34b634ed",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        920,
+        900
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "1b6da683-0ca9-4f4a-a204-02e638212d81",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -180,
+        1120
+      ],
+      "webhookId": "4cb1a9ff-2beb-480e-9fee-238d1240a70a",
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "28d94341-3be3-434e-a2f3-b2bee2e5efce",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -300,
+        -80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "71fd4459-e05b-4581-af94-2f070e120e59",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1280,
+        300
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "958a13a7-7a0b-415f-877b-96b84f299850",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -300,
+        560
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f41843fd-e61c-4084-b2a1-29f62a4db7a8",
+  "connections": {
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Get Video Preview Image",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Upload Ad Video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Check if finished processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "Check if finished processing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "settings_1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "settings": {
+      "main": [
+        [
+          {
+            "node": "Fetch All Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get image ": {
+      "main": [
+        [
+          {
+            "node": "Upload Second Ad Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "settings_1": {
+      "main": [
+        [
+          {
+            "node": "Get Ads to Process",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get image 1": {
+      "main": [
+        [
+          {
+            "node": "Upload Ad Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Asset": {
+      "main": [
+        []
+      ]
+    },
+    "Create Image Ad": {
+      "main": [
+        [
+          {
+            "node": "Save Image Ad Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Video Ad": {
+      "main": [
+        [
+          {
+            "node": "Save Video Ad Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch All Files": {
+      "main": [
+        [
+          {
+            "node": "Get Files Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Video or Image Asset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Ad Image": {
+      "main": [
+        [
+          {
+            "node": "Check if two or one image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Ad Video": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Ad Video1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract File Specs": {
+      "main": [
+        [
+          {
+            "node": "Create Asset",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Ads to Process": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Files Metadata": {
+      "main": [
+        [
+          {
+            "node": "Extract File Specs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Video or Image Asset": {
+      "main": [
+        [
+          {
+            "node": "Upload Ad Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get image 1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Image Creative": {
+      "main": [
+        [
+          {
+            "node": "Create Image Ad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Image Ad Details": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Video Ad Details": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Second Ad Image": {
+      "main": [
+        [
+          {
+            "node": "Create Multiple Image Creative",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video Preview Image": {
+      "main": [
+        [
+          {
+            "node": "Create Video Ad Creative",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Video Ad Creative": {
+      "main": [
+        [
+          {
+            "node": "Create Video Ad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if two or one image": {
+      "main": [
+        [
+          {
+            "node": "Get image ",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Create Image Creative",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive Folder Updated": {
+      "main": [
+        [
+          {
+            "node": "settings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if finished processing": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Multiple Image Creative": {
+      "main": [
+        [
+          {
+            "node": "Create Image Ad",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "settings_1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

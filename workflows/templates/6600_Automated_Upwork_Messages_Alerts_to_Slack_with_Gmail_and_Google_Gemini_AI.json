@@ -1,0 +1,172 @@
+{
+  "_templateId": 6600,
+  "_templateName": "Automated Upwork Messages Alerts to Slack with Gmail and Google Gemini AI",
+  "_templateDescription": "Upwork Messages Notifications (Gmail to Slack) - Fully Automated Alerts\n\nThis n8n workflow streamlines how you receive Upwork client messages, sending instant notifications to Slack. It demonstrates two approaches: a code-based extraction and an AI-powered one with Google Gemini.\n\nUse Cases\n\nInstant Communication:** Get real-time alerts for new Upwork client messages in your team's Slack channel.\nImproved Responsiveness:** Quickly respond to client inquiries and maintain strong communication.\nCentralized Notifications:** Keep all your essential work-related notifications in one place.\n\nGood to Know\n\nThe workflow is set to poll your Gmail every 3 minutes for unread Upwork messages, which can be reduced or increased.\nThe AI Information Extractor with Google Gemini provides a more refined and robust method for data parsing compared to custom code.\nUsage of Google Gemini may incur costs. Refer to Gemini Pricing for updated information.\nGoogle Gemini models can be geo-restricted. If you encounter a \"model not found\" error, it might not be available in your region.\n\nHow it Works\n\nMethod 1: Code-Based Extraction\n\nGmail Trigger: The workflow starts by monitoring your Gmail for new, unread emails from \"via Upwork\".\nCode Node: A custom JavaScript code block is used to extract the client's name and the message content directly from the email's text.\nSlack Notification: The extracted client name and message are then formatted and sent as a new message to a designated Slack channel.\n\nMethod 2: AI-Powered Extraction with Google Gemini (Recommended)\n\nGmail Trigger X: Similar to Method 1, this part also triggers on new unread Upwork emails.\nInformation Extractor (AI): This powerful node, powered by Google Gemini, takes the entire email text and intelligently extracts structured information like the \"client\" name and the \"message\" content based on a defined schema. This method is more robust and requires less manual parsing logic.\nGoogle Gemini Chat Model: (Implicitly used by the Information Extractor) This node provides the underlying AI capabilities for intelligent information extraction.\nSend to Slack X: The refined output from the AI Information Extractor (client name and message) is then sent to a Slack channel.\n\nHow to Use\n\nGmail Credentials: Ensure you have configured your Gmail OAuth2 credentials in n8n for both \"Gmail Trigger\" nodes.\nSlack Credentials: Set up your Slack OAuth2 credentials in n8n for both \"Send to Slack\" nodes and select the desired Slack channel.\nGoogle Gemini Credentials: For the AI-powered workflow, you'll need to set up your Google Gemini API key as a credential in n8n.\nActivate Workflows: Enable both workflows in n8n to start receiving notifications. You can compare the output quality of each method.\n\nRequirements\n\nn8n instance** (self-hosted or cloud)\nGmail Account** connected to Upwork notifications.\nSlack Workspace** and a designated channel for notifications.\nGoogle Gemini API key** for the AI-powered extraction workflow.",
+  "_templateCreatedAt": "2025-07-28T21:32:29.089Z",
+  "_templateTotalViews": 37,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:20:18.044Z",
+  "nodes": [
+    {
+      "id": "170dcec4-9b3e-4d88-8cdb-e0af274a04bc",
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "position": [
+        -48,
+        -160
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "b7736356-c818-4259-9a8c-5c0ce4bfea55",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        160,
+        -160
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "59bf17cf-7b78-464c-b4b9-60c83f6a35d7",
+      "name": "Information Extractor",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "position": [
+        64,
+        176
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "861b165a-08bf-4ebb-9d35-f0653db27649",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        176,
+        320
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "4ae27b64-1f8e-47b4-b18d-ea18a7a3a86b",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -208,
+        -256
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "46594376-8e44-4781-b81d-f6ed51df1d43",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -208,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ed2a7da2-485b-4846-a181-3b7de540c208",
+      "name": "Gmail Trigger X",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "position": [
+        -128,
+        176
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "7f596d6b-1a8f-4bf6-b9cd-c604ddbbb351",
+      "name": "Send to Slack X",
+      "type": "n8n-nodes-base.slack",
+      "position": [
+        432,
+        176
+      ],
+      "parameters": {},
+      "typeVersion": 2.3
+    },
+    {
+      "id": "88269738-5069-468c-8f49-ee177d658c03",
+      "name": "Send to Slack",
+      "type": "n8n-nodes-base.slack",
+      "position": [
+        368,
+        -160
+      ],
+      "parameters": {},
+      "typeVersion": 2.3
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Send to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail Trigger X": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Send to Slack X",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,234 @@
+{
+  "_templateId": 5087,
+  "_templateName": "Get an automated, curated newsletter everyday using Perplexity and Gmail",
+  "_templateDescription": "This workflow contains community nodes that are only compatible with the self-hosted version of n8n. \n\nSetup Time\n5-10 minutes\n\nProblem\n⏳ Researching and personalizing outreach is slow and manual!\n\nYou spend hours searching for the right people, reading through profiles, and then writing custom emails—only to repeat the process for every new lead or opportunity. It’s tedious, error-prone, and not scalable.\n\nWhat if you could get a beautifully formatted, ready-to-send newsletter in your Gmail drafts—automatically, every day?\n\nThat’s what this Perplexity Newsletter Workflow does, powered by n8n.\n\nPrerequisites\nn8n account (self-hosted or cloud)\nPerplexity API key (or OpenAI API key for similar LLMs)\nGmail account (for sending emails)\n(Optional) Google Sheets account (for archiving newsletters)\nWho is this for?\n🎯 Product Managers who want to stay ahead of trends\n🎯 MBA aspirants tracking admission news\n🎯 AI professionals and enthusiasts seeking curated updates\n🎯 Anyone who wants a daily, personalized, multi-topic newsletter—without manual work\n\nStep-by-step workflow\nSetup time: 5-10 minutes\n\nTrigger\n\nUse a Cron node to schedule the workflow (e.g., every morning at 8am).\nFetch News from Perplexity\n\nAdd three HTTP Request nodes (or Perplexity nodes if available):\nOne for MBA News\nOne for Product Management News\nOne for AI Automation News\nEach node sends a prompt to Perplexity and receives a summary with citations.\nMerge News Items\n\nUse a Merge node (mode: Append) to combine the three news responses.\nFormat Newsletter\n\nAdd a Code node after the Merge node.\nIn the Code node, format each news item with a section header (e.g., “MBA News”, “Product Management”, “AI Automation News”), apply HTML formatting, and combine all into a single HTML message.\n(Use the code from our previous message for beautiful formatting and sectioning.)\nSend Email\n\nAdd a Gmail node.\nSet the “HTML” field to the formatted newsletter from the Code node.\nSet the “Subject” to something like “🤖 Your Daily Perplexity Newsletter”.\n(Optional) Archive to Google Sheets\n\nAdd a Google Sheets node to append the newsletter content and date for future reference.\n\nSample Output\n\nA single, beautifully formatted email in your Gmail drafts, with three clearly labeled sections, clickable sources, and all the latest insights—ready to send or review.\n\nReady to automate your daily insights?\nSet up this workflow in n8n and never miss an update again!\n\nCustomization\n\nChange schedule time in the Cron node\nModify news topics or prompts in the Perplexity nodes\nAdjust section titles or email styling in the Format Newsletter (Code) node",
+  "_templateCreatedAt": "2025-06-21T08:42:02.895Z",
+  "_templateTotalViews": 1913,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:17:44.400Z",
+  "id": "3H9yJlSwjn8E3KpP",
+  "meta": {
+    "instanceId": "7b22476bf9699de09fe66fed92056e8ae798418cc9901fa9bd85bb46439116b8",
+    "templateId": "4412",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Perplexity Newsletter",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "a808eaa1-744e-4a01-98d8-d96428346d11",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        360,
+        640
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "e4e02799-c6e2-44ce-8015-5fd71ef9a848",
+      "name": "Workflow Documentation",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        180,
+        200
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "dd06d61f-a4bd-4813-9586-d690e0177dc8",
+      "name": "Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1020,
+        280
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "492432d5-3c18-4517-85b9-4407c4ed26a3",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1500,
+        640
+      ],
+      "webhookId": "6e5776e8-b6b9-4c56-8b3a-812f68959433",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "db433d7c-e212-4c9b-91d9-195df9ac0a95",
+      "name": "Set Dates",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        600,
+        640
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "73311be6-834f-4065-9018-7e3d73e11c5a",
+      "name": "MBA News",
+      "type": "n8n-nodes-base.perplexity",
+      "position": [
+        840,
+        440
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "50d29156-abfb-47cd-ab76-1c053d64cd28",
+      "name": "Product Management",
+      "type": "n8n-nodes-base.perplexity",
+      "position": [
+        840,
+        640
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "10c040d0-70ed-443b-bd64-3ff44f88b820",
+      "name": "AI Automation News",
+      "type": "n8n-nodes-base.perplexity",
+      "position": [
+        840,
+        820
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "800e6cda-ca99-4600-aad4-d293be6c8f3b",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1100,
+        640
+      ],
+      "parameters": {},
+      "typeVersion": 3.2
+    },
+    {
+      "id": "767b2f00-757b-4c61-af1b-1a04d9a9a919",
+      "name": "Combine messages",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1280,
+        640
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "54b8123c-00a8-426f-bebd-ece98a63a6e8",
+  "connections": {
+    "Gmail": {
+      "main": [
+        []
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Combine messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MBA News": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Dates": {
+      "main": [
+        [
+          {
+            "node": "MBA News",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Product Management",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "AI Automation News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Dates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine messages": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Automation News": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Product Management": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    }
+  }
+}

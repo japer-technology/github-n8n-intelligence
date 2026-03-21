@@ -1,0 +1,578 @@
+{
+  "_templateId": 5784,
+  "_templateName": "Personal Google Calendar & Reminder Bot on Telegram using Gemini & Whisper",
+  "_templateDescription": "The CA - Tele Assistant workflow is an intelligent Telegram bot designed to help you manage your Google Calendar effortlessly through natural language and voice commands.\n💡 Why Use CA - Tele Assistant?\n\nHands-free calendar management:** Manage your events via text or voice with zero manual calendar app usage\nSmart reminders:** Receive tailored, friendly reminders well in advance, helping you stay prepared\nMultifunctional AI assistant:** Create, view, update, or delete events simply by chatting naturally\nSeamless integration:** Combines Google Calendar, Telegram, OpenAI transcription, and Google Gemini model for powerful capabilities\nContext-aware messaging:** Personalized message tone, emoji use, and prep tips depending on event type and urgency\n\n⚡ Who Is This For?\n\nBusy professionals:** Who want to manage their schedule quickly without opening multiple apps\nRemote teams:** Needing easy calendar coordination and friendly reminders via Telegram\nPeople who prefer voice commands:** Allows scheduling and querying via Indonesian voice messages\nAnyone overwhelmed by calendar clutter:** Automates reminders and event organization effortlessly\n\n❓ What Problem Does It Solve?\n\nManually juggling your calendar events—creating entries, checking your schedule, or remembering appointments—is time-consuming and error-prone. Traditional calendar apps require multiple interactions and can flood you with generic notifications that lack context or personality. Voice commands or natural chat to manage calendars are rarely supported natively.\n\nCA - Tele Assistant solves these issues by offering a chat-based, AI-powered interface that understands your natural language or voice, automates calendar operations, and sends smart reminders tailored to your event and preferences. This reduces the cognitive load, minimizes missed appointments, and makes calendar management seamless.\n\n🔧 How This Workflow Works\n\n⏱ Step 1: Incoming Telegram messages or voice messages trigger the workflow via Telegram Trigger node\n\n📥 Step 2: Voice messages are automatically downloaded and transcribed into text using OpenAI\n\n🔀 Step 3: A Switch node routes text and voice commands for unified processing\n\n✍️ Step 4: The Google Gemini AI model processes natural language commands for calendar actions\n\n🧠 Step 5: A Langchain AI agent (\"Calendar Manage!\") handles operations such as event creation, update, deletion, and fetching events using Google Calendar API tools. It uses session memory to keep contextual chat flow\n\n🔔 Step 6: A scheduled trigger every 15 minutes retrieves upcoming calendar events (within 45-60 mins), filters duplicates, and an AI Reminder Message Agent crafts personalized reminder messages\n\n💬 Step 7: Reminder messages are sent automatically to the user's Telegram chat, with typing indicators for a humanized feel\n\n🛠 Step 8: All data flows and interactions are combined, ensuring seamless conversational experience with real-time calendar sync\n\n🔐 Setup Instructions\n\nImport the provided JSON workflow into your n8n instance\n\nSet up credentials:\n   Telegram API Bot credentials via BotFather\n   Google Calendar OAuth2 credentials\n   OpenAI API key (for voice transcription)\n   Google Palm API credentials (for Gemini AI)\n\nCustomize: Adjust chat IDs, timezone preferences, and reminder timing (default 45-60 minutes before events)\n\nUpdate: Replace placeholder chat IDs with your Telegram chat ID\n\nTest: Send test commands or voice messages through your Telegram bot to verify event creation, updates, and reminder delivery\n\n🧩 Pre-Requirements\n\nTelegram Bot: Create bot via @BotFather\nGoogle Calendar: Setup OAuth2 credentials\nOpenAI API: For voice message transcription\nGoogle Gemini: For AI language model\n\n📚 Useful Resources\nn8n Documentation\nTelegram Bot API\nGoogle Calendar API\nOpenAI API Docs\n\n🛠️ Customize It Further\n\nAdd support for additional languages in voice transcription or chat responses\nIntegrate weather or traffic APIs for more enhanced reminder tips\nEnable multi-user support with dynamic chat ID handling for group chats\nEnhance personality or tone configurations for more formal or casual responses\n\n🧠 Nodes Used\n\nTelegram Trigger**\nTelegram** (Send Typing Indicator, Send Message, Download Voice)\nOpenAI** (Audio transcription)\nLangchain Google Gemini Model**\nLangchain AI Agents** (Reminder Message Agent, Calendar Manage! agent)\nGoogle Calendar** node (Get Upcoming Events)\nGoogle Calendar Tools** (Create, Update, Delete, Get events)\nRemove Duplicates** node\nMerge** node\nSwitch** node\nSet** node\nSchedule Trigger**\nMemory Buffer Window** node\n\n📞 Support\n\nMade by: khaisa Studio   \nTag: AI, Google Calendar, Telegram, Reminder, Schedule, Voice, OpenAI, Gemini,\nCategory: Productivity Automation  \nNeed a custom? contact khaisa for more tailored templates",
+  "_templateCreatedAt": "2025-07-08T15:30:52.457Z",
+  "_templateTotalViews": 5154,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:17:41.023Z",
+  "id": "u9Zcx3D4glCt7lQP",
+  "meta": {
+    "instanceId": "c2650793f644091dc80fb900fe63448ad1f4b774008de9608064d67294f8307c",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "CA - Tele Assistant",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "send-typing",
+      "name": "Send Typing Indicator",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1120,
+        940
+      ],
+      "webhookId": "fb7d9e87-d2a3-41af-a767-391533f26587",
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "send-response",
+      "name": "Send AI Response",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2880,
+        1040
+      ],
+      "webhookId": "0f0dd540-677f-41f4-aec4-3ad1c08623dc",
+      "parameters": {},
+      "typeVersion": 1.2,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "gemini-model",
+      "name": "Google Gemini Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        1760,
+        840
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "reminder-schedule",
+      "name": "Reminder Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        720,
+        560
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "get-upcoming-events",
+      "name": "Get Upcoming Events",
+      "type": "n8n-nodes-base.googleCalendar",
+      "position": [
+        900,
+        560
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "filter-duplicates",
+      "name": "Filter Duplicate Reminders",
+      "type": "n8n-nodes-base.removeDuplicates",
+      "position": [
+        1120,
+        560
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "reminder-agent",
+      "name": "Reminder Message Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1320,
+        560
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "send-reminder",
+      "name": "Send Reminder",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1620,
+        560
+      ],
+      "webhookId": "d9dced76-6c95-496b-87a9-21867b8090c1",
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "e43b9173-e102-4feb-b78a-40d7b43212ef",
+      "name": "Calendar Manage!",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2440,
+        1040
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "8332bee6-8578-426b-81ad-7ebd8670a290",
+      "name": "Delete event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        2400,
+        1260
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "41595444-1657-4d2f-9f7a-9497f51a3f11",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        2280,
+        1260
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "70831a99-0707-40a3-ab97-864a5663fa16",
+      "name": "Get events",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        2520,
+        1260
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "8530e92e-1c5e-46b3-bc42-eff1c9415aa2",
+      "name": "Create Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        2640,
+        1260
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "776ba60a-b80a-476a-adce-96120c2ce2eb",
+      "name": "Update Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        2760,
+        1260
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "18eb6e28-1b39-41b5-b7db-0bea6d7b1f06",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        1400,
+        1140
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "597784d1-a40e-48e5-bdaa-b5db3561bd9c",
+      "name": "📥 Download Voice",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1120,
+        1140
+      ],
+      "webhookId": "7d9d13d4-ec19-40d7-a905-0b44b58867d9",
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "telegram-trigger",
+      "name": "Start",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        680,
+        1040
+      ],
+      "webhookId": "a57703c3-a03a-406d-b980-f94a0d9a4e3f",
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "4a6a7c60-1ed6-448a-9dab-046f895e3025",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1760,
+        1040
+      ],
+      "parameters": {},
+      "typeVersion": 3.2,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "4313547f-b896-46a8-896c-ee268f137344",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        900,
+        1040
+      ],
+      "parameters": {},
+      "typeVersion": 3.2
+    },
+    {
+      "id": "34ffeb49-a92d-408a-b5be-4c9e46215274",
+      "name": "Typing 2",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2040,
+        1040
+      ],
+      "webhookId": "fb7d9e87-d2a3-41af-a767-391533f26587",
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "25e2f802-702f-49c5-b4ec-b7859b358ff1",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1400,
+        940
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "827ba6e7-f308-4cba-beee-31e1c6055b5b",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        760
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "317717f6-7223-4bd6-8cc5-4147e6836097",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        620,
+        860
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "6a85f881-9c27-488b-a21c-cd2efd6d0b51",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        620,
+        380
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "856ed3d2-58f3-47c2-a63b-f876a1fff14a",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1840,
+        380
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "00f1e9f5-435d-4d99-84f9-29fd27740cc8",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2300,
+        380
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "90ffa13b-633c-46e6-92aa-3da633472c1d",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2660,
+        380
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": true,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "saveExecutionProgress": true,
+    "saveDataErrorExecution": "all",
+    "saveDataSuccessExecution": "all"
+  },
+  "versionId": "f5572e3c-4e0f-456a-b866-69aac88ea256",
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Typing 2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Send Typing Indicator",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "📥 Download Voice",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Typing 2": {
+      "main": [
+        [
+          {
+            "node": "Calendar Manage!",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get events": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Manage!",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Create Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Manage!",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Manage!",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Calendar Manage!",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Calendar Manage!",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calendar Manage!": {
+      "main": [
+        [
+          {
+            "node": "Send AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reminder Schedule": {
+      "main": [
+        [
+          {
+            "node": "Get Upcoming Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Upcoming Events": {
+      "main": [
+        [
+          {
+            "node": "Filter Duplicate Reminders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Reminder Message Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Calendar Manage!",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📥 Download Voice": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Typing Indicator": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reminder Message Agent": {
+      "main": [
+        [
+          {
+            "node": "Send Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter Duplicate Reminders": {
+      "main": [
+        [
+          {
+            "node": "Reminder Message Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

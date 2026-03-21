@@ -1,0 +1,313 @@
+{
+  "_templateId": 5815,
+  "_templateName": "Automated Inventory Management with Airtable PO Creation & Supplier Emails",
+  "_templateDescription": "In-depth description of this automation:\n\nThis is a fully automated daily supply chain and procurement workflow that keeps product stock levels healthy and suppliers updated, by automatically generating and emailing purchase orders (POs) and syncing PO statuses in Airtable.\n\n📅 Daily triggers\n\nTwo Schedule Trigger nodes run:\n\n  One runs at midnight (00:00) to manage low stock and new purchase order creation.\n  Another runs at 1:00 AM to process existing pending POs and email suppliers.\n\n🚦 Step-by-step breakdown\n\n1️⃣ Get Products with low stock\n\nSearches the “Products Table” in Airtable for items where {stock_level} &lt;= {reorder_threshold}.\nDetects products that need restocking.\n\n2️⃣ Get supplier details\n\nFetches supplier data for each low-stock product using its supplier_id.\n\n3️⃣ Calculate Dynamic Reorder Quantity\n\nJS code calculates an optimal reorder quantity:\n\n  Uses average_daily_sales × (lead_time × 1.5) × safety_margin (1.2)\n  Adds extra buffer so the new order covers both immediate demand and next cycle.\n\n4️⃣ Search existing POs\n\nLooks in the “Purchase Orders” table for active POs (status Pending or Sent) matching each product.\nPrevents duplicate orders.\n\n5️⃣ Remove duplicate product orders\n\nJS node compares current low-stock products with existing POs.\nFilters out products already covered, so new POs are only created for truly uncovered products.\n\n6️⃣ Create new purchase orders\n\nFor filtered products, creates new PO records in Airtable with:\n\n  product_name\n  product_id\n  calculated reorder_qty\n  supplier info and email\n  initial status Pending\n\n📧 Process existing pending purchase orders and email suppliers\n\n7️⃣ Get Purchase Orders which are pending\n\nSearches Airtable for all POs with status Pending.\n\n8️⃣ Group products with suppliers\n\nJS code groups these POs by supplier_id.\nBuilds a summary (total products, total quantity) and an HTML email with a styled table of items.\n\n9️⃣ Send PO emails to suppliers\n\nUses Brevo (SendInBlue) to send emails.\nSubject and content include supplier-specific order details.\n\n🔄 Update PO statuses to Sent\n\nExtracts Airtable record IDs of the sent POs.\nUpdates those POs in Airtable, changing status from Pending → Sent.\n\n📌 Summary\n\n✅ Runs every day\n✅ Dynamically calculates reorder needs\n✅ Avoids duplicate purchase orders\n✅ Automatically creates purchase orders in Airtable\n✅ Groups & emails daily PO summaries to suppliers\n✅ Updates PO status after sending email\n\n⚙ Tables involved\n\nProducts Table:** stores products, stock levels, reorder thresholds, average daily sales, supplier references.\nSuppliers Table:** stores supplier emails and metadata.\nPurchase Orders Table:** tracks product orders with supplier IDs, status, quantities, etc.\n\nThis workflow makes daily procurement fully automated: detects risk of stockouts, creates POs smartly, keeps suppliers in sync by email, and updates order statuses in one closed loop — perfect for any small or mid-sized business using Airtable + N8N.\n",
+  "_templateCreatedAt": "2025-07-09T09:45:50.624Z",
+  "_templateTotalViews": 117,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:16:37.399Z",
+  "meta": {
+    "instanceId": "b6731f6e46273cffeac6b5188a5b3bcb0840c00108e73b48ae2b799ac6e8e081",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "fe401179-5a8b-4232-b148-9bf4d96ceb9b",
+      "name": "Get Products with low stock",
+      "type": "n8n-nodes-base.airtable",
+      "position": [
+        -2340,
+        -540
+      ],
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "46bfdc76-b244-41a9-a686-09c8eb140968",
+      "name": "Get supplier Details for those low stock products",
+      "type": "n8n-nodes-base.airtable",
+      "position": [
+        -2120,
+        -540
+      ],
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "836a5efb-0cad-4508-8703-911241f0b847",
+      "name": "Calculate Dynamic Re-order Quantity",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -1900,
+        -540
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "7d04d71d-3d40-4575-b567-6e6bb8712e3a",
+      "name": "Run Every Mid Night",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -2520,
+        -540
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "50c4223b-83d7-4204-a2ad-75b390b9298b",
+      "name": "Create purchase records in table",
+      "type": "n8n-nodes-base.airtable",
+      "position": [
+        -2160,
+        -280
+      ],
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "87965ea3-6e2a-495d-a040-fcf15ba8bb2a",
+      "name": "Search records",
+      "type": "n8n-nodes-base.airtable",
+      "position": [
+        -2500,
+        -280
+      ],
+      "parameters": {},
+      "typeVersion": 2.1,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "18390f14-6622-4f6c-8c24-ec123c4a807e",
+      "name": "Remove Duplicate Product Orders",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -2340,
+        -280
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "cc7b13bc-d8f8-4c26-b503-5d9a8fcfd010",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2600,
+        -980
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "790b9e2e-63fb-4d15-b0e9-47d1ab6dfdd2",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -1360,
+        -520
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "93b3ea8a-5b0a-41b6-863c-1c78bc6ec59d",
+      "name": "Get Purchase Orders which are pending",
+      "type": "n8n-nodes-base.airtable",
+      "position": [
+        -1120,
+        -520
+      ],
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "4ba6d12d-cbe6-418e-a9bb-102f54451b03",
+      "name": "Group products with suppliers",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -900,
+        -520
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "ce853473-aa77-4215-a7e2-4b584f6b5986",
+      "name": "Get the record id's of PO",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -720,
+        -400
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "275e3674-127b-4acf-92cd-c554b61239f9",
+      "name": "Update the PO status to sent",
+      "type": "n8n-nodes-base.airtable",
+      "position": [
+        -500,
+        -540
+      ],
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "fd03a9df-1892-465b-9dc5-6c13cb2c1f16",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1420,
+        -980
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e725f7f0-85a1-4cec-af79-fee429ff2667",
+      "name": "Send PO to suppliers via Email",
+      "type": "n8n-nodes-base.sendInBlue",
+      "position": [
+        -700,
+        -700
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Search records": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicate Product Orders",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Purchase Orders which are pending",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Every Mid Night": {
+      "main": [
+        [
+          {
+            "node": "Get Products with low stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the record id's of PO": {
+      "main": [
+        [
+          {
+            "node": "Update the PO status to sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Products with low stock": {
+      "main": [
+        [
+          {
+            "node": "Get supplier Details for those low stock products",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Group products with suppliers": {
+      "main": [
+        [
+          {
+            "node": "Send PO to suppliers via Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get the record id's of PO",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send PO to suppliers via Email": {
+      "main": [
+        []
+      ]
+    },
+    "Remove Duplicate Product Orders": {
+      "main": [
+        [
+          {
+            "node": "Create purchase records in table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create purchase records in table": {
+      "main": [
+        []
+      ]
+    },
+    "Calculate Dynamic Re-order Quantity": {
+      "main": [
+        [
+          {
+            "node": "Search records",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Purchase Orders which are pending": {
+      "main": [
+        [
+          {
+            "node": "Group products with suppliers",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get supplier Details for those low stock products": {
+      "main": [
+        [
+          {
+            "node": "Calculate Dynamic Re-order Quantity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

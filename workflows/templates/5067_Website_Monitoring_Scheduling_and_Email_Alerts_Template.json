@@ -1,0 +1,123 @@
+{
+  "_templateId": 5067,
+  "_templateName": "Website Monitoring, Scheduling, and Email Alerts Template",
+  "_templateDescription": "🛠 Website Downtime Monitoring with Scheduled Checks and Email Alerts\n\nEasily monitor your website uptime and receive instant email alerts when it becomes unreachable — using this no-code template powered by n8n, a free and flexible workflow automation tool.\n\nThis ready-to-use workflow periodically checks your website’s status and sends an alert email if it’s down.\n\n⚙️ How it Works\n\nSchedule Website Check**  \n  Triggers the workflow at regular intervals (e.g., every 8 hours by default).\n\nCheck Website Status**  \n  Sends an HTTP GET request to your site.\n\nEvaluate Response**  \n  Determines if the site is reachable (expects HTTP status 200).\n\nSend Downtime Alert**  \n  If the site is down, an alert email is sent to the specified address.\n\n🔧 Steps to Customize\n\n1. HTTP Request Node\nReplace https://yourdomain.com with your actual website URL.\n\n2. Send Email Node\nUpdate the To Email and From Email fields with your addresses.\n\n3. Adjust Monitoring Frequency\nModify the Schedule Trigger node to run every 5 minutes, hourly, or as needed.\n\n✅ SMTP Configuration Instructions\n\nBefore emails can be sent, you need to configure SMTP credentials in n8n.\n\n📨 Option 1: Gmail SMTP Setup\n\n&gt; Note: Gmail requires App Passwords (not your regular Gmail password) and 2FA to be enabled.\n\nSteps:\nGo to Google Account Security Settings.\nEnable 2-Step Verification.\nGo to App Passwords.\nCreate a new app password (choose Mail and Other, name it n8n).\nIn n8n:\n   Go to Credentials → Create New → SMTP.\n   Use the following values:\n     Host: smtp.gmail.com\n     Port: 465 (SSL) or 587 (TLS)\n     User: your Gmail address (e.g., you@gmail.com)\n     Password: the App Password you generated\n\n✉️ Option 2: Generic SMTP Setup\n\nUse this if you're using your hosting provider's or business email SMTP server.\n\nExample Values:\nHost**: smtp.yourdomain.com or provider-specific (e.g., smtp.sendgrid.net)\nPort**: 587 (TLS) or 465 (SSL)\nUser**: your email address (e.g., alerts@yourdomain.com)\nPassword**: your email/SMTP password\nSecure**: Yes (if using 465 or TLS-enabled 587)\n\nThen in the workflow's Send Email node, select the SMTP credentials you created.\n\n📌 Requirements\n\nA running instance of n8n (self-hosted or n8n.cloud)\nSMTP credentials configured in n8n for email delivery\nBasic familiarity with the n8n visual editor\n\n🧠 Pro Tips\n\nRename Nodes**: Use clear, descriptive names for maintainability.\nSticky Notes**: Use stickies on the canvas to help explain logic for others.\nExpand Alerts**: Integrate with Slack, Discord, or Telegram for multi-channel alerts.\n",
+  "_templateCreatedAt": "2025-06-20T06:24:24.358Z",
+  "_templateTotalViews": 292,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:17:45.215Z",
+  "name": "Website Downtime Monitoring with Email Alerts",
+  "nodes": [
+    {
+      "id": "1",
+      "name": "Schedule Website Check",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        200,
+        300
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 5
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2",
+      "name": "Check Website Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        400,
+        300
+      ],
+      "parameters": {
+        "url": "https://yourdomain.com",
+        "method": "GET",
+        "options": {},
+        "responseFormat": "json"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "3",
+      "name": "Website Down?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        600,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json[\"statusCode\"] }}",
+              "value2": 200,
+              "operation": "notEqual"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4",
+      "name": "Send Downtime Email Alert",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        800,
+        200
+      ],
+      "parameters": {
+        "html": "<!DOCTYPE html><html><head><style>body { font-family: Arial, sans-serif; background-color: #f8f9fa; color: #333; padding: 20px; } .container { background-color: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 600px; margin: auto; } h2 { color: #d9534f; } p { font-size: 16px; line-height: 1.5; } .footer { margin-top: 30px; font-size: 12px; color: #999; text-align: center; } a { color: #0275d8; text-decoration: none; } a:hover { text-decoration: underline; }</style></head><body><div class=\"container\"><h2>⚠️ Website Down Alert</h2><p>Dear Team,</p><p>The monitored website (<a href=\"https://yourdomain.com\" target=\"_blank\">Link</a>) is currently <strong>not reachable</strong> as of <strong>{{$now}}</strong>.</p><p>Please check the website and take necessary action as soon as possible.</p><p>Thank you,<br>n8n Monitoring Bot</p></div></body></html>",
+        "subject": "⚠️ Website Downtime Alert",
+        "toEmail": "your@email.com",
+        "fromEmail": "your@email.com"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": true,
+  "settings": {},
+  "connections": {
+    "Website Down?": {
+      "main": [
+        [
+          {
+            "node": "Send Downtime Email Alert",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Check Website Status": {
+      "main": [
+        [
+          {
+            "node": "Website Down?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Website Check": {
+      "main": [
+        [
+          {
+            "node": "Check Website Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

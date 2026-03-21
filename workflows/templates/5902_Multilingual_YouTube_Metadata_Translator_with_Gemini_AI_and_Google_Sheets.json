@@ -1,0 +1,580 @@
+{
+  "_templateId": 5902,
+  "_templateName": "Multilingual YouTube Metadata Translator with Gemini AI and Google Sheets",
+  "_templateDescription": "Translating your YouTube video titles and descriptions into multiple languages is one of the simplest ways to expand your channel's global reach. But doing it manually is super tedious and time-consuming. This n8n workflow automates the entire process: from detecting your latest video, translating its metadata into multiple languages using AI, to publishing the translated versions directly to YouTube - all managed and tracked through a connected Google Sheet only.\n\nWhat Problem Is This Workflow Solving?\nManually translating YouTube metadata—titles, descriptions, and tags—is both time-consuming and costly, especially as your video library grows. For example, let's say you want to translate the metadata of 50 videos into 5 languages, and if you spend 10 minutes on each video, it could take over 40 hours of manual work. \n\nThis workflow automates the localization of your YouTube metadata, making it fast and efficient to translate large volumes of content. Instead of spending days on translations, you can handle bulk updates in minutes:\nSave Time and Resources**: Instantly translate metadata for dozens or hundreds of videos, freeing you from repetitive, manual tasks.\nExpand Your Global Reach**: Enable your videos to appear in search results across multiple languages, reaching new audiences worldwide.\nBoost Engagement and SEO**: Localized metadata helps your videos get discovered and increases viewer engagement, leading to higher watch times and better performance.\nMake Content More Accessible**: Welcome viewers from different linguistic backgrounds, making your channel inclusive and inviting. \n\nWho Is This For?\nUse cases are many: This workflow is perfect for YouTubers who want to automate multilingual metadata updates and eliminate repetitive manual tasks. It’s especially useful for creators whose content is visually driven and easy to follow, such as:\nDIY and How-to Channels\nTravel and Nature Channels\nFitness and Workout Channels\nCooking Channels\nArt and Craft Channels\n\nHow It Works\nPhase 1: Prepare Values & Auto Crawl Mode\nSet up a Schedule Trigger: In the **Schedule Trigger node in n8n, define your preferred interval to automatically run the workflow on a recurring schedule; no manual execution needed.\nSet Required Parameters: In the **Prepare Values node in n8n, you must enter the following:\n    spreadsheet_id: to link the workflow to your connected Google Sheet\n    channel_name: to specify which tab of the Google Sheet contains the video URLs to process\n    channel_id: to define the YouTube channel the workflow will act upon\nSet Target Languages: In the **Languages tab of your connected Google Sheet, list all languages you'd like to generate translated titles and descriptions for. These will be used later during the translation phase.\nChoose Crawling Mode: In the **Auto tab of your Google Sheet, configure the Auto Crawl setting in Column B based on your preferred method:\n    Select No (Turn off Auto Crawl): You must manually input the video URL(s) in the channel_name tab and set the status to Ready for 1 video only. \n    Select Yes (Turn on Auto Crawl): The workflow will automatically fetch one of the latest videos from your connected YouTube channel (based on channel_id) into the channel_name tab in your Google Sheet. \n\nPhase 2: Trigger The Process\nOnce everything is properly set up, the workflow in n8n can be activated - either manually or automatically via the Schedule Trigger, which runs based on the interval you’ve configured earlier.\nThe tool then checks the Auto Crawl status in Column B in the Auto tab of your connected Google Sheet to determine the route:\nIf Auto Crawl = No: The workflow skips auto-fetching and proceeds directly to the next phase, expecting that the video URL is already entered manually and marked as Ready in its status.\nIf Auto Crawl = Yes: The tool connects to your YouTube channel using the predefined channel_id. It fetches one of the latest videos and checks whether that video’s ID already exists in the list of processed videos. \n    If the video has not been processed yet, its URL will be inserted into the channel_name tab, and its status in Column A will automatically be set to Ready, ensuring it proceeds to the next step.\n    If it already exists, the video is skipped to avoid reprocessing.\n\n\n⚠️ Important: When Auto Crawl = Yes, do not manually add another URL and set its status to Ready in the channel_name tab in the Google Sheet. Doing so may trigger the same video twice, causing data conflicts and redundant processing.\n\nPhase 3: Collect Video Information\nOnce a new video URL appears in your connected Google Sheet and its status is set Ready in Column A (under the specified channel_name tab), the workflow picks it up automatically.\nThen, it extracts the Video ID from the URL and sends a GET request to the YouTube API to retrieve that video’s title and description in your channel’s default language for the next steps.\n\nPhase 4: Generate Translated Metadata In Preset Languages\nThe tool reads your target languages from the Languages tab in your connected Google Sheet.\nA loop runs through each language code one at a time.\nFor each language, the tool sends your original title and description to Google Gemini’s Chat Model. Then, the AI returns the content translated into the target language.\nThe output is returned in JSON data, then restructured to ensure each language’s data is clearly separated and ready for the next step.\n\nPhase 5: Update Translated Metadata On YouTube & Log Status\nAll translated titles and descriptions from previous steps are combined into one structured format.\nThe tool sends a PUT request to the YouTube API to update the video’s metadata directly with the new multilingual-translated content.\nIf the update is successful, the video's status in Column A in the channel_name tab in the connected Google Sheet is marked as Success.\nIf the update fails, the video’s status is marked as Error for later review or retry.\n\nHow To Set Up\nDownload the working package.\nImport the package into your n8n interface.\nDuplicate the Youtube - Update Video Metadata in Multi-Languages Google Sheet template into your Google Sheets account. For the channel_name tab in the template, you can rename it with your actual YouTube channel's name for easier tracking. \nSet up necessary credentials in Google Cloud Console for tools access and usability:\n     For Google Sheets access, please ensure connection in the following nodes:\n     Node Get Auto Crawl Status → connected to the Auto tab\n     Node Check Latest Video ID → connected to the channel_name tab\n     Node Insert Video Info → connected to the channel_name tab\n     Node Get Video URL → connected to the channel_name tab\n     Node Get Language List → connected to the Languages tab\n     Node Update Status - Success → connected to the channel_name tab\n     Node Update Status - Error → connected to the channel_name tab\n     For YouTube access, ensure connection to YouTube API in the following nodes:\n     Node YouTube - Get Latest Video\n     Node Get Video Info\n     Node Update Video Metadata with Selected Languages\n     For Google Gemini access, ensure connection to Google Gemini API in the following node:\n     Node Google Gemini’s Chat Model\nSet a Schedule Trigger in n8n to run the workflow automatically at your preferred interval.\nDefine necessary parameters in Node Prepare Values in your n8n workflow:\n     spreadsheet_id: your connected Google Sheet ID\n     channel_name: the tab in your connected Google Sheet contains the video URLs and receives process updates (should be renamed with your actual YouTube channel’s name for easy tracking)\n     channel_id: your YouTube channel ID\nCheck the status of the Auto Crawl function in the Auto tab in your connected Google Sheet:\n     By default, its status is No: You’ll manually insert a video URL and mark its row as Ready.\n     In case you want to turn it on, please change it to Yes: The tool will automatically fetch the latest video(s) from your channel.\nActivate the workflow in n8n.\nTo manually update a video:\n     Set Auto Crawl to No\n     Insert the video URL into the channel_name tab\n     Set the status to Ready\nTo automate with Auto Crawl:\n     Set Auto Crawl to Yes\n     The tool will auto-fetch one of the new videos and set its status to Ready\nTrack results of the original row in the channel_name tab of your Google Sheet and YouTube:\n     If the row’s status is Success, the metadata is updated on YouTube with all the set languages and you can check things out on the platform directly.\n     If the row’s status is Error, you can do manual review or retry.\n\nRequirements\nBasic setup in Google Cloud Console with OAuth2 credentials in the following configurations:\n    Google Sheets API enabled, with edit permissions on the connected spreadsheet\n    YouTube API enabled, with an account that has Owner or Editor role on the target channel\nAPI access to Google Gemini for generating multilingual translated content via AI.\n\nHow To Customize\nAdjust the trigger interval: Change the schedule in the **Schedule Trigger node to fit your needs (e.g. every 10 minutes, hourly, etc.).\nAdd or remove target languages: Simply update the **Languages tab in your connected Google Sheet. No changes in n8n are required.\nCustomize the translation style: You can edit the prompt inside the **AI node to change the tone, format, or style of the translations. However, do not modify the output structure format - doing so will break the workflow.\nAdd alerts or notifications when finished**: Feel free to integrate additional nodes (like Telegram or Email) to notify you and your team when updates succeed or fail.\n\nFAQs:\n1. Can I use this workflow for more than one YouTube channel?\nNot directly. This workflow is currently designed to connect to a single YouTube channel ID at a time. However, if you’d like to manage multiple YouTube channels within one Google Sheet and a unified n8n interface, we can customize the setup for you. Feel  free to reach out to Agent Circle for a tailored setup and guidance.\n\n2. What happens if I manually enter a video URL while Auto Crawl is ON?\nAvoid this. Manually adding a URL with status Ready in the channel_name tab while Auto Crawl = Yes may cause duplicate processing, API conflicts, or data overwrites.\n\n3. How many languages can I translate into at once?\nThere's no strict limit. You can list as many languages as needed in the Languages tab in your connected Google Sheet. Refer to the All Languages tab in the Google Sheet template for valid languages and language codes (e.g., en, fr, es, de).\n\n4. Do I need to change anything in n8n when I add more languages?\nNo - simply update the Languages tab in your connected Google Sheet. No work in n8n is needed for this.\n\n5. Can I change the AI model from Google Gemini to something else?\nYes. You can replace the Google Gemini Chat Model node with another chat model, such as OpenAI GPT-4, or any compatible LLM provider.\n\n6. What happens if the metadata update to YouTube fails?\nThe video's status in Column A of the channel_name tab in your connected Google Sheet will be marked Error. You can then review, fix, and re-run the process. \n\n7. Can I edit the translation prompt in the AI node for my own brand tone?\nAbsolutely. You can customize the translation prompt in the AI node to adjust tone, format, or even brand voice. Just make sure the structure of the returned JSON remains intact.\n\n8. Is the workflow GDPR or YouTube policy-compliant?\nYes - as long as you're the owner or have editor access to the YouTube channel and use the official YouTube API with proper OAuth2 authentication.\n\n9. Can I schedule this workflow to run every day?\nYes. In the Schedule Trigger node in n8n, set your preferred interval - e.g., daily, every 12 hours, etc.\n\n10. Does this work with unlisted or private videos?\nNo - YouTube API typically returns data only for public videos. For private/unlisted videos, additional permissions and scopes are required. If you need support for this case, feel free to contact Agent Circle for personalized consultation and setup assistance.\n\nNeed Help?\nIf you need a step-by-step guide to set up this workflow or want it customized for your specific business needs, feel free to reach out to Agent Circle. We’re always here to support and help you to bring automation ideas to life.\n\nJoin our community on different platforms for assistance, inspiration and tips from others.\n\nWebsite: https://www.agentcircle.ai/\nEtsy: https://www.etsy.com/shop/AgentCircle\nGumroad: http://agentcircle.gumroad.com/\nDiscord Global: https://discord.gg/d8SkCzKwnP\nFB Page Global: https://www.facebook.com/agentcircle/\nFB Group Global: https://www.facebook.com/groups/aiagentcircle/\nX: https://x.com/agent_circle\nYouTube: https://www.youtube.com/@agentcircle\nLinkedIn: https://www.linkedin.com/company/agentcircle\n",
+  "_templateCreatedAt": "2025-07-12T08:20:34.113Z",
+  "_templateTotalViews": 5,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:15:35.327Z",
+  "id": "sM8cQjF7S5RDoQh6",
+  "meta": {
+    "instanceId": "ed6d846a2fce1f660ede2e7da800724cca01dc3d0685524a3c917881b7cfcfe9",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Youtube - Update Video Localization - Hoàng",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "26bda9e3-2fe0-479a-a46b-a37940a56c9b",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        -1060,
+        -1440
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "f2e103fd-ac19-4c6b-bc25-d374dbd1b641",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -3900,
+        -1440
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "8ad0e2cd-3be8-4f12-8e44-539c7ae76f97",
+      "name": "Get Language List",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -1320,
+        -1440
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "e04a3c36-0bd6-4cc6-bcf1-3d490007f33a",
+      "name": "Parse Data To JSON",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -580,
+        -1280
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "3c93cd87-e161-4f3b-912b-a8111cf3b2a8",
+      "name": "Set Languages - New",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -400,
+        -1280
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "e7ccb483-aeac-4a95-93a5-7d5c85e42722",
+      "name": "AI",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        -920,
+        -1280
+      ],
+      "parameters": {},
+      "typeVersion": 1.6
+    },
+    {
+      "id": "600be5f6-983e-44ea-9678-06852cc83497",
+      "name": "Update Status - Success",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        400,
+        -1560
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "3d163ede-31fa-42a4-876d-7a74014e250e",
+      "name": "Update Status - Error",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        400,
+        -1360
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "3a6563eb-2f69-447d-a544-da3ab293d148",
+      "name": "Prepare Values",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -3680,
+        -1440
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "49c26bcc-640f-4448-aa91-da11e2117f96",
+      "name": "Get Auto Crawl Status",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -3360,
+        -1260
+      ],
+      "parameters": {},
+      "typeVersion": 4.6
+    },
+    {
+      "id": "ca243a16-7adf-466d-b4d1-09817ff943c9",
+      "name": "Check Auto Crawl Status",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -3140,
+        -1260
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "9649a75e-dd9d-4965-87c8-265453bfa569",
+      "name": "Merge All Languages",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -80,
+        -1460
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "4ff77c6a-9a83-40db-9516-ed13a69f682d",
+      "name": "Get Video URL",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -1980,
+        -1440
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "ebf0b684-3289-4a43-8b22-e92bb3e55372",
+      "name": "Extract Video ID",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -1800,
+        -1440
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "b0f90d46-aafc-4027-9bd7-bb1a598e6d65",
+      "name": "Get Video Info",
+      "type": "n8n-nodes-base.youTube",
+      "position": [
+        -1620,
+        -1440
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "4a841e42-8e87-41d4-958c-3dab1c1bea2a",
+      "name": "Youtube - Get Lastest Video",
+      "type": "n8n-nodes-base.youTube",
+      "position": [
+        -2920,
+        -1260
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "c1857ba5-8b74-4552-8f66-e6082055f2bf",
+      "name": "Check Latest Video ID",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -2700,
+        -1260
+      ],
+      "parameters": {},
+      "typeVersion": 4.5,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "23771d89-e6b1-41a7-9c0c-ae9b129bf04a",
+      "name": "If Video ID Not Exist Yet",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -2480,
+        -1260
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "0c392fad-2209-4636-89e1-a4ba59662177",
+      "name": "Insert Video Info",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -2260,
+        -1260
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "97bdee40-86e3-4ac9-867a-4f40bc5f6e8e",
+      "name": "Update Video Metadata with Selected Languages",
+      "type": "n8n-nodes-base.httpRequest",
+      "onError": "continueErrorOutput",
+      "position": [
+        140,
+        -1460
+      ],
+      "parameters": {},
+      "retryOnFail": false,
+      "typeVersion": 4.1
+    },
+    {
+      "id": "789d312b-b42c-4c41-a826-fe8749bc5825",
+      "name": "Google Gemini's Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        -920,
+        -1120
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "4b5f94a6-8824-42df-8ffb-254157821dab",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -4060,
+        -1860
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8f7a28ef-fd97-419a-b510-e005f26e99af",
+      "name": "Sticky Note10",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2040,
+        -1860
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "00c32941-3273-4787-922f-36ac18ae9bc7",
+      "name": "Sticky Note11",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1420,
+        -1860
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "5d3fcf35-ebc0-4cea-bce7-43be6efb0e48",
+      "name": "Sticky Note12",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        -1860
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "96387528-13b0-4e56-bd24-3bbddb387ff9",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3400,
+        -1860
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "5925802b-0858-422e-a472-4524f95cd204",
+      "name": "Sticky Note17",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -6300,
+        -1860
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e8f2bc25-d167-48e5-871b-731848955755",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -5180,
+        -1860
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6607b57b-dd6a-4e66-ad62-74162228a676",
+  "connections": {
+    "AI": {
+      "main": [
+        [
+          {
+            "node": "Parse Data To JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video URL": {
+      "main": [
+        [
+          {
+            "node": "Extract Video ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video Info": {
+      "main": [
+        [
+          {
+            "node": "Get Language List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Values": {
+      "main": [
+        [
+          {
+            "node": "Get Auto Crawl Status",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Video URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Merge All Languages",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Video ID": {
+      "main": [
+        [
+          {
+            "node": "Get Video Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Prepare Values",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Language List": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Video Info": {
+      "main": [
+        [
+          {
+            "node": "Get Video URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Data To JSON": {
+      "main": [
+        [
+          {
+            "node": "Set Languages - New",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge All Languages": {
+      "main": [
+        [
+          {
+            "node": "Update Video Metadata with Selected Languages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Languages - New": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Latest Video ID": {
+      "main": [
+        [
+          {
+            "node": "If Video ID Not Exist Yet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Auto Crawl Status": {
+      "main": [
+        [
+          {
+            "node": "Check Auto Crawl Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Auto Crawl Status": {
+      "main": [
+        [
+          {
+            "node": "Youtube - Get Lastest Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "If Video ID Not Exist Yet": {
+      "main": [
+        [
+          {
+            "node": "Insert Video Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini's Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Youtube - Get Lastest Video": {
+      "main": [
+        [
+          {
+            "node": "Check Latest Video ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Video Metadata with Selected Languages": {
+      "main": [
+        [
+          {
+            "node": "Update Status - Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Status - Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

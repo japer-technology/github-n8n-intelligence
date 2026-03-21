@@ -1,0 +1,249 @@
+{
+  "_templateId": 5607,
+  "_templateName": "Generate Structured Scientific Research PDF Summaries with GPT-4o",
+  "_templateDescription": "Disclaimer\nThis workflow contains a community node.\n\nWhat It Does\nLeverage the power of GPT-4o to seamlessly summarize a scientific research PDF of your choosing. By simply downloading a PDF of a scientific research article into a folder on your computer this powerful workflow will automatically read the article and produce a detailed summarization of the article. The workflow will then save this summarization onto your computer for future convenience.\nWho Is This For?\nThe workflow is the perfect tool for all types of self-learners attempting to improve their knowledge base as efficiently as possible. It is a way to rapidly improve your knowledge base using peer reviewed scientific articles in a quick and efficient way. This workflow will provide a more detailed summary of the scientific research article than a typical abstract, while taking a fraction of the time it would take to read an entire paper. It will provide you with enough information to have a firm grasp on the information provided within the scientific article and will allow you to determine if you would like to dive deeper into the article.  This workflow is perfect for professionals who need to stay current on the most recent literature in their field, as well as the self-learners who enjoy diving deep into a specific topic. It can aid anyone who is performing academic research, a literature review, or attempting to increase their knowledge base in a field using peer reviewed sources.\nHow It Works\nUtilizing the power of GPT-4o, the moment you save a PDF of a scientific research article to a predesignated folder it will being to read the article and produce a summary that will be saved into another designated folder on your computer via the following steps below.\nSearch the internet and your favorite journal databases for a scientific article that interests you.\nWith the n8n workflow activated, download a PDF of the scientific article and save it to a specific designated folder.\nSaving the scientific article to this folder will trigger the workflow to initiate.\nThe workflow will then extract the contents of the PDF and pass the data along to an AI agent utilizing the power of GPT-4o.\nThis AI agent will produce a detailed summary of the scientific article.\n \tThis summary will include the following:\n\tIntroduction heading discussing the importance of the article and the specific aims of the study\n\tMethods heading detailing how the study was conducted, what variables they evaluated, what their inclusion and exclusion criteria were, and what their measurement standards were.\n\tResults heading providing specific data provided in the study for all variables tested as well as the statistical significance of each result.\n\tSummary heading evaluating the importance of the results, how it compares to other scientific articles in the same field, as well as the recommendations of the authors on how to interpret the data provided by the results.\n\tConclusion heading summarizing the strengths and weaknesses of the scientific article as well as providing deficiencies in knowledge on the subject that would be a good topic for future studies.\nAfter the AI agent has completed its summary, it will convert the summary to text and save it to a designated folder on your computer for future viewing.\nSet Up Steps\nYou will need to create a folder on your computer where you would like to save your scientific article PDFs. You will then copy the pathway to this folder into the local file trigger node.\nYou will need to obtain an Open AI API key from platform.openai.com/api-keys\nAfter you obtain this Open AI API key you will need to connect it to the Open AI Chat Model connected to the Summarizer Tools Agent.\nYou will now need to fund your Open AI account. GPT-4o costs ~$0.01 to run the workflow.\nFinally, create a folder on your computer you wish to have the summarizations saved to. Copy the pathway to this folder into the Save to Folder node.\nCustomization\nThis workflow is easy to customize to a specific area of research to provide the best possible summarization. If you have a specific expertise in a field of study, you can customize the output to provide data at a higher level of understanding for that field. For example, if you are a marine biologist, you can change the portion of the text prompt in the summarizer tool from \"You are a research expert who is providing data to another researcher.\" to \"You are a marine biologist expert who is providing data to another marine biologist.\"\nDisclaimer\nIf the pdf is too large, open AI will not be able to summarize it and will provide the error that you have reached your limit of requests.",
+  "_templateCreatedAt": "2025-07-02T20:15:33.660Z",
+  "_templateTotalViews": 599,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-21T08:14:48.652Z",
+  "id": "z1y59Ygza4dbq9vD",
+  "meta": {
+    "instanceId": "d92ae4b43988b888be9e59a711908a679453e558f86530d2ed2c1c3491f22bf5",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Automatically Generate Structured Summaries of Scientific Research PDFs with GPT-4o",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "cdf76194-f7e3-4846-8d8b-cd13a3a0404b",
+      "name": "Local File Trigger",
+      "type": "n8n-nodes-base.localFileTrigger",
+      "position": [
+        -160,
+        0
+      ],
+      "parameters": {
+        "events": [
+          "add"
+        ],
+        "options": {},
+        "triggerOn": "folder"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "d376462c-b09c-4d35-b631-5fb3ecc73ceb",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        600,
+        160
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "e759529e-fb21-4339-a981-a9cde3b9d63c",
+      "name": "Summarizer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        640,
+        0
+      ],
+      "parameters": {
+        "text": "={{ $json.text }}",
+        "options": {
+          "systemMessage": "=#Role \nYou are a research agent. You are very good at analyzing a research article and obtaining the best detail from it. You are a research expert who is providing data to another researcher. You are well versed in the scientific method. You will be provided data from a pdf {{ $json.text }}. You are to analyze this text and provide a thorough summary of it.\n\nProvide your summary in the format of:\nTitle\n\nIntroduction:\n-What is the importance of this study.\n-What are the specific aims of this study.\n-What questions are they trying to answer.\n-What studies have been done in the past in regards to this topic.\n\nMethods:\n-Go into detail about their methods.\n-What type of study is this.\n-How many subjects were included in the study.\n-How was their study designed.\n-What parameters or variables were they measuring. \n         -This is the most important part of this group. In the methods section of each paper they will define what the measurable outcomes of the study were. Sometimes they will have primary and secondary outcomes. You should include all of these.\n-What was their inclusion and exclusion criteria.\n\nResults:\n-This should be comprehensive.\n-It should give the results for every variable or measurable outcome tested.\n-specific numbers with statistical significance should be given.\n\nSummary:\n-You should provide the specific conclusions they came to from their results.\n-Provide how their results compare to other studies mentioned in their paper. In the summary section of the paper they often reference how their results compare to other studies. You should provide this in your summary.\n-Provide what their recommendations are based off the results.\n\nConclusion:\nProvide any weaknesses of the paper.\nProvide all examples of future studies they recommend be performed.\n\n\n\n#additional information\nIntroduction, methods, results, summary, and conclusion should all be new paragraphs. Your information should read smoothly and make sense. you can utilize bullet points or - if you would like for the individual points within the paragraphs. "
+        },
+        "promptType": "define"
+      },
+      "typeVersion": 1.7
+    },
+    {
+      "id": "35c34c88-354b-4018-a66f-5cd2c3e8164a",
+      "name": "Converter",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        40,
+        0
+      ],
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const originalPath = $input.first().json.path\n  const convertedPath = originalPath.replace(/\\\\/g, '/');\n  return {\n    json: {\n      ...item.json,\n      convertedPath\n    }\n  };\n});"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "e357d953-e875-46f5-89a8-4c876c3bdd6e",
+      "name": "PDF Finder",
+      "type": "n8n-nodes-base.readWriteFile",
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "options": {},
+        "fileSelector": "={{ $json.convertedPath }}"
+      },
+      "typeVersion": 1,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "1905ff88-d54a-4435-9ad1-7c1597da57cb",
+      "name": "PDF Extractor",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "options": {},
+        "operation": "pdf"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "48726ce0-5978-47f6-9688-7ff675128153",
+      "name": "Publisher",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        1000,
+        0
+      ],
+      "parameters": {
+        "options": {},
+        "operation": "toText",
+        "sourceProperty": "output"
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "5cc8a81d-3c55-4e8e-bb8c-1dd41e124ce1",
+      "name": "Save to Folder",
+      "type": "n8n-nodes-base.readWriteFile",
+      "position": [
+        1200,
+        0
+      ],
+      "parameters": {
+        "options": {},
+        "operation": "write"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "be22bace-ec61-4494-8c88-8ef00b8624dd",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -80,
+        -840
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 1320,
+        "height": 820,
+        "content": "Right click and open local file trigger.\n-Insert the path to your folder.  Open the folder and copy and paste the path at the top.\n-Example C:/Desktop/PDF\n-In the above example, PDF is the name of the folder.\n \nCreate an open ai key:\n-Create an open AI account\n-Go to platform.openai.com/api-keys\n-After creating an account click on your name in the top right corner. Click on your profile.\n-On the left side click on API keys.\n-Create new secret key.\n-Give it a name (optional).\n-Create secret key and copy.\n-Open the n8n workflow.\n-Right click and open the OpenAI chat model under Summarizer tools Agent.\n-Click under credential to connect with and click create new credential.\n-Paste the copied API Key in this position in n8n.\n-IMPORTANT: This workflow uses GPT-4o. This cost ~$0.01 per run. You must put money, recommend no more than $5, into your open ai account.\n-Click on your profile again. On left hand side click on billing.  Add credit to balance.\n \n \n \nRight click on save to folder node.\n-Insert path to folder where you want the summary saved.\n-Example C:/Desktop/Summary/Summary.txt\nTips: you can try saving it as a pdf, but I found saving it as a txt had less errors. \n-You can copy the path again, but you must make sure all \\ are / in the path. This is how n8n interprets the pathway. The trigger node does not matter and should not be changed because the converter node does this automatically.\n \n \nCommon issues:\n-If your first open/read/write files from disk node has an error saying no data, try running n8n as administrator.\n-If running localhost, search command prompt or terminal, before opening right click and choose run as administrator. Then start n8n as you normally would.\n-If the pdf is too large open AI will not be able to summarize it and will have an error that you have reached your limit of requests.\n \n \n \nHow it works:\nYou will have a folder predetermined on your computer. When you find a pdf of a scientific article that you would like a summary of, open n8n and click test workflow. Then save the pdf to the dedicated folder. With n8n running you click test step on the trigger. It will automatically produce a summary of the pdf and save it to a specified folder.\n \nHow to improve:\nIf you have a specific expertise in a field of study, you can customize the output to that field. For example, if you are a marine biologist, you can change the portion of the text prompt in the summarizer tool from \"You are a research expert who is providing data to another researcher.\" to \"You are a marine biologist expert who is providing data to another marine biologist.\""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c633a47e-bed2-42fc-a64f-fcb02cb6eae1",
+  "connections": {
+    "Converter": {
+      "main": [
+        [
+          {
+            "node": "PDF Finder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Publisher": {
+      "main": [
+        [
+          {
+            "node": "Save to Folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF Finder": {
+      "main": [
+        [
+          {
+            "node": "PDF Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarizer": {
+      "main": [
+        [
+          {
+            "node": "Publisher",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PDF Extractor": {
+      "main": [
+        [
+          {
+            "node": "Summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Summarizer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Local File Trigger": {
+      "main": [
+        [
+          {
+            "node": "Converter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
