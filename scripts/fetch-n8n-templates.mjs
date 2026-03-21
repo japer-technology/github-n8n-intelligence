@@ -250,8 +250,16 @@ async function main() {
   console.log(`   📂 Location: workflows/templates/`);
   console.log(`   📋 Catalog:  workflows/templates/catalog.json`);
 
-  if (failed > 0) {
+  if (downloaded === 0 && failed > 0) {
     process.exit(1);
+  }
+  if (failed > 0 && downloaded > 0) {
+    const failRate = failed / (downloaded + failed);
+    if (failRate > 0.05) {
+      console.error(`\n💥 High failure rate (${(failRate * 100).toFixed(1)}%). Exiting with failure.`);
+      process.exit(1);
+    }
+    console.log(`\n⚠️  ${failed} template(s) failed but within tolerance (${(failRate * 100).toFixed(1)}% failure rate).`);
   }
 }
 
