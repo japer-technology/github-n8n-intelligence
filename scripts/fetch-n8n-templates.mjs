@@ -40,6 +40,7 @@ const PAGE_SIZE = 50; // max rows per search page
 const RATE_LIMIT_MS = 200; // ms between API calls
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 2000;
+const MAX_FAILURE_RATE = 0.05; // tolerate up to 5% individual template download failures
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -250,8 +251,16 @@ async function main() {
   console.log(`   📂 Location: workflows/templates/`);
   console.log(`   📋 Catalog:  workflows/templates/catalog.json`);
 
-  if (failed > 0) {
+  if (downloaded === 0 && failed > 0) {
     process.exit(1);
+  }
+  if (failed > 0 && downloaded > 0) {
+    const failureRate = failed / (downloaded + failed);
+    if (failureRate > MAX_FAILURE_RATE) {
+      console.error(`\n💥 High failure rate (${(failureRate * 100).toFixed(1)}%). Exiting with failure.`);
+      process.exit(1);
+    }
+    console.log(`\n⚠️  ${failed} template(s) failed but within tolerance (${(failureRate * 100).toFixed(1)}% failure rate).`);
   }
 }
 
