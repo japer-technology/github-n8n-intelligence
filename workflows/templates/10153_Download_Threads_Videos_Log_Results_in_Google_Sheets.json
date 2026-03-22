@@ -1,0 +1,552 @@
+{
+  "_templateId": 10153,
+  "_templateName": "Download Threads Videos & Log Results in Google Sheets",
+  "_templateDescription": "Threads Video Downloader & Google Drive Logger\n\nAutomate downloading Threads videos from URLs, upload them to Google Drive, and log results in Google Sheets using n8n.\n\nAPI Source: Threads Downloader on RapidAPI\n\nWorkflow Explanation \n\n| Node                                     | Explanation                                                                                                                      |\n| ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |\n| On form submission                   | Trigger workflow when a user submits a Threads URL via a form.                                                                   |\n| Fetch Threads Video Data             | Sends the submitted URL to Threads Downloader API to get video info. |\n| Check If Video Exists                | Checks if the API returned a valid downloadable video URL.                                                                       |\n| Download Threads Video File          | Downloads the video from the API-provided URL.                                                                                   |\n| Upload Video to Google Drive         | Uploads the downloaded video to a designated Google Drive folder.                                                                |\n| Set Google Drive Sharing Permissions | Sets sharing permissions so the uploaded video is accessible via a link.                                                         |\n| Log Success to Google Sheets         | Records the original URL and Google Drive link in Google Sheets for successful downloads.                                        |\n| Wait Before Logging Failure          | Adds a pause before logging failed downloads to avoid timing issues.                                                             |\n| Log Failed Download to Google Sheets | Logs URLs with “N/A” for videos that failed to download.                                                                         |\n\nHow to Obtain a RapidAPI Key \n\nGo to Threads Downloader API on RapidAPI.\nSign up or log in to RapidAPI.\nSubscribe to the API (free or paid plan).\nCopy the X-RapidAPI-Key from your dashboard and paste it into the n8n HTTP Request node.\n\n ✅ Note: Keep your API key private.\n\nHow to Configure Google Drive & Google Sheets\n\nGoogle Drive\n\nGo to Google Drive and create a folder for videos.\nIn n8n, create Google Drive OAuth2 credentials and connect your account.\nConfigure the Upload Video node to target your folder.\n\nGoogle Sheets\n\nCreate a spreadsheet with columns: URL | Drive_URL.\nCreate Google API credentials in n8n (service account or OAuth2).\nMap the nodes to log successful or failed downloads.\n\nGoogle Sheet Column Table Example\n\n| URL                                                                  | Drive_URL                                                                            |\n| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |\n| https://www.threads.net/p/abc123 | https://drive.google.com/file/d/xyz/view |\n| https://www.threads.net/p/def456 | N/A                                                                                  |\n\nUse Case & Benefits\n\nUse Case:** Automate downloading Threads videos for marketing, content archiving, or research.\nBenefits:**\n\n  Saves time with automated downloads.\n  Centralized storage in Google Drive.\n  Keeps a clear log in Google Sheets.\n  Works with multiple Threads URLs without manual effort.\n\n\n",
+  "_templateCreatedAt": "2025-10-25T07:55:07.274Z",
+  "_templateTotalViews": 1,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:46:32.031Z",
+  "meta": {
+    "instanceId": "60c025075753afcab9f803964b4caaca9402f435deb4efafbb8e3b93b54d8752"
+  },
+  "nodes": [
+    {
+      "id": "a1b4a7ad-efec-4a7c-a7d0-057b01cae303",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        848,
+        592
+      ],
+      "webhookId": "99c989d4-d7e6-42d9-9f05-5235e2624149",
+      "parameters": {
+        "options": {},
+        "formTitle": "Threads Downloader",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "URL",
+              "placeholder": "https://www.threads.net",
+              "requiredField": true
+            }
+          ]
+        },
+        "formDescription": "Threads Downloader"
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "6510719b-49cf-4264-985b-1ed5b98b1a9f",
+      "name": "Fetch Threads Video Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "onError": "continueRegularOutput",
+      "position": [
+        1072,
+        592
+      ],
+      "parameters": {
+        "url": "https://threads-downloader1.p.rapidapi.com/threads.php",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "sendHeaders": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json.URL }}"
+            }
+          ]
+        },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-rapidapi-host",
+              "value": "threads-downloader1.p.rapidapi.com"
+            },
+            {
+              "name": "x-rapidapi-key",
+              "value": "your key"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "d069c2dc-7576-478f-8510-4beb55871bff",
+      "name": "Check If Video Exists",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1360,
+        608
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "bcc58e3d-9609-4ec3-adb9-bc6098205818",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.video_urls[0].download_url }}",
+              "rightValue": "success"
+            }
+          ]
+        }
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "01d9dd0c-4370-4ecf-8df3-55de50bb09b7",
+      "name": "Download Threads Video File",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1632,
+        320
+      ],
+      "parameters": {
+        "url": "={{ $json.video_urls[0].download_url }}",
+        "options": {}
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "ddde32c8-f9dc-40cf-8180-b232bb40d6a8",
+      "name": "Upload Video to Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1888,
+        304
+      ],
+      "parameters": {
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "options": {},
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        }
+      },
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleDriveOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 3
+    },
+    {
+      "id": "5e5256dd-e767-484d-8b4f-c0dc62b71f9d",
+      "name": "Set Google Drive Sharing Permissions",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        2192,
+        304
+      ],
+      "parameters": {
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {},
+        "resource": "file",
+        "operation": "share",
+        "permissionsUi": {},
+        "authentication": "oAuth2"
+      },
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleDriveOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 3
+    },
+    {
+      "id": "da8b91e6-99c7-4d84-abfb-9358f4b1b87e",
+      "name": "Log Success to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2528,
+        384
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "URL": "={{ $('On form submission').item.json.URL }}",
+            "Drive_URL": "={{ $('Upload Video to Google Drive').item.json.webViewLink }}"
+          },
+          "schema": [
+            {
+              "id": "URL",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "URL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Drive_URL",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Drive_URL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "URL"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "url",
+          "value": ""
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": ""
+        },
+        "authentication": "serviceAccount"
+      },
+      "credentials": {
+        "googleApi": {
+          "id": "credential-id",
+          "name": "googleApi Credential"
+        }
+      },
+      "typeVersion": 4.6
+    },
+    {
+      "id": "05a6f22b-b42c-4bf8-8ad6-5e671cf33c3e",
+      "name": "Wait Before Logging Failure",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1712,
+        848
+      ],
+      "webhookId": "410a255f-0e20-4697-9584-b59829a5bfb8",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "a4554ac9-23bb-490f-b6fa-8ed9b923214b",
+      "name": "Log Failed Download to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2192,
+        848
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "URL": "{{ $('On form submission').item.json.URL }}",
+            "Drive_URL": "N/A"
+          },
+          "schema": [
+            {
+              "id": "URL",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "URL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Drive_URL",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Drive_URL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "url",
+          "value": ""
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "url",
+          "value": ""
+        },
+        "authentication": "serviceAccount"
+      },
+      "credentials": {
+        "googleApi": {
+          "id": "credential-id",
+          "name": "googleApi Credential"
+        }
+      },
+      "typeVersion": 4.6
+    },
+    {
+      "id": "4ce0b5c3-f2aa-4a40-8430-5dbda2c4d791",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        768,
+        464
+      ],
+      "parameters": {
+        "height": 272,
+        "content": "Triggers the workflow when a user submits a URL through the form."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "24997fd1-523a-46fc-8ef2-294b4fe148f3",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1024,
+        464
+      ],
+      "parameters": {
+        "height": 272,
+        "content": "Sends the submitted URL to the Threads Downloader API to retrieve video data."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "6479a5f8-34a8-41aa-b252-150c08be5cb0",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1296,
+        496
+      ],
+      "parameters": {
+        "height": 256,
+        "content": "Checks if the API returned a valid video download URL."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4d12f8a3-6e47-4186-a864-944ac53f20b0",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1568,
+        240
+      ],
+      "parameters": {
+        "height": 240,
+        "content": " Downloads the video file from the provided download URL."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a4c56692-00f3-48ec-8fac-c0fa7d872212",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1840,
+        240
+      ],
+      "parameters": {
+        "height": 240,
+        "content": "Uploads the downloaded video to a specified Google Drive folder."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "741dbb91-6575-4ed7-888d-548a81c017f6",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2112,
+        240
+      ],
+      "parameters": {
+        "height": 240,
+        "content": "Sets the uploaded file’s sharing settings so it’s accessible via a link."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "dc7491b4-1fca-4384-b0ad-137baa4f5e42",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2432,
+        288
+      ],
+      "parameters": {
+        "height": 224,
+        "content": "Records the original URL and Google Drive link of successfully downloaded videos."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "655f8026-7973-4fcd-8996-ddb074e1409c",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1648,
+        736
+      ],
+      "parameters": {
+        "height": 256,
+        "content": "Adds a pause before logging failed downloads to avoid timing issues."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "23b570fb-1b5b-4af6-90e9-ff52fa18842f",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2112,
+        752
+      ],
+      "parameters": {
+        "height": 240,
+        "content": "Logs the original URL with “N/A” for failed video downloads."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "72e23121-48bc-47f3-8311-3f1a7259bb5e",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -256,
+        256
+      ],
+      "parameters": {
+        "width": 800,
+        "height": 912,
+        "content": "# Threads Video Downloader & Google Drive Logger\n\n Automates downloading videos from Threads URLs, uploads them to Google Drive, and logs success or failure in Google Sheets.\n\n---\n\n## Workflow Overview\n\n1. **Form Submission**  \n   User submits a Threads URL via a web form, triggering the workflow.\n\n2. **Fetch Video Data**  \n   Sends the submitted URL to the Threads Downloader API to retrieve video information.\n\n3. **Check Video Availability**  \n   Verifies if a valid downloadable video URL is returned.\n\n4. **Download Video**  \n   Downloads the video from the API-provided URL.\n\n5. **Upload to Google Drive**  \n   Uploads the video to a designated Google Drive folder.\n\n6. **Set Sharing Permissions**  \n   Makes the uploaded video accessible via a shareable link.\n\n7. **Log Success**  \n   Records the original URL and Drive link in Google Sheets for successful downloads.\n\n8. **Handle Failures**  \n   Waits briefly and logs URLs with \"N/A\" in Google Sheets for failed downloads.\n"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Fetch Threads Video Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check If Video Exists": {
+      "main": [
+        [
+          {
+            "node": "Download Threads Video File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait Before Logging Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Threads Video Data": {
+      "main": [
+        [
+          {
+            "node": "Check If Video Exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download Threads Video File": {
+      "main": [
+        [
+          {
+            "node": "Upload Video to Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait Before Logging Failure": {
+      "main": [
+        [
+          {
+            "node": "Log Failed Download to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Video to Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Set Google Drive Sharing Permissions",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Google Drive Sharing Permissions": {
+      "main": [
+        [
+          {
+            "node": "Log Success to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

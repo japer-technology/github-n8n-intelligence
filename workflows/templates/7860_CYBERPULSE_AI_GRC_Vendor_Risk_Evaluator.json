@@ -1,0 +1,180 @@
+{
+  "_templateId": 7860,
+  "_templateName": "CYBERPULSE AI GRC: Vendor Risk Evaluator",
+  "_templateDescription": "Description\n\nAutomates the intake, classification, and documentation of third-party vendors.\nEvaluates vendor function, data access level, certification status, and applies AI-driven risk tiering (Low, Standard, Critical).\nEnsures standardized onboarding and scalable due diligence.\n\nWho It’s For\n\nCompliance and procurement teams onboarding vendors\n\nGRC consultants managing supply chain risk\n\nSecurity leads needing traceable vendor evidence\n\nAudit teams validating third-party controls\n\nHow It Works\n\nTrigger via intake form or webhook\n\nAI engine assigns vendor risk tier based on context (certification, access type, data sensitivity)\n\nIf certifications (ISO 27001, SOC 2, IRAP, PCI DSS) are missing, status is flagged\n\nScorecard is formatted automatically with vendor details, risk tier, and timestamp\n\nLogs results to Google Sheets for audit-ready evidence\n\nSends instant alerts for high-risk or uncertified vendors\n\nRequirements\n\nGoogle Sheets (OAuth2) connected for logging\n\nGmail/SMTP node for automated alerts (optional)\n\nIntake form/webhook for vendor submissions\n\nMandatory fields in vendor intake:\n\nVendor Name\n\nFunction\n\nData Access\n\nAccess Type (Read/Write/API)\n\nCertification (if any)\n\nOwner (GRC)\n\nFile Templates\n\nVendor_Risk_Log.xlsx (auto-created sheet with audit-ready logs)\n\nIntake form (customizable, connects via webhook)\n\nCustomization Tips\n\nModify AI prompt logic to reflect internal risk appetite\n\nAdd more certification checks (e.g., ISO 27701, FedRAMP)\n\nAdjust alert thresholds (e.g., auto-notify only for Critical tier)\n\nExtend integration to Slack/Teams or SIEM for escalation\n\nLink logs to a dashboard for executive reporting\n\nCompliance\n\nISO/IEC 27001: Controls A.15.1.1, A.15.1.2 (supplier relationships and information security)\n\nSOC 2: Vendor management and risk classification\n\nNIST 800-53: SR-3, SR-5 (supply chain risk and contractual requirements)\n\nEssential Eight: Supports control validation via vendor documentation logging\n\nProvides timestamped, structured logs suitable for external audits\n\nSetup Instructions\n\nDeploy the provided intake form or connect your own vendor submission process to the webhook.\n\nConnect Google Sheets to store vendor logs (Vendor_Risk_Log.xlsx).\n\nConnect Gmail/SMTP node for notifications (optional).\n\nCustomize AI prompt and certification logic if needed.\n\nRun intake tests to validate risk tier assignment.\n\nConfirm vendor logs and alerts are recorded correctly.\n\nSupports\n\nISO 27001 Information Security\n\nSOC 2 Compliance\n\nPCI DSS v4.0\n\nNIST CSF / 800-53\n\nACSC Essential Eight\nhttps://cyberpulsesolutions.com",
+  "_templateCreatedAt": "2025-08-26T01:06:25.458Z",
+  "_templateTotalViews": 12,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:47:00.616Z",
+  "id": "G95QFaRlYK3TExyw",
+  "meta": {
+    "info": "***SANITIZED***"
+  },
+  "name": "GRC Module 3: Vendor Risk Evaluator",
+  "tags": [
+    {
+      "id": "7JHhy8yBIMqNfuOr",
+      "name": "Track Trust w Confidence",
+      "createdAt": "2025-08-03T03:23:33.879Z",
+      "updatedAt": "2025-08-03T03:23:33.879Z"
+    },
+    {
+      "id": "Up5UqXJa2H4Kvz97",
+      "name": "Auto Third-Party Risk",
+      "createdAt": "2025-08-03T03:22:52.354Z",
+      "updatedAt": "2025-08-03T03:22:52.354Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "f10d62c5-002a-4c21-b736-a2f19da1b593",
+      "name": "New Vendor Intake",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -624,
+        -176
+      ],
+      "webhookId": "59fcd0cc-6cb4-4139-b772-30a63922eb57",
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "c612a4d1-f7f8-4fe1-8105-8292a7d9641c",
+      "name": "AI – Risk Tier Estimator",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        -400,
+        -176
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "a0d47add-6d71-453f-8014-fe2e3724ccfe",
+      "name": "Cert Checker – Expiry & Type",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -48,
+        -176
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "46187ebf-6bd0-4df9-9067-df836e1b8db4",
+      "name": "Format – Vendor Scorecard",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        192,
+        -176
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "da8246cb-9d75-4722-8d9e-c0e450e36413",
+      "name": "Log – Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        464,
+        -288
+      ],
+      "parameters": {},
+      "typeVersion": 4.6
+    },
+    {
+      "id": "1f390203-81a7-469e-9066-f2e469ba4065",
+      "name": "Alert – GRC Owner Email",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        464,
+        -48
+      ],
+      "webhookId": "f313326c-917d-4b0e-b4fa-d37310818ecb",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "eae4de31-403e-42d0-a8d2-217e7f2cfc6d",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        800,
+        -368
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "edb122ab-744a-48bf-ba81-568f3b5a5996",
+  "connections": {
+    "New Vendor Intake": {
+      "main": [
+        [
+          {
+            "node": "AI – Risk Tier Estimator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log – Google Sheet": {
+      "main": [
+        []
+      ]
+    },
+    "AI – Risk Tier Estimator": {
+      "main": [
+        [
+          {
+            "node": "Cert Checker – Expiry & Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format – Vendor Scorecard": {
+      "main": [
+        [
+          {
+            "node": "Log – Google Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Alert – GRC Owner Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cert Checker – Expiry & Type": {
+      "main": [
+        [
+          {
+            "node": "Format – Vendor Scorecard",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Format – Vendor Scorecard",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

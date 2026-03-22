@@ -1,0 +1,107 @@
+{
+  "_templateId": 7604,
+  "_templateName": "Automatic FTP File Backup to Google Drive with Scheduled Sync",
+  "_templateDescription": "What this workflow does\nThis workflow automatically downloads files from an FTP folder and uploads them to Google Drive.  \nIt’s useful for backup, reporting, or syncing data between systems.\n\nHow it works\nCron Trigger runs on a schedule (default: every hour).  \nFTP List node checks the specified folder on your FTP server.  \nFTP Download node fetches each file found.  \nGoogle Drive Upload node saves the file into your chosen Google Drive folder.\n\nPre-conditions / Requirements\nAn active FTP server with accessible login credentials.  \nA Google account with access to the Drive folder you want to sync into.  \nMake sure the target Google Drive folder exists, and copy its Folder ID.  \nEnsure files in your FTP folder have unique names if you want to avoid overwriting in Google Drive.\n\nSetup\nFTP:** Add your FTP credentials and replace {{FTP_FOLDER}} with the path of the folder you want to sync.  \nGoogle Drive:** Connect your Google Drive account and replace {{GDRIVE_FOLDER_ID}} with the folder ID where files should be stored.  \nAdjust the Cron schedule (e.g. daily, weekly) depending on how often you need the sync.\n\nCustomization Options\nFile filtering:* Add an *IF node after the FTP List node to only download files matching certain extensions (e.g., .csv, .pdf).  \nFile renaming:* Use a *Set node to rename files before uploading to Google Drive (helpful for timestamping or avoiding duplicates).  \nArchiving:** Add a second Google Drive or FTP Upload node to store processed files in an archive folder.  \nError handling:* Connect an *Error Trigger to notify you via Slack or email if a file transfer fails.\n\nBenefits & Use Cases — FTP to Google Drive File Sync\n\nBenefits\nHands-free backups:** Automatically transfers files from FTP to Google Drive.  \nData security:** Ensures files are stored in cloud storage with built-in redundancy.  \nReliability:** Reduces risk of missed uploads or manual errors.  \nScalable:** Works with any FTP folder and Google Drive directory.\n\nUse Cases\nRegularly back up reports or exports from legacy systems (ERP, CRM, POS).  \nSync daily logs or CSVs into Google Drive for analytics and team access.  \nAutomate delivery of partner or client files without manual uploads.  \nCentralize files from multiple FTP sources into one Drive folder.\n",
+  "_templateCreatedAt": "2025-08-19T19:00:19.065Z",
+  "_templateTotalViews": 49,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:44:56.271Z",
+  "meta": {
+    "instanceId": "f01290caa6c024522b0ed5bb2d09cea02bb113d8970b898b340ca3d74255326e"
+  },
+  "nodes": [
+    {
+      "id": "c973768c-211d-4222-bb78-184616c0506e",
+      "name": "Start: Every Hour",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        -96,
+        -32
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "5aba0708-72a9-4abe-b76d-15f656fda507",
+      "name": "FTP: List Files",
+      "type": "n8n-nodes-base.ftp",
+      "position": [
+        176,
+        -32
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "a448e878-9029-451e-b340-73a3a04d00f1",
+      "name": "FTP: Download File",
+      "type": "n8n-nodes-base.ftp",
+      "position": [
+        416,
+        -32
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "6dab0201-c99f-4f73-bcf1-f6b659e162b4",
+      "name": "Google Drive: Upload",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        656,
+        -32
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "93ec351a-3bd8-4199-83ba-556c73213cf7",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -656,
+        -336
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "FTP: List Files": {
+      "main": [
+        [
+          {
+            "node": "FTP: Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start: Every Hour": {
+      "main": [
+        [
+          {
+            "node": "FTP: List Files",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FTP: Download File": {
+      "main": [
+        [
+          {
+            "node": "Google Drive: Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

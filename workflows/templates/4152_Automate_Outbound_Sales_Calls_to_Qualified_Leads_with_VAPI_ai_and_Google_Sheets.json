@@ -1,0 +1,280 @@
+{
+  "_templateId": 4152,
+  "_templateName": "Automate Outbound Sales Calls to Qualified Leads with VAPI.ai and Google Sheets",
+  "_templateDescription": "This workflow automates outbound calls to qualified leads using VAPI.ai and Google Sheets. Here's how it works and how to set it up.\n\nHow It Works\n\nRead Leads: The workflow starts by reading leads from a Google Sheet where the \"AI call status\" is marked as \"NO\"\nBatch Processing: Leads are processed one at a time (batch size = 1) to ensure proper sequencing\nVariable Setup: Extracts the phone number and row number from each lead record\nTrigger VAPI Call: Makes an API call to VAPI.ai to initiate an AI-powered outbound call\nUpdate Status: Marks the lead as \"YES\" in the Google Sheet after the call is triggered to prevent duplicate calls\nDetailed Setup Guide\n\nPrerequisites\n\nn8n instance (self-hosted or cloud)\nGoogle Sheets account with OAuth2 credentials\nVAPI.ai account with API access\nStep 1: Google Sheets Setup\n\nCreate a Google Sheet with your leads data\nEnsure you have these columns (adjust if needed):\nPhone number (column E in the current setup)\nAI call status (column F in the current setup)\nMark all leads you want to call with \"NO\" in the status column\nStep 2: Google Sheets Credentials\n\nIn n8n, go to Credentials &gt; Add New\nSelect \"Google Sheets OAuth2 API\"\nFollow the prompts to authenticate with your Google account\nName it (e.g., \"Google Sheets account 3\" as in the example)\nStep 3: VAPI.ai Setup\n\nGet your VAPI.ai API credentials\nIn n8n, go to Credentials &gt; Add New\nSelect \"HTTP Header Auth\"\nAdd your VAPI authorization header (typically \"Bearer YOUR_API_KEY\")\nName it (e.g., \"Header Auth account 4\" as in the example)\n",
+  "_templateCreatedAt": "2025-05-17T15:26:49.845Z",
+  "_templateTotalViews": 1450,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:50:25.480Z",
+  "meta": {
+    "instanceId": "2000c64071c20843606b95c63795bb0797c41036047055a6586498e855b96efc",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "65b9181d-5171-4d78-9621-af4017326f94",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -80,
+        -96
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ecdd6f6a-5e09-469d-8f1a-51c5a697ee49",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        160,
+        384
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "f1887804-c8f1-4a30-b120-6d149449e3cb",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        320,
+        384
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "8b8f52ae-e661-48f9-b395-79fa00aca1b0",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        512,
+        384
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "87b01555-38c3-450c-a83d-ba07e5862431",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        928,
+        400
+      ],
+      "parameters": {},
+      "executeOnce": false,
+      "typeVersion": 4.2
+    },
+    {
+      "id": "f6cf375c-4dee-4a30-a830-6b461822f814",
+      "name": "Log call status ",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1488,
+        400
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "1b4ce6bd-861d-43ec-9694-f65beb7ea811",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        272,
+        272
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "5ce1c42b-fcab-4669-985b-a7284ac77670",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        512,
+        48
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a34e8064-613c-4e78-a8fe-d545c4ab3d36",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -64,
+        384
+      ],
+      "parameters": {},
+      "typeVersion": 4.6
+    },
+    {
+      "id": "ae457e9b-797b-41ff-a346-f242472df41a",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -288,
+        384
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "b6b4b85a-b431-408e-bed7-a60e9274c1a6",
+      "name": "Wait1",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1104,
+        400
+      ],
+      "webhookId": "71edce11-f3e0-4ade-8c62-c2dd24cf4919",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "a26c15b4-4bd7-4d45-b6f9-e306b984c30d",
+      "name": "append call status",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1280,
+        400
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "bc4c15fa-a2d7-438b-aa96-1a26d20c281d",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        688,
+        384
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait1": {
+      "main": [
+        [
+          {
+            "node": "append call status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log call status ": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "append call status": {
+      "main": [
+        [
+          {
+            "node": "Log call status ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

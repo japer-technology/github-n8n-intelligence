@@ -1,0 +1,984 @@
+{
+  "_templateId": 11200,
+  "_templateName": "Auto-Schedule Demos for High-Intent Leads with Clearbit, Slack, and Calendly",
+  "_templateDescription": "This workflow automatically captures, enriches, scores, and routes website leads in real-time, scheduling high-intent prospects for demos within minutes instead of hours—dramatically improving conversion rates by eliminating response delays.\n\nWhat Makes This Different:\nReal-Time Lead Processing** - Captures and processes leads instantly from website forms with zero delay\nIntelligent Fit Scoring** - Automatically scores leads 0-100 based on company size, seniority, and revenue\nDual-Track Routing** - High-intent leads (60+) get fast-track treatment, others follow standard nurture\nLive Calendar Integration** - Shows actual available Calendly slots, not fake placeholders\nAutomated Sales Alerts** - Posts rich lead details to Slack with booking links instantly\nSmart Follow-Up** - Sends fallback email if sales team doesn't respond within 10 minutes\nComplete CRM Automation** - Creates HubSpot contacts and deals automatically with enriched data\nFull Audit Trail** - Logs everything to Google Sheets for analytics and reporting\n\nKey Benefits of Instant Lead Response:\nSpeed** - Minutes from form submission to scheduled demo, not hours or days\nConversion** - Respond while leads are hot, dramatically improving booking rates\nAutomation** - Zero manual work—enrichment, scoring, routing, and follow-up all automatic\nIntelligence** - Data-driven scoring ensures sales focuses on best-fit prospects\nAccountability** - Complete logging shows response times and follow-up actions\nScalability** - Handles unlimited lead volume without adding sales admin work\n\nWho's it for\n\nThis template is designed for B2B SaaS companies, sales teams, and revenue operations professionals who need to convert website leads faster. It's perfect for organizations that lose deals due to slow response times, want to prioritize high-intent prospects, need to automate CRM data entry, or want to ensure no hot lead falls through the cracks while sales is busy.\n\nHow it works / What it does\n\nThis workflow creates an end-to-end lead-to-meeting pipeline that automatically processes inbound leads and schedules high-intent prospects for demos. The system:\n\nReceives lead submissions via webhook from website forms or chat widgets\nNormalizes data from different form providers into a standard format\nEnriches contact information using Clearbit to get company size, revenue, job title, and industry\nCalculates fit score (0-100) based on company metrics: size (40 pts), seniority (30 pts), revenue (30 pts)\nRoutes intelligently - High-intent leads (60+) → fast track | Standard leads → nurture channel\nCreates CRM records - Automatically creates/updates HubSpot contact and deal with enriched data\nFetches real availability - Gets actual available Calendly demo slots via API (next 7 days)\nAlerts sales team - Posts formatted message to Slack with lead details and booking links\nMonitors response - Waits 10 minutes and checks if sales replied in Slack thread\nSends fallback email - Automatically emails lead with self-service booking link if no response\nLogs everything - Records all data to Google Sheets for reporting and analytics\n\nKey Innovation: Smart Follow-Up Automation - Unlike basic lead capture workflows, this system ensures accountability by automatically following up with leads if the sales team is unavailable, preventing lost opportunities while maintaining a professional response time.\n\nHow to set up\n\n1. Configure API Credentials\nAdd the following credentials in n8n:\n\nClearbit (Lead Enrichment)\nCreate account at clearbit.com\nGenerate API key from Settings → API\nAdd as \"Clearbit API\" credential in n8n\n\nHubSpot (CRM Integration)\nCreate private app in HubSpot Settings → Integrations → Private Apps\nGrant scopes: crm.objects.contacts.write, crm.objects.deals.write\nCopy app token\nAdd as \"HubSpot App Token\" credential in n8n\n\nCalendly (Calendar Availability)\nCreate OAuth app at calendly.com/integrations/api_webhooks\nConfigure OAuth2 credentials in n8n\nSet environment variable: CALENDLY_USER_URI with your user URI\n  Get this from: https://api.calendly.com/users/me (returns your user URI)\n\nSlack (Team Notifications)\nCreate Slack app at api.slack.com/apps\nAdd Bot Token Scopes: channels:read, chat:write, channels:history\nInstall app to workspace and copy Bot User OAuth Token\nAdd as \"Slack API\" credential in n8n\nUpdate channel names in nodes: change \"hot-leads\" and \"leads\" to your actual channel names\n\nSendGrid (Email Fallback)\nCreate account at sendgrid.com\nGenerate API key from Settings → API Keys\nVerify sender email address\nAdd as \"SendGrid API\" credential in n8n\nUpdate \"from\" email in \"Send Fallback Email\" node\n\nGoogle Sheets (Activity Logging)\nCreate Google Cloud project and enable Sheets API\nConfigure OAuth2 credentials in n8n\nCreate a Google Sheet with columns matching the workflow\nReplace YOUR_GOOGLE_SHEET_ID in \"Log to Google Sheets\" node with your actual sheet ID\n\n2. Customize Fit Scoring Logic\nEdit the \"Calculate Fit Score\" node to match your ideal customer profile:\n\nDefault Scoring:\nCompany size 50-5,000 employees = 40 points\nExecutive/Director seniority = 30 points  \nAnnual revenue ≥ $1M = 30 points\nTotal possible:* 100 points | *High-intent threshold:** 60+ points\n\nTo Customize:\nAdjust company size ranges based on your target market\nChange seniority requirements (C-level, VP, Manager, etc.)\nModify revenue thresholds\nUpdate the 60-point threshold for high-intent routing\n\n3. Set Up Webhook Endpoint\nGet Webhook URL:\nActivate the workflow\nCopy webhook URL from \"Lead Form Webhook\" node\nURL format: https://your-n8n-instance.com/webhook/demo-request\n\nConfigure Form Provider:\nPoint your website form POST request to the webhook URL\nSend JSON body with fields: email, name, company, phone, utm_source, utm_campaign, page_url, message\nOr map your existing form fields to these names in \"Normalize Lead Data\" node\n\nExample Form Integration:\n// HTML Form\nfetch('https://your-n8n.com/webhook/demo-request', {\n  method: 'POST',\n  headers: {'Content-Type': 'application/json'},\n  body: JSON.stringify({\n    email: 'lead@company.com',\n    name: 'John Doe',\n    company: 'Acme Inc',\n    phone: '+1234567890',\n    utm_source: 'google',\n    page_url: window.location.href\n  })\n})\n\n4. Test the Workflow\nInitial Test:\nActivate the workflow\nSubmit test lead via webhook (use Postman or curl)\nVerify Clearbit enrichment returns data\nCheck HubSpot for created contact and deal\nConfirm Slack notification appears in correct channel\nVerify Google Sheet receives log entry\n\nResponse Test:\nWait 10 minutes after Slack notification\nCheck if \"Check Slack Replies\" detects no response\nVerify fallback email sends via SendGrid\nConfirm lead receives booking email with Calendly link\n\nCalendly Test:\nVerify \"Get Calendly Event Types\" finds your Demo event\nCheck \"Get Available Demo Slots\" returns actual time slots\nConfirm booking URLs work and pre-fill time selection\n\n5. Monitor and Optimize\nKey Metrics to Track:\nTime from form submission to Slack notification (target: &lt;30 seconds)\nSales response rate within 10 minutes\nFallback email send rate (lower is better)\nHigh-intent lead conversion rate (booked → closed)\nAverage fit score of closed deals\n\nOptimization Tips:\nAdjust fit score weights based on actual conversion data\nTune the 60-point threshold for high-intent routing\nCustomize Slack message format for your team's workflow\nModify wait time (10 minutes) based on team availability\nAdd custom fields to Google Sheet for additional tracking\n\nRequirements\n\nn8n Instance:\nn8n Cloud or self-hosted (v1.0+)\nCode node execution enabled\nWebhook functionality active\n\nExternal Services:\nClearbit** - Enrichment API (paid service, free trial available)\nHubSpot** - CRM with API access (free tier available)\nCalendly** - Scheduling platform with API access (paid plans)\nSlack** - Workspace with bot integration capability\nSendGrid** - Email API (free tier: 100 emails/day)\nGoogle Sheets** - Google account with Sheets API enabled\n\nTechnical Requirements:\nPublic webhook endpoint (HTTPS)\nEnvironment variable support for sensitive data\nOAuth2 authentication capability\nMinimum 256MB RAM for code node execution\n\nData Privacy:\nEnsure GDPR/CCPA compliance for lead data storage\nReview data retention policies for all connected services\nConfigure appropriate data handling in Google Sheets\nAdd privacy policy link to email templates\n\nTips and best practices\n\nFit Scoring:\nStart with default scoring, then optimize based on actual conversion data\nReview monthly: which scores convert best? Adjust weights accordingly\nConsider adding industry filters for vertical-specific targeting\nTest different thresholds (50, 60, 70) to find optimal balance\n\nLead Response:\nKeep 10-minute wait time during business hours\nConsider longer wait for after-hours leads (use schedule trigger)\nCustomize Slack urgency based on fit score (🔥 for 80+, ⚡ for 60-79)\nAdd @mentions in Slack for specific team members based on lead attributes\n\nCalendar Management:\nUse dedicated \"Demo\" event type in Calendly for consistent detection\nEnsure event name includes \"demo\" (case-insensitive) for workflow to find it\nSet appropriate buffer times between meetings in Calendly settings\nReview availability regularly to maintain high slot count\n\nError Handling:\nAll critical nodes have onError: continueRegularOutput to prevent workflow stops\nMonitor execution logs daily for failed enrichments or CRM errors\nSet up n8n error workflow to alert on consistent failures\nKeep fallback booking URL updated in case Calendly API fails\n\nPerformance:\nWebhook responds immediately (within 2 seconds) even while processing continues\nClearbit enrichment can take 3-5 seconds—this is expected\nConsider batching Google Sheets updates if processing &gt;100 leads/day\nMonitor n8n resource usage; Code nodes can be memory-intensive\n\nPrivacy and Compliance:\nAdd unsubscribe link to fallback emails\nInclude data handling disclosure in form\nSet Google Sheet permissions appropriately (team only)\nReview Clearbit's data sources for compliance requirements\nConfigure data retention in HubSpot to match your policy\n\nCustomization Ideas:\nAdd SMS notification for ultra-high fit scores (90+)\nIntegrate with territory routing (route to specific sales rep by region)\nAdd lead source scoring (paid &gt; organic &gt; referral)\nCreate separate tracks for different product lines\nBuild competitor mention detection in form messages\nAdd qualification questions that influence fit score",
+  "_templateCreatedAt": "2025-11-24T19:20:25.091Z",
+  "_templateTotalViews": 1,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:46:06.041Z",
+  "id": "xIkWbq0d9okxJcNL",
+  "meta": {
+    "instanceId": "50631c03cbd88440965b74e5a58aada5437cbc43e90372b516e36154908ad374",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Instant Demo Booker for High Intent Leads",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "2c0c576e-c4b9-417b-810a-e39b92f24604",
+      "name": "Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2736,
+        -192
+      ],
+      "parameters": {
+        "width": 640,
+        "height": 888,
+        "content": "## Instant Demo Booker for High-Intent Leads\n\n### How it works  \n- **Lead Capture**: Collects form submissions via webhook (e.g., email, name, company).  \n- **Data Enrichment**: Uses Clearbit to enrich lead data (company size, revenue, industry, etc.).  \n- **Fit Scoring**: Calculates a fit score based on company size, revenue, and job title (0–100).  \n- **Lead Routing**: \n   - **High-Intent Leads (score ≥ 60)**: Routed to a fast track for immediate action.  \n   - **Standard Leads (score < 60)**: Routed for standard follow-up.  \n- **Demo Scheduling**: Fetches available demo slots from Calendly and sends them to sales team in Slack.  \n- **Sales Alerts**: Sends Slack notifications to sales with lead details and available demo slots.  \n- **Follow-Up**: If no response from sales within 10 minutes, an automatic email is sent to the lead.  \n- **Logging**: Logs all data to Google Sheets for analytics and tracking.\n\n\n### Setup Requirements  \n1. **Clearbit**: API key for lead enrichment.  \n2. **HubSpot**: App token for CRM integration (create/update contacts & deals).  \n3. **Calendly**: OAuth2 token & user URI for demo scheduling.  \n4. **Slack**: Bot token for channel notifications, configure channels for hot leads & standard leads.  \n5. **SendGrid**: API key for sending fallback emails.  \n6. **Google Sheets**: OAuth2 connection and sheet ID for lead & demo logs.\n\n\n### Customize\n• Fit score logic (Calculate Fit Score node)\n• Slack channel names\n• Email template\n• Calendar event name filter"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "20280207-e88f-4dca-8e45-70a2914912b2",
+      "name": "High-Intent Flow",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -816,
+        -192
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 3212,
+        "height": 536,
+        "content": "## High-Intent Path (Score ≥60)\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2b5e5e41-6449-4d32-a0c3-d5f12564f87f",
+      "name": "Standard Flow",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -816,
+        368
+      ],
+      "parameters": {
+        "color": 6,
+        "width": 392,
+        "height": 324,
+        "content": "## Standard Path (Score <60)\nPosts to #leads Slack channel\nNo automated follow-up\nStandard nurture workflow"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2ead105b-92f4-4f51-98be-f3ff5fe55324",
+      "name": "Lead Form Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "notes": "Receives lead submissions via POST request",
+      "onError": "continueRegularOutput",
+      "position": [
+        -1984,
+        144
+      ],
+      "webhookId": "demo-webhook-001",
+      "parameters": {
+        "path": "demo-request",
+        "options": {},
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      },
+      "notesInFlow": true,
+      "typeVersion": 2.1
+    },
+    {
+      "id": "f3b76dd2-b228-4200-bd11-e400cfb6b935",
+      "name": "Normalize Lead Data",
+      "type": "n8n-nodes-base.set",
+      "notes": "Standardizes field names from different form providers",
+      "position": [
+        -1760,
+        144
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "email",
+              "name": "email",
+              "type": "string",
+              "value": "={{ $json.body.email || $json.body.contact_email }}"
+            },
+            {
+              "id": "fullName",
+              "name": "fullName",
+              "type": "string",
+              "value": "={{ $json.body.name || $json.body.full_name }}"
+            },
+            {
+              "id": "company",
+              "name": "company",
+              "type": "string",
+              "value": "={{ $json.body.company || $json.body.company_name || '' }}"
+            },
+            {
+              "id": "phone",
+              "name": "phone",
+              "type": "string",
+              "value": "={{ $json.body.phone || '' }}"
+            },
+            {
+              "id": "utmSource",
+              "name": "utmSource",
+              "type": "string",
+              "value": "={{ $json.body.utm_source || '' }}"
+            },
+            {
+              "id": "utmCampaign",
+              "name": "utmCampaign",
+              "type": "string",
+              "value": "={{ $json.body.utm_campaign || '' }}"
+            },
+            {
+              "id": "pageUrl",
+              "name": "pageUrl",
+              "type": "string",
+              "value": "={{ $json.body.page_url || $json.body.referrer || '' }}"
+            },
+            {
+              "id": "message",
+              "name": "message",
+              "type": "string",
+              "value": "={{ $json.body.message || $json.body.notes || '' }}"
+            },
+            {
+              "id": "timestamp",
+              "name": "submittedAt",
+              "type": "string",
+              "value": "={{ $now.toISO() }}"
+            }
+          ]
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 3.4
+    },
+    {
+      "id": "afed81f7-9ddf-4195-97e2-e3ea38021415",
+      "name": "Enrich with Clearbit",
+      "type": "n8n-nodes-base.clearbit",
+      "notes": "Enriches contact with company data (size, revenue, industry, job title)",
+      "onError": "continueRegularOutput",
+      "position": [
+        -1536,
+        144
+      ],
+      "parameters": {
+        "email": "={{ $json.email }}",
+        "resource": "person",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "clearbitApi": {
+          "id": "credential-id",
+          "name": "clearbitApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "625bcc5e-5ae9-4b14-a77c-d8cbf7632bb6",
+      "name": "Calculate Fit Score",
+      "type": "n8n-nodes-base.set",
+      "notes": "Scores 0-100 based on company size (40), seniority (30), revenue (30)",
+      "position": [
+        -1312,
+        144
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "enrichedCompany",
+              "name": "enrichedCompany",
+              "type": "string",
+              "value": "={{ $json.company && $json.company.name ? $json.company.name : $('Normalize Lead Data').item.json.company }}"
+            },
+            {
+              "id": "companySize",
+              "name": "companySize",
+              "type": "number",
+              "value": "={{ $json.company && $json.company.metrics && $json.company.metrics.employees ? $json.company.metrics.employees : 0 }}"
+            },
+            {
+              "id": "industry",
+              "name": "industry",
+              "type": "string",
+              "value": "={{ $json.company && $json.company.category && $json.company.category.industry ? $json.company.category.industry : 'Unknown' }}"
+            },
+            {
+              "id": "annualRevenue",
+              "name": "annualRevenue",
+              "type": "number",
+              "value": "={{ $json.company && $json.company.metrics && $json.company.metrics.annualRevenue ? $json.company.metrics.annualRevenue : 0 }}"
+            },
+            {
+              "id": "jobTitle",
+              "name": "jobTitle",
+              "type": "string",
+              "value": "={{ $json.person && $json.person.employment && $json.person.employment.title ? $json.person.employment.title : '' }}"
+            },
+            {
+              "id": "seniority",
+              "name": "seniority",
+              "type": "string",
+              "value": "={{ $json.person && $json.person.employment && $json.person.employment.seniority ? $json.person.employment.seniority : '' }}"
+            },
+            {
+              "id": "fitScore",
+              "name": "fitScore",
+              "type": "number",
+              "value": "={{ ($json.company && $json.company.metrics && $json.company.metrics.employees >= 50 && $json.company.metrics.employees <= 5000 ? 40 : 0) + ($json.person && $json.person.employment && ($json.person.employment.seniority === 'executive' || $json.person.employment.seniority === 'director') ? 30 : 0) + ($json.company && $json.company.metrics && $json.company.metrics.annualRevenue >= 1000000 ? 30 : 0) }}"
+            }
+          ]
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 3.4
+    },
+    {
+      "id": "03a8939e-1e58-4798-9273-e7848264b8d1",
+      "name": "High Intent Lead?",
+      "type": "n8n-nodes-base.if",
+      "notes": "Routes leads with score ≥60 to fast track, others to standard",
+      "position": [
+        -1088,
+        144
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "fit-check",
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              },
+              "leftValue": "={{ $json.fitScore }}",
+              "rightValue": 60
+            }
+          ]
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 2.2
+    },
+    {
+      "id": "bef98f70-efb1-4a15-b732-655f9c952b08",
+      "name": "Create HubSpot Contact",
+      "type": "n8n-nodes-base.hubspot",
+      "notes": "Creates or updates contact in HubSpot CRM",
+      "onError": "continueRegularOutput",
+      "maxTries": 3,
+      "position": [
+        -736,
+        32
+      ],
+      "parameters": {
+        "email": "={{ $('Normalize Lead Data').item.json.email }}",
+        "options": {},
+        "authentication": "appToken",
+        "additionalFields": {
+          "jobTitle": "={{ $json.jobTitle }}",
+          "lastName": "={{ $('Normalize Lead Data').item.json.fullName.split(' ').slice(1).join(' ') }}",
+          "firstName": "={{ $('Normalize Lead Data').item.json.fullName.split(' ')[0] }}",
+          "companyName": "={{ $json.enrichedCompany }}",
+          "phoneNumber": "={{ $('Normalize Lead Data').item.json.phone }}"
+        }
+      },
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "credential-id",
+          "name": "hubspotAppToken Credential"
+        }
+      },
+      "retryOnFail": true,
+      "typeVersion": 2.2,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "be4256a3-6f78-45b2-a3f7-3ef8bec480a8",
+      "name": "Create HubSpot Deal",
+      "type": "n8n-nodes-base.hubspot",
+      "notes": "Creates deal in 'Appointment Scheduled' stage",
+      "onError": "continueRegularOutput",
+      "maxTries": 3,
+      "position": [
+        -496,
+        32
+      ],
+      "parameters": {
+        "stage": "appointmentscheduled",
+        "resource": "deal",
+        "authentication": "appToken",
+        "additionalFields": {
+          "amount": "0",
+          "dealName": "=Demo Request - {{ $json.enrichedCompany }}",
+          "pipeline": "=default",
+          "closeDate": "={{ $now.plus({ days: 30 }).toISO() }}"
+        }
+      },
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "credential-id",
+          "name": "hubspotAppToken Credential"
+        }
+      },
+      "retryOnFail": true,
+      "typeVersion": 2.2,
+      "waitBetweenTries": 2000
+    },
+    {
+      "id": "0b4ee4ba-f453-4e9e-9030-712bf2e2dbaa",
+      "name": "Get Calendly Event Types",
+      "type": "n8n-nodes-base.httpRequest",
+      "notes": "Fetches your Calendly event types to find Demo events",
+      "onError": "continueRegularOutput",
+      "position": [
+        -272,
+        32
+      ],
+      "parameters": {
+        "url": "https://api.calendly.com/event_types",
+        "options": {},
+        "sendQuery": true,
+        "authentication": "predefinedCredentialType",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user",
+              "value": "Your user URI"
+            }
+          ]
+        },
+        "nodeCredentialType": "calendlyOAuth2Api"
+      },
+      "credentials": {
+        "calendlyOAuth2Api": {
+          "id": "credential-id",
+          "name": "calendlyOAuth2Api Credential"
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 4.3
+    },
+    {
+      "id": "4e3a9a46-8170-4188-8286-5c6d005c2d2f",
+      "name": "Prepare Availability Params",
+      "type": "n8n-nodes-base.code",
+      "notes": "Finds Demo event and prepares 7-day availability window",
+      "onError": "continueRegularOutput",
+      "position": [
+        -48,
+        32
+      ],
+      "parameters": {
+        "jsCode": "const eventTypes = $input.first().json.collection || [];\nconst demoEventType = eventTypes.find(e => e.name.toLowerCase().includes('demo'));\n\nif (!demoEventType) {\n  return [{\n    json: {\n      error: 'No demo event type found',\n      fallbackUrl: 'https://calendly.com/your-team/demo'\n    }\n  }];\n}\n\nconst startTime = new Date();\nconst endTime = new Date();\nendTime.setDate(endTime.getDate() + 7);\n\nreturn [{\n  json: {\n    eventTypeUri: demoEventType.uri,\n    startTime: startTime.toISOString(),\n    endTime: endTime.toISOString(),\n    schedulingUrl: demoEventType.scheduling_url\n  }\n}];"
+      },
+      "notesInFlow": true,
+      "typeVersion": 2
+    },
+    {
+      "id": "a9ccbc19-252e-4059-a305-b852bb67e2d3",
+      "name": "Get Available Demo Slots",
+      "type": "n8n-nodes-base.httpRequest",
+      "notes": "Fetches real available time slots from Calendly API",
+      "onError": "continueRegularOutput",
+      "maxTries": 2,
+      "position": [
+        176,
+        32
+      ],
+      "parameters": {
+        "url": "https://api.calendly.com/event_type_available_times",
+        "options": {},
+        "sendQuery": true,
+        "authentication": "predefinedCredentialType",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "event_type",
+              "value": "={{ $json.eventTypeUri }}"
+            },
+            {
+              "name": "start_time",
+              "value": "={{ $json.startTime }}"
+            },
+            {
+              "name": "end_time",
+              "value": "={{ $json.endTime }}"
+            }
+          ]
+        },
+        "nodeCredentialType": "calendlyOAuth2Api"
+      },
+      "credentials": {
+        "calendlyOAuth2Api": {
+          "id": "credential-id",
+          "name": "calendlyOAuth2Api Credential"
+        }
+      },
+      "notesInFlow": true,
+      "retryOnFail": true,
+      "typeVersion": 4.3,
+      "waitBetweenTries": 1000
+    },
+    {
+      "id": "110b29c4-7c1f-42e9-b6d4-6682e0417361",
+      "name": "Format Demo Slots",
+      "type": "n8n-nodes-base.code",
+      "notes": "Formats next 2 available slots with booking URLs",
+      "onError": "continueRegularOutput",
+      "position": [
+        400,
+        32
+      ],
+      "parameters": {
+        "jsCode": "const availableTimes = $input.first().json.collection || [];\nconst fallbackUrl = $('Prepare Availability Params').first().json.schedulingUrl || 'https://calendly.com/your-team/demo';\n\nif (availableTimes.length === 0) {\n  return [{\n    json: {\n      bookingUrl: fallbackUrl,\n      nextSlots: ['No slots in next 7 days', 'Check calendar'],\n      slotCount: 0\n    }\n  }];\n}\n\nconst formattedSlots = availableTimes.slice(0, 2).map(slot => {\n  const date = new Date(slot.start_time);\n  return date.toLocaleString('en-US', {\n    weekday: 'short',\n    month: 'short',\n    day: 'numeric',\n    hour: 'numeric',\n    minute: '2-digit',\n    timeZoneName: 'short'\n  });\n});\n\nconst firstSlotUrl = availableTimes[0].scheduling_url || fallbackUrl;\n\nreturn [{\n  json: {\n    bookingUrl: firstSlotUrl,\n    nextSlots: formattedSlots,\n    slotCount: availableTimes.length,\n    allSlots: availableTimes.slice(0, 5).map(s => ({\n      time: s.start_time,\n      url: s.scheduling_url\n    }))\n  }\n}];"
+      },
+      "notesInFlow": true,
+      "typeVersion": 2
+    },
+    {
+      "id": "4e1451f4-6646-4c37-85bc-892cea0c15e3",
+      "name": "Alert Sales (High Intent)",
+      "type": "n8n-nodes-base.slack",
+      "notes": "Posts to #hot-leads with full lead details and booking links",
+      "onError": "continueRegularOutput",
+      "position": [
+        704,
+        32
+      ],
+      "webhookId": "6b9e8ef0-29ce-4295-b754-3f77f5ae6795",
+      "parameters": {
+        "text": "=🔥 HIGH INTENT LEAD\n\n👤 {{ $('Normalize Lead Data').item.json.fullName }}\n📧 {{ $('Normalize Lead Data').item.json.email }}\n🏢 {{ $('Calculate Fit Score').item.json.enrichedCompany }} ({{ $('Calculate Fit Score').item.json.companySize }} employees)\n💼 {{ $('Calculate Fit Score').item.json.jobTitle }}\n📊 Fit Score: {{ $('Calculate Fit Score').item.json.fitScore }}/100\n\n🎯 Source: {{ $('Normalize Lead Data').item.json.utmSource || 'Direct' }}\n🌐 Page: {{ $('Normalize Lead Data').item.json.pageUrl }}\n💬 Message: {{ $('Normalize Lead Data').item.json.message || 'None' }}\n\n📅 Available Slots ({{ $('Format Demo Slots').item.json.slotCount }} total):\n• {{ $('Format Demo Slots').item.json.nextSlots[0] }}\n• {{ $('Format Demo Slots').item.json.nextSlots[1] }}\n\n🔗 Book: {{ $('Format Demo Slots').item.json.bookingUrl }}\n\n⚡ Respond in 10min or auto-email sends!",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "hot-leads"
+        },
+        "otherOptions": {
+          "mrkdwn": true
+        }
+      },
+      "credentials": {
+        "slackApi": {
+          "id": "credential-id",
+          "name": "slackApi Credential"
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 2.3
+    },
+    {
+      "id": "50c42a60-8b79-409f-9876-b97a2278a0d0",
+      "name": "Alert Sales (Standard)",
+      "type": "n8n-nodes-base.slack",
+      "notes": "Posts to #leads channel for standard priority",
+      "onError": "continueRegularOutput",
+      "position": [
+        -672,
+        512
+      ],
+      "webhookId": "f7f985ab-c5d2-490a-a549-38ebd0eaaafc",
+      "parameters": {
+        "text": "=📋 New Lead\n\n👤 {{ $('Normalize Lead Data').item.json.fullName }}\n📧 {{ $('Normalize Lead Data').item.json.email }}\n🏢 {{ $('Calculate Fit Score').item.json.enrichedCompany }}\n📊 Fit: {{ $('Calculate Fit Score').item.json.fitScore }}/100\n\n🔗 Book: {{ $('Format Demo Slots').item.json.bookingUrl }}",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "leads"
+        },
+        "otherOptions": {
+          "mrkdwn": true
+        }
+      },
+      "credentials": {
+        "slackApi": {
+          "id": "credential-id",
+          "name": "slackApi Credential"
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 2.3
+    },
+    {
+      "id": "66a0f0e0-afc8-4c1f-a02a-65ae586a2f82",
+      "name": "Wait 10 Minutes",
+      "type": "n8n-nodes-base.wait",
+      "notes": "Waits for sales rep to respond in Slack thread",
+      "position": [
+        1504,
+        32
+      ],
+      "webhookId": "wait-001",
+      "parameters": {
+        "unit": "minutes",
+        "amount": 10
+      },
+      "notesInFlow": true,
+      "typeVersion": 1.1
+    },
+    {
+      "id": "91a5228c-5072-4159-913f-b549c6ed4936",
+      "name": "Check Slack Replies",
+      "type": "n8n-nodes-base.slack",
+      "notes": "Checks if sales team replied in thread",
+      "onError": "continueRegularOutput",
+      "position": [
+        1696,
+        32
+      ],
+      "webhookId": "f1916193-ab83-4196-8039-cef48a44c1a1",
+      "parameters": {
+        "ts": "={{ $('Alert Sales (High Intent)').first().json.ts }}",
+        "filters": {},
+        "resource": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $('Alert Sales (High Intent)').first().json.channel }}"
+        },
+        "operation": "replies"
+      },
+      "credentials": {
+        "slackApi": {
+          "id": "credential-id",
+          "name": "slackApi Credential"
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 2.3
+    },
+    {
+      "id": "efef0ae7-7c05-4e42-9e57-c56229bc08ab",
+      "name": "No Response?",
+      "type": "n8n-nodes-base.if",
+      "notes": "Sends email if no Slack reply (message count = 1)",
+      "position": [
+        1904,
+        32
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "reply-check",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.messages && $json.messages.length ? $json.messages.length : 1 }}",
+              "rightValue": 1
+            }
+          ]
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 2.2
+    },
+    {
+      "id": "423bf560-215a-4f67-8b37-1d63014ae027",
+      "name": "Send Fallback Email",
+      "type": "n8n-nodes-base.sendGrid",
+      "notes": "Auto-sends booking email if sales doesn't respond",
+      "maxTries": 2,
+      "position": [
+        2144,
+        32
+      ],
+      "parameters": {
+        "subject": "=Book Your Demo - {{ $('Calculate Fit Score').first().json.enrichedCompany }}",
+        "toEmail": "={{ $('Normalize Lead Data').first().json.email }}",
+        "fromName": "Demo Team",
+        "resource": "mail",
+        "fromEmail": "user@example.com",
+        "contentType": "text/html",
+        "contentValue": "=<h2>Thanks for your interest!</h2><p>Hi {{ $('Normalize Lead Data').first().json.fullName }},</p><p>We received your demo request for {{ $('Calculate Fit Score').first().json.enrichedCompany }}.</p><p><strong>Next available:</strong></p><ul><li>{{ $('Format Demo Slots').first().json.nextSlots[0] }}</li><li>{{ $('Format Demo Slots').first().json.nextSlots[1] }}</li></ul><p><a href='{{ $('Format Demo Slots').first().json.bookingUrl }}' style='background:#0066cc;color:white;padding:12px 24px;text-decoration:none;border-radius:4px;display:inline-block;'>Book Demo Now</a></p><p>Looking forward to connecting!</p>",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "sendGridApi": {
+          "id": "credential-id",
+          "name": "sendGridApi Credential"
+        }
+      },
+      "retryOnFail": true,
+      "typeVersion": 1
+    },
+    {
+      "id": "4fc94d27-1dff-4828-9bd6-6f8544c2d59c",
+      "name": "Log to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "notes": "Logs all lead data for analytics and reporting",
+      "onError": "continueRegularOutput",
+      "position": [
+        1136,
+        -64
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "Name": "={{ $('Normalize Lead Data').item.json.fullName }}",
+            "Email": "={{ $('Normalize Lead Data').item.json.email }}",
+            "Company": "={{ $('Calculate Fit Score').item.json.enrichedCompany }}",
+            "Page URL": "={{ $('Normalize Lead Data').item.json.pageUrl }}",
+            "Priority": "={{ $('Calculate Fit Score').item.json.fitScore >= 60 ? 'High' : 'Standard' }}",
+            "Fit Score": "={{ $('Calculate Fit Score').item.json.fitScore }}",
+            "Timestamp": "={{ $('Normalize Lead Data').item.json.submittedAt }}",
+            "UTM Source": "={{ $('Normalize Lead Data').item.json.utmSource }}",
+            "Booking URL": "={{ $('Format Demo Slots').item.json.bookingUrl }}",
+            "HubSpot Deal": "={{ $('Create HubSpot Deal').item.json.id || 'Failed' }}",
+            "Fallback Email": "={{ $('Check Slack Replies').item.json.messages && $('Check Slack Replies').item.json.messages.length === 1 ? 'Sent' : 'Not Needed' }}",
+            "Sales Response": "={{ $('Check Slack Replies').item.json.messages && $('Check Slack Replies').item.json.messages.length > 1 ? 'Yes' : 'No' }}",
+            "HubSpot Contact": "={{ $('Create HubSpot Contact').item.json.id || 'Failed' }}",
+            "Slots Available": "={{ $('Format Demo Slots').item.json.slotCount }}"
+          },
+          "mappingMode": "defineBelow"
+        },
+        "options": {},
+        "operation": "appendOrUpdate",
+        "sheetName": {
+          "__rl": true,
+          "mode": "name",
+          "value": "Lead Log"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_GOOGLE_SHEET_ID"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 4.7
+    },
+    {
+      "id": "b2d9ad7d-6a02-4d5a-9088-33a9b9453aeb",
+      "name": "Webhook Response",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "notes": "Returns success message to form with booking details",
+      "position": [
+        1136,
+        128
+      ],
+      "parameters": {
+        "options": {},
+        "respondWith": "json",
+        "responseBody": "={\"success\":true,\"message\":\"Demo request received!\",\"fitScore\":{{$('Calculate Fit Score').item.json.fitScore}},\"priority\":\"{{$('Calculate Fit Score').item.json.fitScore>=60?'high':'standard'}}\",\"availableSlots\":{{$('Format Demo Slots').item.json.slotCount}},\"bookingUrl\":\"{{$('Format Demo Slots').item.json.bookingUrl}}\"}"
+      },
+      "notesInFlow": true,
+      "typeVersion": 1.4
+    },
+    {
+      "id": "e94eb671-7d06-48f2-a282-71a0e200ce05",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        -128
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 448,
+        "height": 432,
+        "content": "## Create HubSpot contact + deal\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8c3fc727-c681-4051-826e-fd71fa75c810",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -336,
+        -128
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 880,
+        "height": 432,
+        "content": "## Get real Calendly slots\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8f9aa05d-df2e-4800-8dcc-0459d82024c0",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        560,
+        -128
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 400,
+        "height": 432,
+        "content": "## Post to #hot-leads Slack\n\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "692eceab-17c8-48f2-bea6-0a7446bd1fb4",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        976,
+        -128
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 416,
+        "height": 432,
+        "content": "## Log to Google Sheet and Send Response\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a13d737c-0348-40d3-9a80-12f749e7fa00",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1408,
+        -128
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 960,
+        "height": 432,
+        "content": "## Wait 10 minutes, Check for response. Send email if no reply"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8bac8fd3-abd1-42c5-bd55-191085c497f5",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1824,
+        -16
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 944,
+        "height": 432,
+        "content": "## Enrich the Lead data and calculate the Fit Score"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "8d3ac6ae-89d0-4f0e-b8bb-e399de7da43e",
+  "connections": {
+    "No Response?": {
+      "main": [
+        [
+          {
+            "node": "Send Fallback Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 10 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Check Slack Replies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Demo Slots": {
+      "main": [
+        [
+          {
+            "node": "Alert Sales (High Intent)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "High Intent Lead?": {
+      "main": [
+        [
+          {
+            "node": "Create HubSpot Contact",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Alert Sales (Standard)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead Form Webhook": {
+      "main": [
+        [
+          {
+            "node": "Normalize Lead Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculate Fit Score": {
+      "main": [
+        [
+          {
+            "node": "High Intent Lead?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Slack Replies": {
+      "main": [
+        [
+          {
+            "node": "No Response?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create HubSpot Deal": {
+      "main": [
+        [
+          {
+            "node": "Get Calendly Event Types",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize Lead Data": {
+      "main": [
+        [
+          {
+            "node": "Enrich with Clearbit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich with Clearbit": {
+      "main": [
+        [
+          {
+            "node": "Calculate Fit Score",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create HubSpot Contact": {
+      "main": [
+        [
+          {
+            "node": "Create HubSpot Deal",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Available Demo Slots": {
+      "main": [
+        [
+          {
+            "node": "Format Demo Slots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Calendly Event Types": {
+      "main": [
+        [
+          {
+            "node": "Prepare Availability Params",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Alert Sales (High Intent)": {
+      "main": [
+        [
+          {
+            "node": "Wait 10 Minutes",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log to Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Availability Params": {
+      "main": [
+        [
+          {
+            "node": "Get Available Demo Slots",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,247 @@
+{
+  "_templateId": 5660,
+  "_templateName": "Generate Personalized Language Learning News Digests with LLaMA-3.1 & DeepSeek AI",
+  "_templateDescription": "\nAutomatically generate and email level-appropriate language learning content based on trending news.  \nThis workflow reads learner preferences from Google Sheets (language, level, and topic of interest), uses an AI web search model to fetch relevant news, and formats the result into a structured HTML digest featuring grammar explanations and vocabulary highlights.  \nEmails are sent automatically to each learner in a clean, mobile-friendly format.\n\n⚙️ What it does\n\n⏰ Daily Trigger at 6 AM  \n📄 Pulls learner data from Google Sheets (Language, Level, Topic)  \n🔍 Fetches news using perplexity/llama-3.1-sonar-small-128k-online  \n✨ Formats it into HTML using deepseek-chat, tailored to the learner's level  \n🧠 Adds grammar breakdowns and vocabulary highlights  \n📬 Sends personalized HTML email to each learner\n\n🧠 AI Models Used\n\nperplexity/llama-3.1-sonar-small-128k-online – web-connected LLM for up-to-date news  \ndeepseek-chat – formatting and simplifying articles for language learners\n\n📚 Examples\n\n🔗 Technologies used\n\nGoogle Sheets** – Learner database  \nOpenRouter API** – AI access and online reasoning  \nLangChain AI Agent + Output Parser** – Clean HTML structuring  \nGmail Node** – Email dispatch per user\n\n💡 Use Cases\n\n🧑‍🏫 Classroom-ready language micro-lessons  \n🌍 Personalized news digests for multilingual learners  \n✉️ Daily practice delivery via email  \n📚 Reading + grammar + vocab in one workflow\n",
+  "_templateCreatedAt": "2025-07-03T20:51:28.594Z",
+  "_templateTotalViews": 48,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:49:47.419Z",
+  "id": "kzecgELbo7WU1uOf",
+  "meta": {
+    "instanceId": "1fc85153dfc4ea22a8172f0d7347fa9f591f71e2064dc331f7bdc1d7ee422e7a"
+  },
+  "name": "Multilingual Daily news digets",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "28950fcc-9aa5-4047-a927-de3c431da865",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "fb2857cc-ade3-4f7f-9fbc-a710dd92510e",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        200,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "46bd85ea-ef08-454d-9872-1e4537417127",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        640,
+        20
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "b2961903-dc63-45e1-9488-52b55386a6ca",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        880,
+        20
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "23b3bd7b-f646-4af0-9de4-2fdaac7811d4",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1100,
+        20
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "84adeebd-8cfa-457c-ac45-45fc74e8b6c7",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1300,
+        20
+      ],
+      "parameters": {},
+      "typeVersion": 1.9
+    },
+    {
+      "id": "7e63b887-3419-4e78-bfba-17fb72e1c3c0",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        1320,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "d36cdc5d-bba0-46cb-934a-4dec4a85046e",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1660,
+        20
+      ],
+      "webhookId": "041f863d-35df-499d-8624-dcbff397912a",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "0513d53a-3120-4de2-8007-083de395ea64",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        1460,
+        260
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "9643541f-60b1-429b-86d9-546225895ffa",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        420,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "01fc2a0b-1697-4dae-be09-47ff30691776",
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

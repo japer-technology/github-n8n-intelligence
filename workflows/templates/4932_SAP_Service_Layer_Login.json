@@ -1,0 +1,190 @@
+{
+  "_templateId": 4932,
+  "_templateName": "SAP Service Layer Login",
+  "_templateDescription": "This minimal utility workflow connects to the SAP Business One Service Layer API to verify login credentials and return the session ID. It's ideal for testing access or using as a sub-workflow to retrieve the B1SESSION token for other operations.\n\n++⚙️ HOW IT WORKS:++\n🔹 1. Trigger Manually\n\nThe workflow is initiated using a Manual Trigger.\n\nIdeal for testing or debugging credentials before automation.\n\n🔹 2. Set SAP Login Data\n\nThe Set Login Data node defines four key input variables:\n\nsap_url: Base URL of the SAP B1 Service Layer (e.g. https://sap-server:50000/b1s/v1/)\n\nsap_username: SAP B1 username\n\nsap_password: SAP B1 password\n\nsap_companydb: SAP B1 Company DB name\n\n🔹 3. Connect to SAP\n\nA HTTP Request node performs a POST to the Login endpoint.\n\nThe body is structured as:\n\n{\n  \"UserName\": \"your_sap_username\",\n  \"Password\": \"your_sap_password\",\n  \"CompanyDB\": \"your_sap_companydb\"\n}\n\nIf successful, the response contains a SessionId which is essential for authenticated requests.\n\n🔹 4. Return Session or Error\n\nThe response is branched:\n\nOn success → the sessionID is extracted and returned.\n\nOn failure → the error message and status code are stored separately.\n\n++🛠 SETUP STEPS:++\n1️⃣ Create SAP Service Layer Credentials\nAlthough this workflow uses manual inputs (via Set), it's best to define your connection details as environment variables for reuse:\n\nSAP_URL=https://your-sap-host:50000/b1s/v1/\nSAP_USER=your_sapuser\nSAP_PASSWORD=your_password\nSAP_COMPANY_DB=your_companyDB\n\nAlternatively, update the Set Login Data node directly with your values.\n\n2️⃣ Run the Workflow\nClick \"Execute Workflow\" in n8n.\n\nWatch the response from SAP:\n\nIf successful: sessionID will be available in the Success node.\n\nIf failed: statusCode and errorMessage will be available in the Failed node.\n\n++✅ USE CASES:++\n🔄 Reusable Login Module\nExport this as a reusable sub-workflow for other SAP-integrated flows.\n\n🔐 Credential Testing Tool\nValidate new environments, test credentials before deployment.",
+  "_templateCreatedAt": "2025-06-14T14:04:57.600Z",
+  "_templateTotalViews": 244,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:49:57.386Z",
+  "id": "veR3QmgYzOAMgekz",
+  "meta": {
+    "instanceId": "06b3271522ae4bedcb94de9dac3219d19e1a4e5fcd0a448a4abc68198b391077"
+  },
+  "name": "Conexion SAP",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "34406311-d715-481c-a61c-b8c382536ddb",
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "72224168-7e1c-437f-816f-9181405d28bb",
+      "name": "Set Login Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0d7bca14-f15c-4722-b10a-5c10fb763247",
+              "name": "sap_url",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "8edfe1d1-bbbe-487b-bc5d-591ed9faa97d",
+              "name": "sap_username",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "6ff2fb60-0c71-4fab-ae31-26bfcba03058",
+              "name": "sap_password",
+              "type": "string",
+              "value": ""
+            },
+            {
+              "id": "838523c8-1ebb-4bd1-a13b-3f0921f97576",
+              "name": "sap_companydb",
+              "type": "string",
+              "value": ""
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "ef7da537-aaa8-4589-bcc9-80672d0b4096",
+      "name": "SAP Connection",
+      "type": "n8n-nodes-base.httpRequest",
+      "onError": "continueErrorOutput",
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "url": "={{ $json.sap_url }}Login",
+        "method": "POST",
+        "options": {
+          "allowUnauthorizedCerts": true
+        },
+        "jsonBody": "={\n       \"UserName\": \"{{ $json.sap_username }}\",\n       \"Password\": \"{{ $json.sap_password }}\",\n       \"CompanyDB\": \"{{ $json.sap_companydb }}\"\n}",
+        "sendBody": true,
+        "specifyBody": "json"
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "960fff2d-1135-4cac-a94a-e174af7b8c3b",
+      "name": "Failed",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        660,
+        100
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7ed3ddd5-5334-4a53-8f2d-1c883129b6c3",
+              "name": "statusCode",
+              "type": "string",
+              "value": "={{ $json.error.status }}"
+            },
+            {
+              "id": "b5600ed6-ef4b-4b4a-9829-2afc290bd0b3",
+              "name": "errorMessage",
+              "type": "string",
+              "value": "={{ $json.error.message }}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "4744fa72-6249-4565-ba17-c225d303c4eb",
+      "name": "Success",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        660,
+        -100
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a0be1383-9c5e-4246-b506-7a453c1859f6",
+              "name": "sessionID",
+              "type": "string",
+              "value": "={{ $json.SessionId }}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "99dc9b88-369d-4ad1-b42b-f0a7317424ab",
+  "connections": {
+    "SAP Connection": {
+      "main": [
+        [
+          {
+            "node": "Success",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Login Data": {
+      "main": [
+        [
+          {
+            "node": "SAP Connection",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set Login Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

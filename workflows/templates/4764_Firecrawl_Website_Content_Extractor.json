@@ -1,0 +1,183 @@
+{
+  "_templateId": 4764,
+  "_templateName": "🌐 Firecrawl Website Content Extractor",
+  "_templateDescription": "🌐 Firecrawl Website Content Extractor (n8n Workflow)\n\nThis n8n automation workflow uses Firecrawl API to extract structured data (e.g., quotes and authors) from web pages — such as Quotes to Scrape — and handles retries in case of delayed extraction.\n\n🔁 Workflow Overview\n\n🎯 Purpose:\nCrawl and extract structured web data using Firecrawl\nWait for asynchronous scraping to complete\nRetrieve and validate results\nSupport retries if content is not ready\n\n🔧 Step-by-Step Node Breakdown\n\n1. 🧪 Manual Trigger\nNode: When clicking ‘Test workflow’\nUsed to manually test or execute the workflow during setup or debugging.\n\n2. 📤 Firecrawl Extract API Request\nNode: Extract\nSends a POST request to https://api.firecrawl.dev/v1/extract\nPayload includes:\n  urls: List of pages to crawl (https://quotes.toscrape.com/*)\n  prompt: \"Extract all quotes and their corresponding authors from the website.\"\n  schema: JSON schema defining expected structure (quotes[], each with text and author)\n\n&gt; 📌 Uses an HTTP Header Auth credential for Firecrawl API\n\n3. ⏱️ Wait for 30 Seconds\nNode: 30 Secs\nGives Firecrawl time to finish processing in the background\nPrevents hitting the API before results are ready\n\n4. 📥 Get Results\nNode: Get Results\nPerforms a GET request to the status URL using {{ $('Extract').item.json.id }} to retrieve extraction results.\n\n5. ✅❌ Condition Check\nNode: If\nChecks if the data array is empty (i.e., no results yet)\nIf data is empty:\n  Waits 10 more seconds and retries\nIf data is available:\n  Passes data to the next step (e.g., processing or storage)\n\n6. 🔁 Retry Delay\nNode: 10 Seconds\nWaits briefly before sending another GET request to Firecrawl\n\n7. 🛠️ Edit Fields (Optional Output Formatting)\nNode: Edit Fields\nPlaceholder to structure or format the extracted results (quotes and authors)\n\n🧾 Sticky Note: Firecrawl Setup Guide\n\nIncluded as an embedded reference:\n🔗 10% Firecrawl Discount\n🧰 Instructions to:\n  Add Firecrawl API credentials in n8n\n  Use Firecrawl Community Node for self-hosted instances\n  Set up the schema and prompt for targeted data extraction\n\n✅ Key Features\n\n🔌 API-based crawling with schema-structured output\n⏱️ Smart waiting + retry mechanism\n🧠 AI prompt integration for intelligent data parsing\n⚙️ Flexible for different URLs, prompts, and schemas\n\n📦 Sample Output Schema\n\n{\n  \"quotes\": [\n    {\n      \"text\": \"The world as we have created it is a process of our thinking. It cannot be changed without changing our thinking.\",\n      \"author\": \"Albert Einstein\"\n    },\n    {\n      \"text\": \"It is our choices, Harry, that show what we truly are, far more than our abilities.\",\n      \"author\": \"J.K. Rowling\"\n    }\n  ]\n}\n",
+  "_templateCreatedAt": "2025-06-07T17:56:19.339Z",
+  "_templateTotalViews": 431,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:50:10.676Z",
+  "meta": {
+    "instanceId": "473ff4054f1a6c3ed6f17a2b4a2e55676fe5b921cceb87b2256e6c416c158559"
+  },
+  "nodes": [
+    {
+      "id": "ec18e1a4-1da9-4180-9e6d-6acbdf6655dc",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        500,
+        320
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "3de6d683-5db9-49dc-a31e-87a41f87f607",
+      "name": "Extract",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        720,
+        320
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "1892f176-3523-488d-a7e6-414ee83f540d",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "onError": "continueErrorOutput",
+      "position": [
+        1360,
+        320
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "2850a08b-5f66-4c2d-98d0-4cfd3e667592",
+      "name": "Get Results",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1160,
+        320
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "1db9ad43-11a4-401b-bfa8-de4b724d983e",
+      "name": "30 Secs",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        940,
+        320
+      ],
+      "webhookId": "e4866198-b806-4746-b57f-97333c497dbf",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "863211df-48eb-48d2-bd72-6f713893cf87",
+      "name": "10 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1620,
+        440
+      ],
+      "webhookId": "6cc8c637-bafb-4d64-9cd4-8ae2a9f5b7ca",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "550a879f-fd8f-470e-b573-d6c9e35fc1bd",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -80,
+        160
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "92dba1ed-9d4c-4eca-99b5-ed9dc7adc3be",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1620,
+        180
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "10 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "30 Secs": {
+      "main": [
+        [
+          {
+            "node": "Get Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract": {
+      "main": [
+        [
+          {
+            "node": "30 Secs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "10 Seconds": {
+      "main": [
+        [
+          {
+            "node": "Get Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Results": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

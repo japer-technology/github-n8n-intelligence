@@ -1,0 +1,164 @@
+{
+  "_templateId": 5460,
+  "_templateName": "Parse Natural Language Dates with OpenAI GPT-4o for Smart Scheduling",
+  "_templateDescription": "This n8n workflow demonstrates how to transform natural language date and time expressions into structured data with 96%+ accuracy. Parse complex expressions like \"early next July\", \"2 weeks after project launch\", or \"end of Q3\" into precise datetime objects with confidence scoring, timezone intelligence, and business rules validation for any automation workflow.\n\nGood to know\nAchieves 96%+ accuracy on complex natural language date expressions\nAt time of writing, this is the most advanced open-source date parser available\nIncludes AI learning that improves over time with user corrections\nSupports 6 languages with auto-detection (English, Spanish, French, German, Italian, Portuguese)\nSub-millisecond response times with intelligent caching\nEnterprise-grade with business intelligence and timezone handling\n\nHow it works\nNatural Language Input**: Receives date expressions via webhook, form, email, or chat\nAI-Powered Parsing**: Your world-class date parser processes the text through:\n 50+ custom rule patterns for complex expressions\n Multi-language auto-detection and smart translation\n Confidence scoring (0.0-1.0) for AI decision-making\n Ambiguity detection with helpful suggestions\nBusiness Intelligence**: Applies enterprise rules automatically:\n Holiday calendar awareness (US + International)\n Working hours validation and warnings\n Business day auto-adjustment\n Timezone normalization (IANA format)\nSmart Scheduling**: Creates calendar events with:\n Structured datetime objects (start/end times)\n Confidence metadata for workflow decisions\n Alternative interpretations for ambiguous inputs\n Rich context for follow-up actions\nIntegration Ready**: Outputs connect seamlessly to:\n Google Calendar, Outlook, Apple Calendar\n CRM systems (HubSpot, Salesforce)\n Project management tools (Notion, Asana)\n Communication platforms (Slack, Teams)\n\nHow to use\nThe webhook trigger receives natural language date requests from any source\nReplace the MCP server URL with your deployed date parser endpoint\nConfigure timezone preferences for your organization\nCustomize business rules (working hours, holidays) in the parser settings\nConnect calendar integration nodes for automatic event creation\nAdd notification workflows for scheduling confirmations\n\nUse Cases\nMeeting Scheduling**: \"Schedule our quarterly review for early Q3\"\nProject Management**: \"Set deadline 2 weeks after product launch\"\nEvent Planning**: \"Book venue for the weekend before Labor Day\"\nPersonal Assistant**: \"Remind me about dentist appointment next Tuesday morning\"\nInternational Teams**: \"Team standup tomorrow morning\" (auto-timezone conversion)\nSeasonal Planning**: \"Launch campaign in late spring 2025\"\n\nRequirements\nNatural Language Date Parser MCP server (provided code)\nWebhook endpoint or form trigger\nCalendar integration (Google Calendar, Outlook, etc.)\nOptional: Slack/Teams for notifications\nOptional: Database for learning pattern storage\n\nCustomizing this workflow\nMulti-language Support**: Enable auto-detection for global teams\nBusiness Rules**: Configure company holidays and working hours\nLearning System**: Enable AI learning from user corrections\nIntegration Depth**: Connect to your existing calendar and CRM systems\nConfidence Thresholds**: Set minimum confidence levels for auto-scheduling\nAmbiguity Handling**: Route unclear dates to human review or clarification requests\n\nSample Input/Output\n\nInput Examples:\n\"early next July\"\n\"2 weeks after Thanksgiving\"\n\"next Wednesday evening\"\n\"Q3 2025\"\n\"mañana por la mañana\" (Spanish)\n\"first thing Monday\"\n\nRich Output:\n{\n  \"parsed\": [{\n    \"start\": \"2025-07-01T00:00:00Z\",\n    \"end\": \"2025-07-10T23:59:59Z\",\n    \"timezone\": \"America/New_York\"\n  }],\n  \"confidence\": 0.95,\n  \"method\": \"custom_rules\",\n  \"business_insights\": [{\n    \"type\": \"business_warning\",\n    \"message\": \"Selected date range includes July 4th holiday\"\n  }],\n  \"predictions\": [{\n    \"type\": \"time_preference\",\n    \"suggestion\": \"You usually schedule meetings at 10 AM\"\n  }],\n  \"ambiguities\": [],\n  \"alternatives\": [{\n    \"interpretation\": \"Early July 2026\",\n    \"confidence\": 0.15\n  }],\n  \"performance\": {\n    \"cache_hit\": true,\n    \"response_time\": \"0.8ms\"\n  }\n}\n\nWhy This Workflow is Unique\n\nWorld-Class Accuracy**: 96%+ success rate on complex expressions\nAI Learning**: Improves over time with user feedback  \nGlobal Ready**: Multi-language and timezone intelligence\nBusiness Smart**: Enterprise rules and holiday awareness\nPerformance Optimized**: Sub-millisecond cached responses\nContext Aware**: Provides confidence scores and alternatives for AI decision-making\n\nTransform your scheduling workflows from rigid form inputs to natural, conversational date requests that your users will love!\n\n\n",
+  "_templateCreatedAt": "2025-06-29T23:06:55.530Z",
+  "_templateTotalViews": 58,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:49:49.479Z",
+  "id": "aC1k1pYeeq4depUi",
+  "meta": {
+    "instanceId": "04825daa9471a5540d9cbe929ad35145fdd237d05aa1593716515dbb7e6d5f84",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "AI-Powered Natural Language Date Parser with 96% Accuracy",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "65d87d2e-6091-4ec2-98d2-589dddec0748",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        1000,
+        360
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "bf8c983c-ee58-4aae-83be-76196a976f91",
+      "name": "AI Agent with Date Parser",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1000,
+        140
+      ],
+      "parameters": {
+        "text": "={{ $json.userInput }}",
+        "options": {
+          "systemMessage": "// PART 1: Developer's Agent Purpose (Customizable)\nYou are a helpful scheduling and planning assistant. Help users with date-related requests, meeting planning, and timeline coordination.\n\nWhen you use the dateParserTool, always format your response in this clean structure:\n\n🎯 **REQUEST:** [User's original request]\n📅 **PARSED DATE:** [Start date] to [End date]\n📊 **CONFIDENCE:** [X%] [confidence indicator: 🌟 for >90%, ⚡ for >70%, ⚠️ for lower]\n🌍 **TIMEZONE:** [timezone]\n⏱️ **TIMING:** [Any specific time details]\n💡 **CONTEXT:** [Brief explanation of how the date was interpreted]\n[If ambiguities exist, mention them with suggestions]\n\n// PART 2: Tool Description (Fixed/Standard)\n---\nAVAILABLE TOOLS:\n\ndateParserTool - Advanced natural language date parser that can:\n- Parse quarters (Q1, Q2, Q3, Q4) with specific year support\n- Handle fuzzy date ranges (early/mid/late month)\n- Calculate business days excluding weekends  \n- Process complex patterns (last Friday of March, 2 weeks before Christmas)\n- Interpret relative dates (next week, in 3 months, tomorrow)\n- Handle seasonal references (spring 2025, winter campaign)\n- Detect vague terms and provide guidance (soon, eventually, ASAP)\n- Support multi-year planning and fiscal periods\n- Provide confidence scoring and intelligent explanations\n\nThe tool returns precise date ranges with start/end times, confidence levels, and business context. Use it whenever users mention dates, deadlines, scheduling, or time-related planning.\n\nAlways use the dateParserTool for ANY date, time, or scheduling reference in the user's message. Do not guess or estimate dates - use the tool to get precise results."
+        },
+        "promptType": "define"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "a1c65f40-fbf7-4f76-a286-6bae182ebe7f",
+      "name": "Natural Language Date Parser",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "position": [
+        1220,
+        360
+      ],
+      "parameters": {
+        "url": "https://mcp-dateparser.jaredco.com",
+        "method": "POST",
+        "options": {},
+        "jsonBody": "={\n  \"type\": \"call-tool\",\n  \"tool_id\": \"natural_language_date_parser\",\n  \"input\": {\n    \"text\": \"{{ $fromAI('text', 'The date/time text to parse', 'string') }}\"\n  }\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "toolDescription": "dateParserTool"
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "de12c5d2-ffec-4456-8ee8-c2c2f6393977",
+      "name": "Set User Input",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        800,
+        140
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "userInput",
+              "name": "userInput",
+              "type": "string",
+              "value": "First Monday in July 2025"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "54378fc9-36a6-405d-9581-5dbf32efed5f",
+      "name": "Start",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        600,
+        140
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "cd771a77-777a-46bb-99a8-5df040e1b630",
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Set User Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set User Input": {
+      "main": [
+        [
+          {
+            "node": "AI Agent with Date Parser",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent with Date Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Natural Language Date Parser": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent with Date Parser",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

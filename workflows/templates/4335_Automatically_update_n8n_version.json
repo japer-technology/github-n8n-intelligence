@@ -1,0 +1,188 @@
+{
+  "_templateId": 4335,
+  "_templateName": "Automatically update n8n version",
+  "_templateDescription": "🔄 n8n Workflow: Check and Update n8n Version\n\nThis workflow automatically checks if the local n8n version is outdated and, if so, creates a file to signal an update is needed.\n\n🖥️ Working Environment\n\nOperating System:** Ubuntu 24.04  \nn8n Installation:** Docker container\n\n📁 Project Directory Structure\nn8n/\n├── check_update.txt\n├── check-update.sh\n├── compose.yml\n├── update_n8n.cron\n\n🧾 File Descriptions\n\ncheck_update.txt\n\nContains a single word:\n\ntrue: Update is needed  \nfalse: No update required\n\ncheck-update.sh\n\n#!/bin/bash\nPATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin\n\nif grep -q \"true\" /home/sysadmin/n8n/check_update.txt; then\nPlace your update logic here\n    echo \"Update needed - please insert update logic\"\n    echo true &gt; /home/sysadmin/n8n/check_update.txt\nfi\nPurpose:\n\nChecks the contents of check_update.txt\nIf it contains true, executes update logic (currently a placeholder)\nResets check_update.txt to true\nupdate_n8n.cron\n\nSHELL=/bin/sh\n10 5 * * * /bin/sh /home/sysadmin/n8n/check-update.sh\nPurpose:\n\nRuns the check-update.sh script daily at 5:10 AM\nUses /bin/sh as the shell environment\n\n🧩 n8n Workflow Breakdown\n\n1. Schedule Trigger 🕓\nPurpose:** Triggers the workflow every day at 5:00 AM  \nNode Type:** Schedule Trigger\n\n2. Get the latest n8n version 🌐\nPurpose:** Fetches the latest version of n8n from npm  \nEndpoint:** https://registry.npmjs.org/n8n/latest  \nNode Type:** HTTP Request\n\n3. Get Local n8n version 🖥️\nPurpose:** Retrieves the currently running n8n version  \nEndpoint:** http://192.168.100.18:5678/rest/settings  \nNode Type:** HTTP Request\n\n4. If 🔍\nPurpose:** Compares the local and latest versions  \nCondition:** If not equal → update is needed\n\n5. SSH1 🧾\nPurpose:** Writes the result to a file on the host via SSH  \nLogic:**\n\necho \"{{ $('If').params.conditions ? 'false' : 'true' }}\" &gt; check_update.txt\nEffect: Updates check_update.txt with \"true\" if an update is needed, \"false\" otherwise.\n\n🛠️ Setting up Crontab on Ubuntu\n1.  Register the cron job with:\ncrontab update_n8n.cron\n2.  Verify that your cron job is registered:\ncrontab -l\n✅ Result\n\n5:00 AM** – n8n workflow checks versions and writes result to check_update.txt  \n5:10 AM** – Cron runs check-update.sh to respond to update flag\n",
+  "_templateCreatedAt": "2025-05-23T08:39:54.420Z",
+  "_templateTotalViews": 745,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:50:21.022Z",
+  "id": "6XYqPkPDbHsRoX62",
+  "meta": {
+    "instanceId": "5c3b5db3715a57f4ed79fed05ac755845d719ba3ec8ccb7d9438a3d85e556c1f",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "update n8n version",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "47829c66-4f79-43f1-a89f-a2137c86bb30",
+      "name": "Get Local n8n version",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -180,
+        -260
+      ],
+      "parameters": {
+        "url": "http://0.0.0.0:5678/rest/settings",
+        "options": {},
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpBearerAuth"
+      },
+      "credentials": {
+        "httpBearerAuth": {
+          "id": "credential-id",
+          "name": "httpBearerAuth Credential"
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "ee7a6dea-7b56-432c-9b8f-6ebd806e1359",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -620,
+        -260
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 5
+            }
+          ]
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "5e64e00f-0403-4669-b9a1-c1fc93a28d47",
+      "name": "SSH1",
+      "type": "n8n-nodes-base.ssh",
+      "position": [
+        340,
+        -260
+      ],
+      "parameters": {
+        "cwd": "n8n/",
+        "command": "=echo \"{{ $prevNode.outputIndex ? false : true }}\" > check_update.txt"
+      },
+      "credentials": {
+        "sshPassword": {
+          "id": "credential-id",
+          "name": "sshPassword Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a40311c9-17b1-41e8-87d5-d86cce2439d7",
+      "name": "Get the latest n8n version",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -400,
+        -260
+      ],
+      "parameters": {
+        "url": "https://registry.npmjs.org/n8n/latest",
+        "options": {
+          "fullResponse": false
+        }
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "50d7a87c-4e1c-469b-b5ae-2d7347f7ca58",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        40,
+        -260
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "a2d169a3-7aa2-46f5-bdb2-f0d53a011b5c",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              },
+              "leftValue": "={{ $('Get the latest n8n version').item.json.version }}",
+              "rightValue": "={{ $json.data.versionCli }}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 2.2,
+      "alwaysOutputData": false
+    }
+  ],
+  "active": true,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0b55007a-a4cc-45ca-90a1-8cc4e17b0f1e",
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "SSH1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SSH1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get the latest n8n version",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Local n8n version": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get the latest n8n version": {
+      "main": [
+        [
+          {
+            "node": "Get Local n8n version",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

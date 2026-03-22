@@ -1,0 +1,267 @@
+{
+  "_templateId": 5049,
+  "_templateName": "Interactive Slack Approval & Data Submission System with Webhooks",
+  "_templateDescription": "Slack Bot n8n Integration Hub - Workflow Submission\n\n🚀 Showcase: Endless Possibilities with n8n Integration\n\nThis repository demonstrates a powerful Slack Bot Socket App that seamlessly integrates with n8n for automation workflows. This is just a showcase of what's possible when combining Slack's interactive capabilities with n8n's automation power - the possibilities are truly endless!\n\n📋 Project Overview\n\nRepository: slack-n8n-integration-hub\n\nStatus: ✅ Committed and Ready for Submission\n\nThis project showcases how to create seamless interactions between Slack users and n8n workflows, demonstrating:\n\nReal-time Data Submission** from Slack to n8n workflows\nInteractive Approval/Rejection** workflows triggered from Slack\nSecure Webhook Communication** with optional Basic Authentication\nDynamic Modal Interactions** with immediate feedback\nError Handling and User Experience** optimization\n\n🎯 Key Features Demonstrated\n\n1. Data Input Integration\nUsers can submit custom data directly from Slack\nData is instantly sent to n8n workflows for processing\nReal-time feedback and confirmation messages\n\n2. Approval Workflow Automation\nInteractive approve/reject buttons in Slack modals\nDecisions trigger different n8n workflow paths\nAutomated decision logging and processing\n\n3. Enhanced User Experience\nModal closes automatically after actions\nSubmit button positioned below input for better UX\nComprehensive error handling and user feedback\n\n4. Security & Authentication\nOptional HTTP Basic Auth for webhook security\nEnvironment-based configuration management\nSecure credential handling\n\n🔧 Technical Implementation\n\nSlack Bot Features:\nSocket Mode for real-time communication\nCustom slash commands (/automation)\nInteractive modals with dynamic content\nButton actions and form submissions\n\nn8n Integration:\nWebhook triggers for data reception\nStructured payload formats\nAuthentication support\nError handling and response management\n\nWorkflow Payload Examples:\n\nData Submission:\n{\n  \"type\": \"data_submission\",\n  \"data\": \"User input data here\",\n  \"user\": {\n    \"id\": \"U1234567890\",\n    \"name\": \"username\"\n  },\n  \"timestamp\": \"2024-01-01T12:00:00.000Z\",\n  \"source\": \"slack_bot\"\n}\n\nApproval Action:\n{\n  \"type\": \"approval_action\",\n  \"action\": \"approve\",\n  \"user\": {\n    \"id\": \"U1234567890\",\n    \"name\": \"username\"\n  },\n  \"timestamp\": \"2024-01-01T12:00:00.000Z\",\n  \"source\": \"slack_bot\"\n}\n\n🌟 Why This Matters for n8n Community\n\nThis project demonstrates how n8n can be the backbone for:\n\nHuman-in-the-loop** automation workflows\nInteractive approval** processes\nReal-time data collection** from team communication tools\nSeamless integration** between chat platforms and automation\nScalable workflow triggers** from multiple sources\n\n🚀 Endless Possibilities\n\nThis is just the beginning! With this foundation, you can build:\n\nIT Service Desk** automation with Slack approvals\nContent Publishing** workflows with team reviews\nData Collection** and processing pipelines\nIncident Management** with automated escalations\nProject Management** with status updates and approvals\nCustomer Support** ticket routing and responses\nDevOps Deployments** with approval gates\nFinancial Approvals** with audit trails\nHR Processes** with automated workflows\nMarketing Campaigns** with content approvals\n\n📁 Repository Structure\n\nslack-n8n-integration-hub/\n├── app.js                          # Main Slack Bot application\n├── package.json                    # Dependencies and scripts\n├── .env.example                    # Environment configuration template\n├── README.md                       # Complete setup documentation\n├── CONTRIBUTING.md                 # Contribution guidelines\n├── Slack_Bot_n8n_Integration_Hub.json  # n8n workflow export\n├── n8n-workflow-examples.json     # Additional workflow examples\n└── test-webhook.js                 # Webhook testing utilities\n\n🎉 Ready for n8n Community\n\nThis workflow is:\n✅ Fully Tested and working\n✅ Well Documented with setup instructions\n✅ Open Source and ready for community use\n✅ Extensible for various use cases\n✅ Production Ready with error handling\n\n🔗 Get Started\n\nClone the repository: git clone https://github.com/iam-niranjan/slack-n8n-integration-hub.git\nFollow the setup guide in the main README.md\nImport the n8n workflows from the JSON files\nCustomize for your use case and explore the possibilities!\n\nThis showcase demonstrates that with n8n and Slack integration, the automation possibilities are truly endless! 🚀\n\nReady to submit to n8n community for sharing and collaboration.",
+  "_templateCreatedAt": "2025-06-19T14:48:52.116Z",
+  "_templateTotalViews": 358,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:47:15.735Z",
+  "id": "5rr11oY3PWtqx8az",
+  "meta": {
+    "instanceId": "c62c01f3e843893075a10f252ec7d6d69e5ab593af019f50055d506cb3081b99",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Slack Bot N8N Integration Hub",
+  "tags": [
+    {
+      "id": "XuoVybTXeUXuim6G",
+      "name": "✅ Live",
+      "createdAt": "2025-06-08T07:59:43.586Z",
+      "updatedAt": "2025-06-08T07:59:43.586Z"
+    },
+    {
+      "id": "RiQR5FfzNZyblqRY",
+      "name": "🛠️ Utility",
+      "createdAt": "2025-06-08T08:02:50.794Z",
+      "updatedAt": "2025-06-08T08:02:50.794Z"
+    },
+    {
+      "id": "TEMBBqocz4kZADTv",
+      "name": "📤 Submitted Workflows",
+      "createdAt": "2025-06-08T07:38:04.084Z",
+      "updatedAt": "2025-06-08T07:38:04.084Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "b62c6302-387e-4ef3-af4c-92c87fdfef1b",
+      "name": "n8n Data Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -140,
+        -360
+      ],
+      "webhookId": "874768ff-6631-42a8-8c49-25b63ead3fec",
+      "parameters": {
+        "path": "874768ff-6631-42a8-8c49-25b63ead3fec",
+        "options": {},
+        "httpMethod": "POST",
+        "authentication": "basicAuth"
+      },
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "credential-id",
+          "name": "httpBasicAuth Credential"
+        }
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "6e22fc14-5eb0-4dab-944f-e527b10292a2",
+      "name": "Slack - Data Acknowledgment",
+      "type": "n8n-nodes-base.slack",
+      "position": [
+        80,
+        -360
+      ],
+      "webhookId": "16b35492-6886-4319-ade7-eca8ef1a141b",
+      "parameters": {
+        "text": "=Data Input 📥 : {{$json.body.data || $json.data || 'No data provided'}}\n\n✅ Data received and processed successfully! Your automation request has been submitted.",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "A12B1C1DEFG"
+        },
+        "otherOptions": {}
+      },
+      "credentials": {
+        "slackApi": {
+          "id": "credential-id",
+          "name": "slackApi Credential"
+        }
+      },
+      "typeVersion": 2.3
+    },
+    {
+      "id": "48d837e7-626e-472b-b528-8b75ad2d86a5",
+      "name": "n8n Button Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -140,
+        -80
+      ],
+      "webhookId": "fa872cfc-abe3-481d-ab7c-74f78d83a070",
+      "parameters": {
+        "path": "fa872cfc-abe3-481d-ab7c-74f78d83a070",
+        "options": {},
+        "httpMethod": "POST",
+        "authentication": "basicAuth"
+      },
+      "credentials": {
+        "httpBasicAuth": {
+          "id": "credential-id",
+          "name": "httpBasicAuth Credential"
+        }
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "16390c39-acbd-437a-ae90-be702e67bed6",
+      "name": "Process Button Action",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        80,
+        -80
+      ],
+      "parameters": {
+        "functionCode": "// Process approval/rejection action\nconst webhookData = items[0].json;\n\n// Extract data from the webhook payload\nconst body = webhookData.body || webhookData;\nconst action = body.action;\nconst user = body.user || {};\nconst timestamp = body.timestamp || Date.now();\n\n// Create response based on action\nlet message = '';\nlet emoji = '';\nlet status = '';\n\nconst userDisplayName = user.name || user.id || 'Unknown User';\n\nif (action === 'approve') {\n  emoji = '✅';\n  status = 'APPROVED';\n  message = `${emoji} *Request ${status}*\\n\\n` +\n           `👤 *Approved by:* ${userDisplayName}\\n` +\n           `⏰ *Time:* ${new Date(timestamp).toLocaleString()}\\n` +\n           `🎯 *Action:* Request has been processed successfully and approved for execution.\\n` +\n           `📋 *Next Steps:* The automation workflow will proceed with the approved action.`;\n} else if (action === 'reject') {\n  emoji = '❌';\n  status = 'REJECTED';\n  message = `${emoji} *Request ${status}*\\n\\n` +\n           `👤 *Rejected by:* ${userDisplayName}\\n` +\n           `⏰ *Time:* ${new Date(timestamp).toLocaleString()}\\n` +\n           `🚫 *Action:* Request has been rejected and will not be processed.\\n` +\n           `📋 *Next Steps:* No further action will be taken for this request.`;\n} else {\n  emoji = '⚠️';\n  status = 'UNKNOWN';\n  message = `${emoji} *Unknown Action Received*\\n\\n` +\n           `👤 *User:* ${userDisplayName}\\n` +\n           `⏰ *Time:* ${new Date(timestamp).toLocaleString()}\\n` +\n           `❓ *Action:* ${action || 'undefined'}\\n` +\n           `📋 *Status:* Unable to process this action type.`;\n}\n\n// Return processed data\nreturn [{\n  json: {\n    ...webhookData,\n    processedMessage: message,\n    emoji: emoji,\n    status: status,\n    processedAt: new Date().toISOString()\n  }\n}];\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "bbb48629-5773-42d6-a3f7-10f87fbb439c",
+      "name": "Slack - Button Acknowledgment",
+      "type": "n8n-nodes-base.slack",
+      "position": [
+        300,
+        -80
+      ],
+      "webhookId": "16b35492-6886-4319-ade7-eca8ef1a141b",
+      "parameters": {
+        "text": "={{$json.processedMessage}}",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "A12B1C1DEFG"
+        },
+        "otherOptions": {}
+      },
+      "credentials": {
+        "slackApi": {
+          "id": "credential-id",
+          "name": "slackApi Credential"
+        }
+      },
+      "typeVersion": 2.3
+    },
+    {
+      "id": "63a966d9-4eab-4736-9cac-74f79f1f680e",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -460
+      ],
+      "parameters": {
+        "width": 760,
+        "height": 280,
+        "content": "## DATA_WEBHOOK "
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "82e8b699-3e70-4ffe-8f18-e32d15b3fc67",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -160
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 760,
+        "height": 280,
+        "content": "## BUTTON_WEBHOOK"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "81cd3810-cc40-436c-b3a6-2c651eccf014",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -640,
+        -460
+      ],
+      "parameters": {
+        "width": 380,
+        "height": 240,
+        "content": "🚀 SLACK BOT N8N INTEGRATION HUB\n\n📌 Purpose: Complete Slack automation workflow\n🔗 Handles: Data submission + Approval workflows\n⚡ Features: Real-time responses, dual webhooks\n\n🎯 Use Cases:\n• Employee approval requests\n• Data collection & processing\n• Interactive team workflows\n• Automated decision routing"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "1aff3893-1619-43b2-9c89-37e086189716",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -640,
+        -200
+      ],
+      "parameters": {
+        "width": 380,
+        "height": 200,
+        "content": "🛠️ QUICK SETUP GUIDE\n\n1️⃣ Configure webhook URLs in Slack bot\n2️⃣ Set Slack channel ID in response nodes\n3️⃣ Update Slack credentials\n4️⃣ Test with /automation command\n\n🔐 Optional: Enable Basic Auth for security\n📖 Full docs: https://github.com/iam-niranjan/slack-n8n-integration-hub"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "c82d2e8a-34f2-4699-a1b0-c605797390e4",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -640,
+        20
+      ],
+      "parameters": {
+        "width": 380,
+        "height": 260,
+        "content": "📂 COMPLETE SOURCE CODE\n\n🌟 GitHub: https://github.com/iam-niranjan/slack-n8n-integration-hub\n\n📦 Includes:\n✅ Slack Bot source code\n✅ Environment setup guide\n✅ Authentication examples\n✅ Troubleshooting docs\n\n⭐ Star the repo if helpful!"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": true,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fef3bea8-23c9-4266-8a10-0aa072e25a74",
+  "connections": {
+    "n8n Data Webhook": {
+      "main": [
+        [
+          {
+            "node": "Slack - Data Acknowledgment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "n8n Button Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process Button Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Button Action": {
+      "main": [
+        [
+          {
+            "node": "Slack - Button Acknowledgment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

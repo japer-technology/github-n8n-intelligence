@@ -1,0 +1,306 @@
+{
+  "_templateId": 3932,
+  "_templateName": "Track Personal Finances with GPT-4 via Telegram & Google Sheets",
+  "_templateDescription": "Track your expenses, gain insights, and manage money smarter – right from Telegram.\nWho is this For\nThis workflow is perfect for individuals and freelancers who want financial control without app overload. Launch it in your n8n environment and start tracking your money smarter today!\n\nFeatures\nNatural Language Expense Input: Log expenses by simply messaging “Spent $50 on groceries”.\nIncome Logging: Add income sources such as salary, freelance, or passive income.\nVoice Support: Speak to the bot—Whisper API converts voice to text.\nGoogle Sheets Integration: All data is synced to a spreadsheet in real time.\n\nHow It Works\nUser Input (Text or Voice):\n Send messages on your telegram bot like:\n\t“Spent $25 on transportation”\n\t“Received $300 from freelancing”\n\tOr just voice record a message\nAI Parsing & Categorization:\n\tGPT-4 processes and categorizes the entry using pre-trained financial logic.\nData Logging:\n \tn8n stores data in: Google Sheets (via Google Sheets API)\nVideo Demo:\n\tSee this youtube Video to explore \"how it works\".\n\nSet Up Steps\nImport the Workflow\n\tCreate a new workflow\n\tImport the JSON file by clicking \"three dot\" (upper right corner) &gt; \"import from file...\" (I will provide the JSON file after buying).\nSet Up Telegram Bot \n   \tCreate a bot via @BotFather\n   \tCreate a telegram credential to connect telegram with n8n.\n   \tGrab the token from @BotFather and paste into the Telegram credential.\n   \tConnect that credential with telegram nodes.\nEnable Google Sheets Integration\n\tCreate a google sheet credential to connect google sheet with n8n.\n\tConnect that credential with Google sheets tools.\n\tCreate a google sheet including these columns: \"chat_id\", \"date_and_time\", \"income (dollar)\", \"income source\", \"cost (dollar)\", \"cost category\"\t\t\n\tProvide access that sheet to n8n.\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\nConfigure OpenAI (GPT & Whisper)\n\tCreate an OpenAi credential to connect openai with n8n.\n\tAdd your OpenAI API Key in the credentials tab\n\tConnect that credential with openai nodes.\nPre-requisites\n\tNecessary credentials:\n\t\tTelegram Account\n\t\tOpenAi Account\n\t\tGoogle Sheets Account\n\tN8N version 1.92.2 or upper\n\nCustomization Guidance\nYou can customize the ai agent prompt based on your needs.\nAnd also you can customize the sheet's columns based on your needs.\nAnd you can add additional features like:\n\tMonthly budgeting alert\n\tExpense report generation\n\tSmart Recommendations for cost cutting tips\nReady to Automate Your Finances?\nBuy the workflow for only 30$, You will get full setup guide after buying.",
+  "_templateCreatedAt": "2025-05-08T07:20:03.997Z",
+  "_templateTotalViews": 1309,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:48:59.341Z",
+  "id": "zTJPdvC8wsFg4sEZ",
+  "meta": {
+    "instanceId": "33a1322f1f61145a63f10463383a5f6e869af749f7b4a69f6c89ce8866715370",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "My workflow",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "1e564a55-3c3f-4b9e-97ee-15d0e472ff6b",
+      "name": "Receive Input Via Telegram",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -660,
+        100
+      ],
+      "webhookId": "658190b4-f829-4190-9869-6a3f225d960a",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "776a251a-390b-49e8-90fe-7f8971a4fb76",
+      "name": "Transcribe Voice Message ",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        160,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "44e251a9-e6ad-4d66-ade4-fbc1c3657325",
+      "name": "Send AI Response To Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1040,
+        100
+      ],
+      "webhookId": "3c242c21-bc05-4706-87d9-84728088c62f",
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "95f8ebb3-d4f7-408a-8269-424adf0c520a",
+      "name": "User's Text Message",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "77e443cc-b86e-49ae-9868-b58bbfd6daac",
+      "name": "Download User's Voice Message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -120,
+        200
+      ],
+      "webhookId": "04bc96b1-00db-4881-afb1-6b39f16c0ad0",
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "b2f8c528-9663-4d7b-9f55-010c6374ac23",
+      "name": "Detect Message Type",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        -440,
+        100
+      ],
+      "parameters": {},
+      "typeVersion": 3.2
+    },
+    {
+      "id": "668f4ab0-936a-4383-8c10-21cfecfc7b7d",
+      "name": "Finance Tracker Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        600,
+        100
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "75e50454-1567-4d90-bba4-dca4b545310e",
+      "name": "Watch Existing Finance Data",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "position": [
+        820,
+        320
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "c6152675-c34e-4c5b-a58d-0b03775c22cd",
+      "name": "Add New Finance Data",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "position": [
+        980,
+        320
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "1a7cb393-23c7-4f67-afdd-b13083d27a01",
+      "name": "Generate User's Reply With OpenAi",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        500,
+        320
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "e5e389e5-d395-4d83-b2d3-1768b8f00404",
+      "name": "Remember Chat History",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        660,
+        320
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "e99610e3-57ba-443e-9874-b37103de38ba",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -720,
+        -200
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2032e33b-c4c8-41f8-97c4-0bf4dd2a974e",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        400,
+        -200
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "910588b8-1543-4de6-9bcb-f5835472d341",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -260,
+        -200
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "5964e3d4-65d1-44ba-ae79-5b2d5503201e",
+  "connections": {
+    "Detect Message Type": {
+      "main": [
+        [
+          {
+            "node": "User's Text Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Download User's Voice Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "User's Text Message": {
+      "main": [
+        [
+          {
+            "node": "Finance Tracker Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add New Finance Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "Finance Tracker Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finance Tracker Agent": {
+      "main": [
+        [
+          {
+            "node": "Send AI Response To Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remember Chat History": {
+      "ai_memory": [
+        [
+          {
+            "node": "Finance Tracker Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Voice Message ": {
+      "main": [
+        [
+          {
+            "node": "Finance Tracker Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive Input Via Telegram": {
+      "main": [
+        [
+          {
+            "node": "Detect Message Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Watch Existing Finance Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "Finance Tracker Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download User's Voice Message": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Voice Message ",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate User's Reply With OpenAi": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Finance Tracker Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

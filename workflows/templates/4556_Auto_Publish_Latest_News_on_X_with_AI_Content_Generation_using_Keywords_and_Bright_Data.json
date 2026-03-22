@@ -1,0 +1,568 @@
+{
+  "_templateId": 4556,
+  "_templateName": "Auto-Publish Latest News on X with AI Content Generation using Keywords and Bright Data",
+  "_templateDescription": "📰 Publish Latest News on X and Other Social Media Platforms Using Keyword\n\nA comprehensive n8n automation that fetches the latest news based on keywords, generates AI-powered social media content, and automatically publishes to X (Twitter) with complete tracking and notification systems.\n\n📋 Overview\n\nThis workflow provides a professional news publishing solution that automatically discovers breaking news, creates engaging social media content using AI, and publishes to X (Twitter) with comprehensive tracking. Perfect for news organizations, content creators, social media managers, and businesses wanting to stay current with automated news sharing. The system uses BrightData's Google News dataset, OpenAI's GPT-4o for content generation, and multi-platform integration for complete automation.\n\n⭐ Key Features\n\n📝 Form-Based Input**: Clean web form for keyword and country submission\n📰 Real-Time News Fetching**: BrightData Google News integration for latest articles\n🤖 AI Content Generation**: GPT-4o powered tweet creation with hashtags\n📱 Auto X Publishing**: Direct posting to X (Twitter) with URL tracking\n📊 Complete Tracking**: Google Sheets logging of all published content\n🔔 Email Notifications**: Success alerts with tweet links\n🌍 Multi-Country Support**: Localized news for US, India, UK, Australia\n⚡ Status Monitoring**: Real-time progress tracking with retry logic\n🛡 Error Handling**: Robust error management and validation\n🔄 Loop Management**: Intelligent waiting for news processing completion\n\n🎯 What This Workflow Does\n\nInput:\n\nNews Name**: Keyword or topic for news search (required)\nCountry**: Target country for localized news (dropdown: US/IN/GB/AU)\n\nProcessing:\n\nForm Submission: Captures news keyword and target country\nNews Triggering: Initiates BrightData Google News scraping job\nStatus Monitoring: Checks scraping progress with intelligent retry loop\nData Retrieval: Fetches latest news articles when ready\nAI Content Creation: Generates engaging tweet content using GPT-4o\nSocial Publishing: Posts content to X (Twitter) automatically\nURL Generation: Creates direct tweet links for tracking\nData Logging: Saves content and URLs to Google Sheets\nEmail Notification: Sends success confirmation with tweet link\nCompletion: Workflow ends with full audit trail\n\n📋 Output Data Points\n\n| Field         | Description                         | Example                                                                                                |\n| :------------ | :---------------------------------- | :----------------------------------------------------------------------------------------------------- |\n| TweetMessage  | AI-generated social media content | \"Breaking: AI revolution transforming healthcare with 40% efficiency gains. New study shows promising results in patient care automation. #AI #Healthcare #Innovation #TechNews #US\" |\n| TweetURL      | Direct link to published tweet      | https://twitter.com/i/web/status/1234567890123456789                                                 |\n\n🛠️ Setup Instructions\n\nPrerequisites:\n\nn8n instance (self-hosted or cloud)\nX (Twitter) account with API v2 access\nOpenAI account with GPT-4o access\nGmail account for notifications\nGoogle account with Sheets access\nBrightData account with Google News dataset access\nBasic understanding of social media automation\n\nStep 1: Import the Workflow\n\nCopy the JSON workflow code from the provided file.\nIn n8n, click \"+ Add workflow\".\nSelect \"Import from JSON\".\nPaste the workflow code and click \"Import\".\nThe workflow will appear with all nodes properly connected.\n\nStep 2: Configure API Credentials\n\nX (Twitter) API Setup:\n\nCreate X Developer Account at developer.twitter.com.\nCreate new app and generate API keys.\nIn n8n: Credentials → + Add credential → Twitter OAuth2 API.\nAdd your Twitter API credentials:\n    API Key\n    API Secret Key\n    Bearer Token\n    Access Token\n    Access Token Secret\nTest the connection with a sample tweet.\n\nOpenAI API Configuration:\n\nGet API key from platform.openai.com.\nEnsure GPT-4o model access is available.\nIn n8n: Credentials → + Add credential → OpenAI API.\nAdd your OpenAI API key.\nVerify model access in the \"OpenAI Chat Model\" node.\n\nGmail Integration:\n\nCreate \"Gmail OAuth2\" credential.\nFollow OAuth setup process.\nGrant email sending permissions.\nTest with sample email.\n\nBrightData News API:\n\nThe workflow uses pre-configured token: 5662edde-6735-4c5d-a6c6-693043a5a9a5.\nDataset ID: gd_lnsxoxzi1omrwnka5r (Google News).\nVerify access to Google News dataset.\nTest API connection.\n\nGoogle Sheets Integration:\n\nCreate \"Google Sheets OAuth2 API\" credential.\nComplete OAuth authentication.\nGrant read/write permissions.\nTest connection.\n\nStep 3: Configure Google Sheets Integration\n\nCreate Google Sheets Structure:\n    Sheet Name: \"Publish Latest News on Social Media Platforms Using Keyword\"\n    Tab: \"Data\" (default)\n    Columns:\n        Tweet Message: AI-generated content posted to X\n        Tweet URL: Direct link to published tweet\nSheet Configuration:\n    Create new Google Sheet or use existing one.\n    Add the required column headers.\n    Copy Sheet ID from URL: https://docs.google.com/spreadsheets/d/SHEET_ID_HERE/edit.\n    Current configured Sheet ID: 1koxNrwdeuaSBdREuKc7JQh3d9blEk0sQDJ8VgVLjPOo.\nUpdate Workflow Settings:\n    Open \"Google Sheets\" node.\n    Replace Document ID with your Sheet ID.\n    Select your Google Sheets credential.\n    Choose \"Data\" sheet/tab.\n    Verify column mapping is correct.\n\nStep 4: Configure Form Interface\n\nForm Settings:\n\nOpen \"On form submission\" node.\nForm configuration:\n    Title: \"News Publisher\"\n    Description: \"publish latest news to direct social media\"\n    Fields:\n        News Name (text, required)\n        Country (dropdown: US, IN, GB, AU, required)\n    Webhook URL: Copy webhook URL from form trigger node.\n    Current webhook ID: 8d320705-688c-4150-a393-cf899d2bbb52.\n    Test form accessibility and submission.\n\nStep 5: Configure Email Notifications\n\nGmail Setup:\n\nOpen \"Gmail\" node.\nUpdate recipient email: raushan@iwantonlinemarketing.com.\nEmail template includes:\n    Success confirmation\n    Direct tweet link\n    Professional formatting\nTest email delivery.\n\nStep 6: Test the Workflow\n\nSample Test Data:\n\nUse these examples for testing:\n\n| News Name             | Country | Expected Results                                   |\n| :-------------------- | :------ | :------------------------------------------------- |\n| artificial intelligence | US      | Latest AI news with US-specific hashtags           |\n| cricket world cup     | IN      | Sports news with India-focused content            |\n| brexit update         | GB      | UK political news with British hashtags            |\n| bushfire news         | AU      | Australian environmental news                      |\n\nTesting Process:\n\nActivate the workflow (toggle switch).\nNavigate to the webhook form URL.\nSubmit test data.\nMonitor execution progress:\n    News fetching (30-60 seconds)\n    AI content generation (10-15 seconds)\n    X publishing (5-10 seconds)\n    Sheet update and email (5 seconds)\nVerify results in all platforms.\n\n📖 Usage Guide\n\nUsing the Form Interface\n\nNavigate to the webhook URL provided by the form trigger.\nEnter news keyword or topic (e.g., \"climate change\", \"stock market\", \"technology\").\nSelect target country from dropdown.\nClick submit and wait for processing.\nCheck email for success notification with tweet link.\n\nExample Inputs to Test\n\n| News Name                         | Country | Expected                                               |\n| :-------------------------------- | :------ | :----------------------------------------------------- |\n| \"artificial intelligence breakthrough\" | \"US\"    | Latest AI developments with tech hashtags              |\n| \"football premier league\"         | \"GB\"    | UK football news with sports hashtags                  |\n| \"stock market updates\"            | \"IN\"    | Indian market news with finance hashtags                |\n| \"hollywood movies\"                | \"AU\"    | Entertainment news with Australian perspective         |\n\nCountry-Specific Considerations\n\nUnited States (US)**:\n    Focus on national news and global impact.\n    Hashtags: #USA, #American, #Breaking, #News.\n    Time zone considerations for optimal posting.\nIndia (IN)**:\n    Emphasis on regional relevance.\n    Hashtags: #India, #Indian, #News, #Breaking.\n    Cultural context in content generation.\nUnited Kingdom (GB)**:\n    British perspective and terminology.\n    Hashtags: #UK, #British, #News, #Breaking.\n    Focus on European context.\nAustralia (AU)**:\n    Australian angle and regional focus.\n    Hashtags: #Australia, #Australian, #News, #Breaking.\n    Pacific region context.\n\n📊 Reading the Results\n\nGoogle Sheets Data\n\nThe output sheet contains:\n\nComplete tweet content with hashtags and formatting.\nDirect tweet URLs for easy access and sharing.\nChronological record of all published content.\nAudit trail for content management.\n\nEmail Notifications\n\nSuccess emails include:\n\nConfirmation that content was published.\nDirect link to view the tweet.\nProfessional formatting for easy reference.\n\nX (Twitter) Posts\n\nPublished content features:\n\nAI-optimized messaging within 260 character limit.\nRelevant hashtags based on topic and country.\nEngaging format designed for social media.\nProfessional tone suitable for news sharing.\n\n🔧 Customization Options\n\nExpanding Social Media Platforms\n\nAdd more platforms to the publishing workflow:\n\n// Add LinkedIn publishing\n{\n  \"node\": \"LinkedIn\",\n  \"type\": \"n8n-nodes-base.linkedin\",\n  \"parameters\": {\n    \"text\": \"={{ $json.output }}\",\n    \"additionalFields\": {}\n  }\n}\n// Add Facebook posting\n{\n  \"node\": \"Facebook\",\n  \"type\": \"n8n-nodes-base.facebook\",\n  \"parameters\": {\n    \"pageId\": \"YOUR_PAGE_ID\",\n    \"message\": \"={{ $json.output }}\"\n  }\n}",
+  "_templateCreatedAt": "2025-06-01T11:55:19.435Z",
+  "_templateTotalViews": 1824,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:43:37.687Z",
+  "id": "UcRJot2fG84lnzNa",
+  "meta": {
+    "instanceId": "bc8ca75c203589705ae2e446cad7181d6f2a7cc1766f958ef9f34810e53b8cb2",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Publish Latest  News on X and Other Social Media Platforms Using Keyword",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "9208debf-56cf-4181-adce-b6fd25713142",
+      "name": "Check Final Status1",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -500,
+        40
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "or",
+          "conditions": [
+            {
+              "id": "35ed620d-b5d5-4e97-bcc5-52b283d85616",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "ready"
+            }
+          ]
+        }
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "906db788-b7c8-4f80-90ed-1d9a556e33d9",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -1500,
+        40
+      ],
+      "webhookId": "8d320705-688c-4150-a393-cf899d2bbb52",
+      "parameters": {
+        "options": {},
+        "formTitle": "News Publisher",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "News Name",
+              "placeholder": "news",
+              "requiredField": true
+            },
+            {
+              "fieldType": "dropdown",
+              "fieldLabel": "Country",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "US"
+                  },
+                  {
+                    "option": "IN"
+                  },
+                  {
+                    "option": "GB"
+                  },
+                  {
+                    "option": "AU"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "formDescription": "publish latest news to direct social medial"
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "e1462542-ddd9-417a-a467-6671e4d68fda",
+      "name": "Wait 1 Minutes",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -720,
+        40
+      ],
+      "webhookId": "10b45556-5e91-4387-abd0-f9078b220286",
+      "parameters": {
+        "amount": 30
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "53f4a578-b098-459e-bdad-ccf1e9508994",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        0,
+        20
+      ],
+      "parameters": {
+        "text": "=You are a professional social media strategist. You'll receive three inputs: a news headline, a URL to the full article, and a country code. \nFirst, understand the headline like a news summary. Then analyze the URL content to extract or simulate key facts, context, quotes, or figures. Use the country code to adjust the tone and hashtags to suit the local audience. \nYour task is to write a post for X (formerly Twitter), within 260 characters, that is clear, engaging, and informative. \n- Do not include any intro, outro, publisher names, or brand mentions. \n- Only output the final tweet text with relevant, topic-based and country-specific hashtags.\n- always output in english langauge.\nhere is the title: \"{{ $json.title }}\" \nhere is the URL: \"{{ $json.url }}\"\ncountry code: \"{{ $json.country }}\"",
+        "options": {},
+        "promptType": "define"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "cfebdd34-a1f8-47b7-9e2f-8edea038a6b3",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        0,
+        260
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o",
+          "cachedResultName": "gpt-4o"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "c9514ac6-f29c-490f-8d33-2409eea93973",
+      "name": "Get News URL from Google News",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -220,
+        20
+      ],
+      "parameters": {
+        "url": "=https://api.brightdata.com/datasets/v3/snapshot/{{ $json.snapshot_id }}",
+        "options": {},
+        "sendQuery": true,
+        "sendHeaders": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "format",
+              "value": "json"
+            }
+          ]
+        },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_TOKEN_HERE"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "30b391cb-f56f-4d27-b39c-a3db422c249f",
+      "name": "Fetch Latest News",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1240,
+        40
+      ],
+      "parameters": {
+        "url": "https://api.brightdata.com/datasets/v3/trigger",
+        "method": "POST",
+        "options": {},
+        "jsonBody": "=[\n  {\n    \"url\": \"https://news.google.com/\",\n    \"keyword\": \"{{ $json['News Name'] }}\",\n    \"country\": \"{{ $json.Country }}\",\n    \"language\": \"\"\n  }\n] ",
+        "sendBody": true,
+        "sendQuery": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "dataset_id",
+              "value": "gd_lnsxoxzi1omrwnka5r"
+            },
+            {
+              "name": "include_errors",
+              "value": "true"
+            },
+            {
+              "name": "limit_multiple_results",
+              "value": "1"
+            }
+          ]
+        },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_TOKEN_HERE"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "5982536a-2887-408d-ad8b-ec74fc3b7d52",
+      "name": "X",
+      "type": "n8n-nodes-base.twitter",
+      "position": [
+        440,
+        20
+      ],
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "credential-id",
+          "name": "twitterOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "eddbcbbe-2ef7-4e44-8799-572a9f368213",
+      "name": "tweet to URL",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        680,
+        20
+      ],
+      "parameters": {
+        "jsCode": "function generateTweetUrl(tweetId) {\n  if (!tweetId || isNaN(tweetId)) {\n    return null;\n  }\n  return `https://twitter.com/i/web/status/${tweetId}`;\n}\n\n// Loop through all input items and process them\nreturn $input.all().map(item => {\n  const tweetId = item.json.tweetId || item.json.id || item.json.tweet_id;\n  const tweetUrl = generateTweetUrl(tweetId);\n  return {\n    json: {\n      ...item.json,\n      tweetUrl,\n    }\n  };\n});"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "e94dd4c9-2c9f-49a8-bf3b-13491e2f9617",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        940,
+        20
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "Tweet URL": "={{ $json.tweetUrl }}",
+            "Tweet Message": "={{ $json.text }}"
+          },
+          "schema": [
+            {
+              "id": "Tweet URL",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Tweet URL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Tweet Message",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Tweet Message",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1koxNrwdeuaSBdREuKc7JQh3d9blEk0sQDJ8VgVLjPOo/edit#gid=0",
+          "cachedResultName": "Data"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1koxNrwdeuaSBdREuKc7JQh3d9blEk0sQDJ8VgVLjPOo",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1koxNrwdeuaSBdREuKc7JQh3d9blEk0sQDJ8VgVLjPOo/edit?usp=drivesdk",
+          "cachedResultName": "Publish Latest  News on Social Media Platforms Using Keyword"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.6
+    },
+    {
+      "id": "57fc5e5f-6ecd-4933-be5d-02223eae1d9a",
+      "name": "Check Snapshot ID Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -960,
+        40
+      ],
+      "parameters": {
+        "url": "=https://api.brightdata.com/datasets/v3/progress/{{ $json.snapshot_id }}",
+        "options": {},
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_TOKEN_HERE"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "1dda70c1-9eca-484e-b109-ca297fcdfe72",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1160,
+        20
+      ],
+      "webhookId": "0210609d-191a-4eb7-ae2b-13f9e2248c11",
+      "parameters": {
+        "sendTo": "=raushan@iwantonlinemarketing.com ",
+        "message": "=<p>Hello,</p>  <p>Your news tweet has been published successfully on X (formerly Twitter).</p>  <p>You can view it here: <a href=\"{{ $json['Tweet URL'] }}\" target=\"_blank\">Click to view your tweet</a></p>  <p>Best regards,<br> Team</p>",
+        "options": {},
+        "subject": "Your News Has Been Published on X (Twitter)"
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "credential-id",
+          "name": "gmailOAuth2 Credential"
+        }
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "8412946a-0b83-4c94-a5e7-bcf11dc77780",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1040,
+        -100
+      ],
+      "parameters": {
+        "width": 700,
+        "height": 420,
+        "content": "## Checking Snapshot ID status in While Loops\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "54d35176-cc63-43e2-aabc-bca61fb249af",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -120
+      ],
+      "parameters": {
+        "width": 560,
+        "height": 520,
+        "content": "## Scrap Latest News and Generate Content\ncrapping lastest news from google news and generaint content"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2992d27f-fb9b-45b2-a4d2-8baffa5faa53",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        920,
+        -80
+      ],
+      "parameters": {
+        "width": 560,
+        "height": 320,
+        "content": "## Update URL in Sheet and Sent Success Mail"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f1868b0b-c58d-4252-82a7-5399cf22bb0f",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        380,
+        -80
+      ],
+      "parameters": {
+        "width": 460,
+        "height": 320,
+        "content": "## Publishing on X"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "056a411e-ed25-4f5f-ad70-f032b6e21eca",
+  "connections": {
+    "X": {
+      "main": [
+        [
+          {
+            "node": "tweet to URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "X",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tweet to URL": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait 1 Minutes": {
+      "main": [
+        [
+          {
+            "node": "Check Final Status1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Latest News": {
+      "main": [
+        [
+          {
+            "node": "Check Snapshot ID Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Fetch Latest News",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Final Status1": {
+      "main": [
+        [
+          {
+            "node": "Get News URL from Google News",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check Snapshot ID Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Snapshot ID Status": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 Minutes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get News URL from Google News": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

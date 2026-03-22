@@ -1,0 +1,373 @@
+{
+  "_templateId": 4064,
+  "_templateName": "Automated daily workflow backup to GitHub",
+  "_templateDescription": "This workflow provides a robust solution for automatically backing up all your n8n workflows to a designated GitHub repository on a daily basis. By leveraging the n8n API and GitHub API, it ensures your workflows are version-controlled and securely stored, safeguarding against data loss and facilitating disaster recovery.\n\nHow it works\n\nThe automation follows these key steps:\n\nScheduled trigger: The workflow is initiated automatically every day at a pre-configured time.\nList existing backups: It first connects to your GitHub repository to retrieve a list of already backed-up workflow files. This helps in determining whether a workflow's backup file needs to be created or updated.\nRetrieve n8n workflows: The workflow then fetches all current workflows directly from your n8n instance using the n8n REST API.\nProcess and prepare: Each retrieved workflow is individually processed. Its data is converted into JSON format. This JSON content is then encoded to base64, a format suitable for GitHub API file operations.\nCommit to GitHub: For each n8n workflow:\n    A standardized filename is generated (e.g., workflow-name-tag.json).\n    The workflow checks if a file with this name already exists in the GitHub repository (based on the list fetched in step 2).\n    If the file exists: It updates the existing file with the latest version of the workflow.\n    If it's a new workflow (file doesn't exist): A new file is created in the repository.\n    Each commit is timestamped for clarity.\n\nThis process ensures that you always have an up-to-date version of all your n8n workflows stored securely in your GitHub version control system, providing peace of mind and a reliable backup history.\n\nPre-requisites\n\nBefore you can use this template, please ensure you have the following:\n\nAn active n8n instance (self-hosted or cloud).\nA GitHub account.\nA GitHub repository created where you want to store the workflow backups.\nA GitHub Personal Access Token with repo scope (or fine-grained token with read/write access to the specific backup repository). This token will be used for GitHub API authentication.\nn8n API credentials (API key) for your n8n instance.\n\nSet up steps\n\nSetting up this workflow should take approximately 10-15 minutes if you have your credentials ready.\n\nImport the template: Import this workflow into your n8n instance.\nConfigure n8n API credentials:\n    Locate the \"Retrieve workflows\" node.\n    In the \"Credentials\" section for \"n8n API\", create new credentials (or select existing ones).\n    Enter your n8n instance URL and your n8n API Key (you can create your n8n api key in the settings of your n8n instance)\nConfigure GitHub credentials:\n    Locate the \"List files from repo\" node (and subsequently \"Update file\" / \"Upload file\" nodes which will use the same credential).\n    In the \"Credentials\" section for \"GitHub API\", create new credentials.\n    Select OAuth2/Personal Access Token authentication method.\n    Enter the GitHub Personal Access Token you generated as per the pre-requisites.\nSpecify repository details:\n    In the \"List files from repo\", \"Update file\", and \"Upload file\" GitHub nodes:\n        Set the Owner: Your GitHub username or organization name.\n        Set the Repository: The name of your GitHub repository dedicated to backups.\n        Set the Branch (e.g., main or master) where backups should be stored.\n        (Optional) Specify a Path within the repository if you want backups in a specific folder (e.g., n8n_backups/). Leave blank to store in the root.\nAdjust schedule (Optional):\n    Select the \"Schedule Trigger\" node.\n    Modify the trigger interval (e.g., change the time of day or frequency) as needed. By default, it's set for a daily run.\nActivate the workflow: Save and activate the workflow.\n\nExplanation of nodes\n\nHere's a detailed breakdown of each node used in this workflow:\n\nSchedule trigger**\n    Type: n8n-nodes-base.scheduleTrigger\n    Purpose: This node automatically starts the workflow based on a defined schedule (e.g., daily at midnight).\nList files from repo**\n    Type: n8n-nodes-base.github\n    Purpose: Connects to your specified GitHub repository and lists all files, primarily to check for existing workflow backups.\nAggregate**\n    Type: n8n-nodes-base.aggregate\n    Purpose: Consolidates the list of file names obtained from the \"List files from repo\" node into a single item for easier lookup later in the \"Check if file exists\" node.\nRetrieve workflows**\n    Type: n8n-nodes-base.n8n\n    Purpose: Uses the n8n API to fetch a list of all workflows currently present in your n8n instance.\nJson file**\n    Type: n8n-nodes-base.convertToFile\n    Purpose: Takes the data of each workflow (retrieved by the \"Retrieve workflows\" node) and converts it into a structured JSON file format.\nTo base64**\n    Type: n8n-nodes-base.extractFromFile\n    Purpose: Converts the binary content of the JSON file (from the \"Json file\" node) into a base64 encoded string. This encoding is required by the GitHub API for file content.\nCommit date & file name**\n    Type: n8n-nodes-base.set\n    Purpose: Prepares metadata for the GitHub commit. It generates:\n        commitDate: The current date and time for the commit message.\n        fileName: A standardized file name for the workflow backup (e.g., my-workflow-vps-backups.json), typically using the workflow's name and its first tag.\nCheck if file exists**\n    Type: n8n-nodes-base.if\n    Purpose: A conditional node. It checks if the fileName (generated by \"Commit date & file name\") is present in the list of files aggregated by the \"Aggregate\" node. This determines if the workflow backup already exists in GitHub.\nUpdate file**\n    Type: n8n-nodes-base.github\n    Purpose: If the \"Check if file exists\" node determines the file does exist, this node updates that existing file in your GitHub repository with the latest workflow content (base64 encoded) and a commit message.\nUpload file**\n    Type: n8n-nodes-base.github\n    Purpose: If the \"Check if file exists\" node determines the file does not exist, this node creates and uploads a new file to your GitHub repository with the workflow content and a commit message.\n\nCustomization\n\nHere are a few ways you can customize this template to better fit your needs:\n\nBackup path**: In the GitHub nodes (\"List files from repo\", \"Update file\", \"Upload file\"), you can specify a Path parameter to store backups in a specific folder within your repository (e.g., workflows/ or daily_backups/).\nFilename convention**: Modify the \"Commit date & file name\" node (specifically the expression for fileName) to change how backup files are named. For example, you might want to include the workflow ID or a different date format.\nCommit messages**: Customize the commit messages in the \"Update file\" and \"Upload file\" GitHub nodes to include more specific information if needed.\nError handling**: Consider adding error handling branches (e.g., using the \"Error Trigger\" node or checking for node execution failures) to notify you if a backup fails for any reason.\nFiltering workflows**: If you only want to back up specific workflows (e.g., those with a particular tag or name pattern), you can add a \"Filter\" node after \"Retrieve workflows\" to include only the desired workflows in the backup process.\nBackup frequency**: Adjust the \"Schedule Trigger\" node to change how often the backup runs (e.g., hourly, weekly, or on specific days).\n\n\nTemplate was created in n8n v1.92.2",
+  "_templateCreatedAt": "2025-05-15T02:33:44.721Z",
+  "_templateTotalViews": 3755,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:43:16.552Z",
+  "nodes": [
+    {
+      "id": "2aafc10f-0bb7-419f-a6b3-fa90f5f68653",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        100,
+        -20
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "da87b4f8-4507-456b-bfc3-3ae7d9400449",
+      "name": "Retrieve workflows",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        580,
+        -20
+      ],
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "6cd7d968-6fa0-4ab0-ac58-ceb15c8b7b4a",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        420,
+        -20
+      ],
+      "parameters": {
+        "options": {},
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "name"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "854f6e82-babb-474e-a138-2a6c398fd60e",
+      "name": "List files from repo",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        260,
+        -20
+      ],
+      "webhookId": "354d699e-44b0-4444-9d31-af7fd4ff5561",
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": ""
+        },
+        "filePath": "=",
+        "resource": "file",
+        "operation": "list",
+        "repository": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "authentication": "oAuth2"
+      },
+      "typeVersion": 1,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "8abba016-1f34-420a-b10b-3c8e44297725",
+      "name": "Update file",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        1380,
+        -100
+      ],
+      "webhookId": "27218087-8df7-474d-a39f-70cfa9c34ec8",
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": ""
+        },
+        "filePath": "={{ $('Retrieve workflows').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-{{ $('Retrieve workflows').item.json.tags[0].name }}.json",
+        "resource": "file",
+        "operation": "edit",
+        "repository": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "fileContent": "={{ $('To base64').item.json.data }}",
+        "commitMessage": "=backup-{{ $('Commit date & file name').item.json.commitDate }}",
+        "authentication": "oAuth2"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "d55efcc7-5873-4c9a-b374-b7b31814905b",
+      "name": "Upload file",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        1380,
+        60
+      ],
+      "webhookId": "ce4b561b-acb9-4cd8-b76f-4928dada9674",
+      "parameters": {
+        "owner": {
+          "__rl": true,
+          "mode": "name",
+          "value": ""
+        },
+        "filePath": "={{ $('Retrieve workflows').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-{{ $('Retrieve workflows').item.json.tags[0].name }}.json",
+        "resource": "file",
+        "repository": {
+          "__rl": true,
+          "mode": "list",
+          "value": ""
+        },
+        "fileContent": "={{ $('To base64').item.json.data }}",
+        "commitMessage": "=backup-{{ $node['Commit date & file name'].json.commitDate }}",
+        "authentication": "oAuth2"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "09909c9f-8a68-4670-8396-65fae9be51ff",
+      "name": "Check if file exists",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1220,
+        -20
+      ],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $('Aggregate').item.json.name }}",
+              "value2": "={{ $('Retrieve workflows').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-{{ $('Retrieve workflows').item.json.tags[0].name }}.json",
+              "operation": "contains"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "43990124-eac4-4c57-9da3-39053d9e5850",
+      "name": "Json file",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        740,
+        -20
+      ],
+      "parameters": {
+        "mode": "each",
+        "options": {
+          "format": true
+        },
+        "operation": "toJson"
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "956de457-4d05-4ea8-be7b-390861a739d4",
+      "name": "To base64",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        900,
+        -20
+      ],
+      "parameters": {
+        "options": {},
+        "operation": "binaryToPropery"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "fc258985-2621-42a3-9bc6-01048a92b702",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        240,
+        -160
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 300,
+        "height": 380,
+        "content": "### Retrieve previous file names from Github"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "1bfedd8f-1921-4f33-aa45-7ab612f26059",
+      "name": "Commit date & file name",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1060,
+        -20
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fe4a36ef-9f04-40e3-99bd-cc517a49b440",
+              "name": "commitDate",
+              "type": "string",
+              "value": "={{ $now.format('dd-MM-yyyy/H:mm') }}"
+            },
+            {
+              "id": "b0fe1bcc-e79c-4a6b-b8b4-44222c8bf4e8",
+              "name": "fileName",
+              "type": "string",
+              "value": "={{ $('Retrieve workflows').item.json.name.replace(/\\s+/g, '-').toLowerCase() }}-{{ $('Retrieve workflows').item.json.tags[0].name }}.json"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "2f36af66-12ca-451a-a1ca-c5a71b94b644",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        560,
+        -160
+      ],
+      "parameters": {
+        "color": 3,
+        "width": 460,
+        "height": 380,
+        "content": "### Retrieve and process workflows from n8n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "dc914f31-e6b5-43b0-8a4e-f9f46118fa30",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1040,
+        -160
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 460,
+        "height": 380,
+        "content": "### Commit + edit/create files if needed"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Retrieve workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Json file": {
+      "main": [
+        [
+          {
+            "node": "To base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "To base64": {
+      "main": [
+        [
+          {
+            "node": "Commit date & file name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "List files from repo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve workflows": {
+      "main": [
+        [
+          {
+            "node": "Json file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check if file exists": {
+      "main": [
+        [
+          {
+            "node": "Update file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List files from repo": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Commit date & file name": {
+      "main": [
+        [
+          {
+            "node": "Check if file exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

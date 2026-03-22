@@ -1,0 +1,138 @@
+{
+  "_templateId": 3161,
+  "_templateName": "Generate Content From Google Sheets to X with GPT-4",
+  "_templateDescription": "AI-Powered Social Media Content Automation\n\n🧑‍💻 Who is this for?\nThis workflow is perfect for social media managers, content creators, and digital marketers who want to save time by automating social media post generation and publishing across platforms.\n\n📌 What problem does this solve?\nManually generating and scheduling social media content is time-consuming and repetitive. This workflow automates content creation and publishing, allowing you to:\n\nStreamline content generation using AI\nEnsure consistent posting across social media platforms\nTrack published posts in Google Sheets\n\n🔍 What this workflow does:\nFetches content ideas from a Google Sheet.\nGenerates social media posts using OpenAI's GPT-4.\nChecks the target platform (e.g., Twitter/X, LinkedIn).\nPosts the content to the chosen social media platform.\nUpdates the Google Sheet with the generated post and timestamp.\n\n🛠️ Setup Guide:\nConnect Google Sheets: Ensure you have a Google Sheet with content ideas (columns: Idea, Status, Generated Post).\nSet up OpenAI API Key: Provide your OpenAI API key for GPT-4.\nConfigure Social Media Accounts: Link your Twitter/X or other social media accounts using n8n's built-in nodes.\nTest the Workflow: Run the workflow to verify automation.\nSchedule Automation: Set a recurring trigger (e.g., daily) to automate posting.\n\n🔧 Customization Tips:\nAdjust prompt inputs in the OpenAI node to tailor the tone and style.\nAdd more platforms (e.g., Instagram, Facebook) by duplicating the social media node.\nInclude analytics tracking for engagement insights.\n\n📊 Example Use Cases:\nAutomatically generate and share daily motivational quotes.\nPost product updates and announcements.\nShare curated industry news and insights.\n\nThis workflow saves time and keeps your social media presence active and engaging effortlessly. 🚀\n",
+  "_templateCreatedAt": "2025-03-14T08:03:42.663Z",
+  "_templateTotalViews": 8488,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:47:45.754Z",
+  "nodes": [
+    {
+      "name": "Get Content Ideas",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        200,
+        300
+      ],
+      "parameters": {
+        "range": "Sheet1!A:C",
+        "sheetId": "YOUR_GOOGLE_SHEET_ID"
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": "YOUR_GOOGLE_SHEETS_CREDENTIALS"
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Generate Post with OpenAI",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        500,
+        300
+      ],
+      "parameters": {
+        "model": "gpt-4",
+        "prompt": "Create a social media post for {{$node[\"Get Content Ideas\"].json[\"Platform\"]}} based on this idea: {{$node[\"Get Content Ideas\"].json[\"Idea\"]}}. Keep it engaging and concise."
+      },
+      "credentials": {
+        "openAIApi": "YOUR_OPENAI_CREDENTIALS"
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Check Platform",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        800,
+        300
+      ],
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "{{$node[\"Get Content Ideas\"].json[\"Platform\"]}}",
+              "value2": "Twitter",
+              "operation": "equal"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Post to Twitter",
+      "type": "n8n-nodes-base.twitter",
+      "position": [
+        1000,
+        200
+      ],
+      "parameters": {
+        "text": "{{$node[\"Generate Post with OpenAI\"].json[\"text\"]}}"
+      },
+      "credentials": {
+        "twitterOAuth1Api": "YOUR_TWITTER_CREDENTIALS"
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Update Google Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1200,
+        300
+      ],
+      "parameters": {
+        "range": "Sheet1!D:F",
+        "values": "Posted,{{$node[\"Generate Post with OpenAI\"].json[\"text\"]}},{{Date.now()}}",
+        "sheetId": "YOUR_GOOGLE_SHEET_ID",
+        "updateOperation": "append"
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": "YOUR_GOOGLE_SHEETS_CREDENTIALS"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Check Platform": {
+      "main": [
+        [
+          {
+            "node": "Post to Twitter",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Post to Twitter": {
+      "main": [
+        [
+          {
+            "node": "Update Google Sheet",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Get Content Ideas": {
+      "main": [
+        [
+          {
+            "node": "Generate Post with OpenAI",
+            "type": "main"
+          }
+        ]
+      ]
+    },
+    "Generate Post with OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Check Platform",
+            "type": "main"
+          }
+        ]
+      ]
+    }
+  }
+}

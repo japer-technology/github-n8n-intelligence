@@ -1,0 +1,149 @@
+{
+  "_templateId": 4211,
+  "_templateName": "IOT device control with MQTT and webhook",
+  "_templateDescription": ". \n\nIOT device control with MQTT and webhook\n\n\nThis workflow is for users wanting a practical example of how to control IOT systems using the MQTT protocol in an an n8n environment.\n\nThe template provides typical n8n MQTT and Webhook node implementation and configuration settings necessary to set IOT device inputs and outputs.\n\nHow it works\n\nA webpage with IOT control 'on and 'off' buttons is presented to the user. When a button is selected on the webpage the value is sent via a webhook to trigger the active workflow. The workflow set node then prepares the received value into a message payload. It then passes the message to the MQTT node for publishing the topic with the payload to a cloud based MQTT broker. A remote ESP32 micro-controller subscribes to the broker and reads the payload contained in the topic. The ESP32 will then toggle the GPIO pin depending on the topic payload value.\n\nThe IOT control webpage\n\nThe webpage is a simple HTML page containing the  clickable 'on' and 'off' buttons. It also has the get webhook URL that sends the selected value to the n8n workflow in this case running locally.\n\n The URL webhook format is http://localhost:5678/webhook/pin-control?value=action\n\nThe webpage code\n\nIOT-control.html\n\nIOT device \n\nThe IOT device is an ESP32 micro-controller running on a remote network. To keep it simple GPIO2 is selected as the control output.  In this case when the received value is \"on\" GPIO2 goes high a led will turn on in the ESP32. It will go off when the received value is \"off\".\n\nThe program for the ESP32 IOT control is 'main.py' . You will require a micropython interpreter to be uploaded to the ESP32 for the program to run automatically. The code can be easily edited and modified to accommodate any further attached IOT devices.\n\nThe ESP32 main.py code\n\nmain.py\n\nHow to customise this workflow to your needs\n\nESP32\n\nYou will need a working ESP32 installed with a micro-python interpreter.\nThe code main.py is provided.\nThe main.py program can loaded and edited with a python IDE. I used Thonny for this example.\nUse a free MQTT broker to get started. I used \"broker.emqx.io\" in the code.\n\nIOT Control Webpage\n\nThe webpage contains HTML and can be easily edit to enhance functionality. The embedded webhook is configured for n8n production mode. http://localhost:5678/webhook/pin-control?value=action\nIf you want to run the page in test mode you will use the following URL. \nhttp://localhost:5678/webhook-test/pin-control?value=action\n\n\nn8n workflow.\n\nThe workflow is a good demonstration of how to control IOT devices using n8n.\nFollowing these steps will give a good insight for microcontroller automation.\n\n",
+  "_templateCreatedAt": "2025-05-19T04:38:11.299Z",
+  "_templateTotalViews": 867,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:50:24.478Z",
+  "id": "01UHgh673YDyv5xN",
+  "meta": {
+    "instanceId": "7221598654c32899e94731aab144bdcd338735c2ac218dc0873131caa0be0ef8",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "IOT control via MQTT and webhook",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "3d3b2e80-4e4e-43ec-b2fd-7000e7307915",
+      "name": "MQTT Publish Topic Node",
+      "type": "n8n-nodes-base.mqtt",
+      "position": [
+        680,
+        -20
+      ],
+      "parameters": {
+        "topic": "pin-control",
+        "message": "={{ $json.pin }}",
+        "options": {},
+        "sendInputData": false
+      },
+      "credentials": {
+        "mqtt": {
+          "id": "credential-id",
+          "name": "mqtt Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f4444f19-424a-487b-8d7c-3c609a55b913",
+      "name": "Set data for MQTT message payload",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        360,
+        -20
+      ],
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "pin",
+              "value": "={{ $json.query.value }}"
+            }
+          ]
+        },
+        "options": {},
+        "keepOnlySet": true
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "3ed996b8-419f-458a-a717-b35e1a52a851",
+      "name": "IOT control Webhook ",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        20,
+        -20
+      ],
+      "webhookId": "69036479-fe77-40e1-a700-8a2e2602e0c8",
+      "parameters": {
+        "path": "pin-control",
+        "options": {}
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "40fa6c2a-c515-412b-93df-eceb993c38c9",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -60,
+        -160
+      ],
+      "parameters": {
+        "height": 120,
+        "content": "When the \"on\" or \"off\" button is clicked on the IOT control webpage the webhook gets the selected value and triggers the workflow "
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "159f8c6e-285a-443a-bd9d-ae3456b9a6a8",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        300,
+        -140
+      ],
+      "parameters": {
+        "height": 80,
+        "content": "The set node prepares the receive data as a message payload for the MQTT topic"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "250140e6-f46c-42c2-b79a-537ec4975b97",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        620,
+        -160
+      ],
+      "parameters": {
+        "height": 100,
+        "content": "Publishes MQTT topic \"pin-control\" with the payload data to control the GPIO on the ESP32 microcontroller"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f5d124a9-c6e1-44f5-b088-cafb8e5bd602",
+  "connections": {
+    "IOT control Webhook ": {
+      "main": [
+        [
+          {
+            "node": "Set data for MQTT message payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set data for MQTT message payload": {
+      "main": [
+        [
+          {
+            "node": "MQTT Publish Topic Node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

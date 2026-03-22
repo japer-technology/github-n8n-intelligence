@@ -1,0 +1,207 @@
+{
+  "_templateId": 5365,
+  "_templateName": "🛠️ TheHive Tool MCP Server",
+  "_templateDescription": "Need help? Want access to this workflow + many more paid workflows + live Q&A sessions with a top verified n8n creator?\n\nJoin the community\n\nComplete MCP server exposing all TheHive Tool operations to AI agents. Zero configuration needed - all 4 operations pre-built.\n\n⚡ Quick Setup\n\nImport this workflow into your n8n instance\nActivate the workflow to start your MCP server\nCopy the webhook URL from the MCP trigger node\nConnect AI agents using the MCP URL\n\n🔧 How it Works\n\n• MCP Trigger: Serves as your server endpoint for AI agent requests\n• Tool Nodes: Pre-configured for every TheHive Tool operation\n• AI Expressions: Automatically populate parameters via $fromAI() placeholders\n• Native Integration: Uses official n8n TheHive Tool tool with full error handling\n\n📋 Available Operations (4 total)\n\nEvery possible TheHive Tool operation is included:\n\n🔧 Alert (0 operations)\n\n🔧 Case (0 operations)\n\n🔧 Log (4 operations)\n\n• Create a log\n• Execute a responder\n• Get many logs\n• Get a log\n\n🔧 Observable (0 operations)\n\n🔧 Task (0 operations)\n\n🤖 AI Integration\n\nParameter Handling: AI agents automatically provide values for:\n• Resource IDs and identifiers\n• Search queries and filters\n• Content and data payloads\n• Configuration options\n\nResponse Format: Native TheHive Tool API responses with full data structure\n\nError Handling: Built-in n8n error management and retry logic\n\n💡 Usage Examples\n\nConnect this MCP server to any AI agent or workflow:\n\n• Claude Desktop: Add MCP server URL to configuration\n• Custom AI Apps: Use MCP URL as tool endpoint\n• Other n8n Workflows: Call MCP tools from any workflow\n• API Integration: Direct HTTP calls to MCP endpoints\n\n✨ Benefits\n\n• Complete Coverage: Every TheHive Tool operation available\n• Zero Setup: No parameter mapping or configuration needed\n• AI-Ready: Built-in $fromAI() expressions for all parameters\n• Production Ready: Native n8n error handling and logging\n• Extensible: Easily modify or add custom logic\n\n&gt; 🆓 Free for community use! Ready to deploy in under 2 minutes.",
+  "_templateCreatedAt": "2025-06-26T03:12:51.950Z",
+  "_templateTotalViews": 960,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:48:29.648Z",
+  "id": "sBJlEpK3x5T80uBi",
+  "meta": null,
+  "name": "TheHive Tool MCP Server",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "7b102b99-0596-4440-873e-bd81881c1261",
+      "name": "Workflow Overview 0",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1460,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "5713ee36-a689-4bfe-9d83-2597de8d9c49",
+      "name": "TheHive Tool MCP Server",
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "position": [
+        -420,
+        200
+      ],
+      "webhookId": "79203b81-fef2-423e-aaa9-356565708c94",
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "2e53442e-a6cb-4c15-88c0-446d455ac245",
+      "name": "Create a log",
+      "type": "n8n-nodes-base.theHiveTool",
+      "position": [
+        -800,
+        620
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "ca270653-6815-4a58-b5fa-86be59745539",
+      "name": "Execute a responder",
+      "type": "n8n-nodes-base.theHiveTool",
+      "position": [
+        -580,
+        620
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "7f01e558-b10f-4242-989a-caa2f3a15b74",
+      "name": "Get many logs",
+      "type": "n8n-nodes-base.theHiveTool",
+      "position": [
+        -360,
+        620
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "96bd5158-ae2b-46ba-a94b-f2524d3b9a21",
+      "name": "Get a log",
+      "type": "n8n-nodes-base.theHiveTool",
+      "position": [
+        -140,
+        620
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "14f28435-f1e6-4861-a452-f197c41c92a9",
+      "name": "Sticky Note 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1000,
+        600
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "shared": [
+    {
+      "role": "workflow:owner",
+      "project": {
+        "id": "G5fce9xGuBAsWBXe",
+        "icon": null,
+        "name": "David Ashby <david.ashby.lds@gmail.com>",
+        "type": "personal",
+        "createdAt": "2025-06-04T02:55:02.013Z",
+        "updatedAt": "2025-06-04T02:56:01.361Z",
+        "projectRelations": [
+          {
+            "role": "project:personalOwner",
+            "user": {
+              "id": "715c1c00-cb48-4712-9a32-f1f4b6db2b30",
+              "role": "global:owner",
+              "email": "david.ashby.lds@gmail.com",
+              "disabled": false,
+              "lastName": "Ashby",
+              "settings": {
+                "npsSurvey": {
+                  "responded": true,
+                  "lastShownAt": 1749357655581
+                },
+                "userActivated": true,
+                "userActivatedAt": 1749075994495,
+                "easyAIWorkflowOnboarded": true,
+                "firstSuccessfulWorkflowId": "3N3vVikZb3MckFYm"
+              },
+              "createdAt": "2025-06-04T02:55:01.745Z",
+              "firstName": "David",
+              "isPending": false,
+              "updatedAt": "2025-06-08T04:40:58.399Z",
+              "mfaEnabled": false,
+              "personalizationAnswers": {
+                "version": "v4",
+                "personalization_survey_n8n_version": "1.95.3",
+                "personalization_survey_submitted_at": "2025-06-04T02:56:07.075Z"
+              }
+            },
+            "userId": "715c1c00-cb48-4712-9a32-f1f4b6db2b30",
+            "createdAt": "2025-06-04T02:55:02.013Z",
+            "projectId": "G5fce9xGuBAsWBXe",
+            "updatedAt": "2025-06-04T02:55:02.013Z"
+          }
+        ]
+      },
+      "createdAt": "2025-06-20T19:42:33.272Z",
+      "projectId": "G5fce9xGuBAsWBXe",
+      "updatedAt": "2025-06-20T19:42:33.272Z",
+      "workflowId": "sBJlEpK3x5T80uBi"
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "timezone": "America/New_York"
+  },
+  "createdAt": "2025-06-20T19:42:33.272Z",
+  "updatedAt": "2025-06-26T03:12:32.000Z",
+  "versionId": "c8f1e3a5-b4c1-40c1-9f24-0e9b9dc5d202",
+  "isArchived": false,
+  "staticData": null,
+  "connections": {
+    "Get a log": {
+      "ai_tool": [
+        [
+          {
+            "node": "TheHive Tool MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a log": {
+      "ai_tool": [
+        [
+          {
+            "node": "TheHive Tool MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get many logs": {
+      "ai_tool": [
+        [
+          {
+            "node": "TheHive Tool MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a responder": {
+      "ai_tool": [
+        [
+          {
+            "node": "TheHive Tool MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "triggerCount": 0
+}

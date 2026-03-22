@@ -1,0 +1,346 @@
+{
+  "_templateId": 4370,
+  "_templateName": "Auto Meeting Summarizer with Google Drive, OpenAI Whisper & GPT-4 to Sheets",
+  "_templateDescription": "🎤 Audio-to-Insights: Auto Meeting Summarizer\n\nTransform your meeting recordings into actionable insights automatically. This powerful n8n workflow monitors your Google Drive for new audio files, transcribes them using OpenAI's Whisper, generates intelligent summaries with ChatGPT, and logs everything in Google Sheets - all without lifting a finger.\n\n🔄 How It Works\n\nThis workflow operates as a seamless 6-step automation pipeline:\n\nStep 1: Smart Detection\nThe workflow continuously monitors a designated Google Drive folder (polls every minute) for newly uploaded audio files.\n\nStep 2: Secure Download\nWhen a new audio file is detected, the system automatically downloads it from Google Drive for processing.\n\nStep 3: AI Transcription\nOpenAI's Whisper technology converts your audio recording into accurate text transcription, supporting multiple audio formats.\n\nStep 4: Intelligent Summarization\nChatGPT processes the transcript using a specialized prompt that extracts:\nKey discussion points and decisions\nAction items with assigned persons and deadlines\nPriority levels and follow-up tasks\nClean, professional formatting\n\nStep 5: Timestamp Generation\nThe system automatically adds the current date and formats it consistently for tracking purposes.\n\nStep 6: Automated Logging\nThe final summary is appended to your Google Sheets document with the date, creating a searchable archive of all meeting insights.\n\n⚙️ Setup Steps\n\nPrerequisites\nBefore setting up the workflow, ensure you have:\nActive Google Drive account\nOpenAI API key with credits\nGoogle Sheets access\nn8n instance (cloud or self-hosted)\n\nConfiguration Steps\n\n1. Credential Setup\nGoogle Drive OAuth2**: Required for folder monitoring and file downloads\nOpenAI API Key**: Needed for both transcription (Whisper) and summarization (ChatGPT)\nGoogle Sheets OAuth2**: Essential for writing summaries to your spreadsheet\n\n2. Google Drive Configuration\nCreate a dedicated folder in Google Drive for meeting recordings\nCopy the folder ID from the URL (the long string after /folders/)\nUpdate the folderToWatch parameter in the workflow\n\n3. Google Sheets Preparation\nCreate a new Google Sheet or use an existing one\nEnsure it has columns: Date and Meeting Summary\nCopy the spreadsheet ID from the URL\nUpdate the documentId parameter in the workflow\n\n4. Audio Requirements\nSupported Formats**: MP3, WAV, M4A, MP4\nRecommended Size**: Under 100MB for optimal processing\nLanguage**: Optimized for English (customizable for other languages)\nQuality**: Clear audio produces better transcriptions\n\n5. Workflow Activation\nImport the workflow JSON into your n8n instance\nConfigure all credential connections\nTest with a sample audio file\nActivate the workflow trigger\n\n🚀 Use Cases\n\nProject Management\nTeam Standup Summaries**: Convert daily standups into actionable task lists\nSprint Retrospectives**: Extract improvement points and action items\nStakeholder Updates**: Generate concise reports for leadership\n\nSales & Customer Success\nDiscovery Call Notes**: Capture prospect pain points and requirements\nDemo Follow-ups**: Track questions, objections, and next steps\nCustomer Check-ins**: Monitor satisfaction and expansion opportunities\n\nConsulting & Professional Services\nClient Strategy Sessions**: Document recommendations and implementation plans\nRequirements Gathering**: Organize complex project specifications\nProgress Reviews**: Track deliverables and milestone achievements\n\nHR & Training\nInterview Debriefs**: Standardize candidate evaluation notes\nTraining Sessions**: Create searchable knowledge bases\nPerformance Reviews**: Document development plans and goals\n\nResearch & Development\nBrainstorming Sessions**: Capture innovative ideas and concepts\nTechnical Reviews**: Log decisions and architectural choices\nUser Research**: Organize feedback and insights systematically\n\n💡 Advanced Customization Options\n\nEnhanced Summarization\nModify the ChatGPT prompt to focus on specific elements:\nAdd speaker identification for multi-person meetings\nInclude sentiment analysis for customer calls\nGenerate department-specific summaries (technical, sales, legal)\nExtract financial figures and metrics automatically\n\nIntegration Expansions\nSlack Integration**: Auto-post summaries to relevant channels\nEmail Notifications**: Send summaries to meeting participants\nCRM Updates**: Push action items directly to Salesforce/HubSpot\nCalendar Integration**: Schedule follow-up meetings based on action items\n\nQuality Improvements\nAudio Preprocessing**: Add noise reduction before transcription\nMulti-language Support**: Configure for international teams\nCustom Templates**: Create industry-specific summary formats\nApproval Workflows**: Add human review before final storage\n\n🛠️ Troubleshooting & Best Practices\n\nCommon Issues\nLarge File Processing**: Split recordings over 100MB into smaller segments\nPoor Audio Quality**: Use noise reduction tools before uploading\nAPI Rate Limits**: Implement delay nodes for high-volume usage\nFormatting Issues**: Adjust ChatGPT prompts for consistent output\n\nOptimization Tips\nUpload files in supported formats only\nEnsure stable internet connection for cloud processing\nMonitor OpenAI API usage and costs\nRegularly backup your Google Sheets data\nTest workflow changes with sample files first\n\n📊 Expected Outputs\n\nSample Summary Format:\nMeeting Summary - March 15, 2024\n\nKey Discussion Points:\nQ1 budget review and allocation decisions\nNew product launch timeline and milestones\nTeam restructuring and role assignments\n\nAction Items:\nJohn: Finalize budget proposal by March 20th (High Priority)\nSarah: Schedule product demo sessions for March 25th\nTeam: Submit org chart feedback by March 18th\n\nDecisions Made:\nApproved additional marketing budget of $50K\nDelayed product launch to April 15th for quality assurance\nPromoted Lisa to Senior Developer role\n\n📞 Questions & Support\n\nFor any questions, customizations, or technical support regarding this workflow:\n\n📧 Email Support\nPrimary Contact**: Yaron@nofluff.online\nResponse Time**: Within 24 hours on business days\nBest For**: Setup questions, customization requests, troubleshooting\n\n🎥 Learning Resources\nYouTube Channel**: https://www.youtube.com/@YaronBeen/videos\n  Step-by-step setup tutorials\n  Advanced customization guides  \n  Workflow optimization tips\n\n🔗 Professional Network\nLinkedIn**: https://www.linkedin.com/in/yaronbeen/\n  Connect for ongoing support\n  Share your workflow success stories\n  Get updates on new automation ideas\n\n💡 What to Include in Your Support Request\nDescribe your specific use case\nShare any error messages or logs\nMention your n8n version and setup type\nInclude sample audio file characteristics (if relevant)\n\nReady to transform your meeting chaos into organized insights? Download the workflow and start automating your meeting summaries today!",
+  "_templateCreatedAt": "2025-05-25T05:37:57.429Z",
+  "_templateTotalViews": 2408,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:43:39.121Z",
+  "meta": {
+    "instanceId": "5aaf4236c70e34e423fbdb2c7b754d19253a933bb1476d548f75848a01e473cf"
+  },
+  "nodes": [
+    {
+      "id": "ab3309d9-cb3e-4b13-bb43-a214722c50b4",
+      "name": "Looking for uploading file",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        1620,
+        120
+      ],
+      "parameters": {
+        "event": "fileCreated",
+        "options": {},
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "specificFolder",
+        "folderToWatch": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1Wjd0_fptBBBtLZySHt0qYPpZA_dBjyYi",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1Wjd0_fptBBBtLZySHt0qYPpZA_dBjyYi",
+          "cachedResultName": "meeting audio"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "6c7bed41-fcb2-46de-b764-f0df6bf15d72",
+      "name": "Download file",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1920,
+        120
+      ],
+      "parameters": {
+        "fileId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "options": {},
+        "operation": "download"
+      },
+      "typeVersion": 3
+    },
+    {
+      "id": "e44378ed-d689-4692-abe0-e9abc251dd40",
+      "name": "Transcribe the file",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        2160,
+        120
+      ],
+      "parameters": {
+        "options": {},
+        "resource": "audio",
+        "operation": "transcribe"
+      },
+      "typeVersion": 1.8
+    },
+    {
+      "id": "b5cfacc7-59c6-47ad-8d4b-ce56f6c8b339",
+      "name": "Create summary",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        2380,
+        120
+      ],
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1",
+          "cachedResultName": "GPT-4.1"
+        },
+        "options": {},
+        "messages": {
+          "values": [
+            {
+              "role": "system",
+              "content": "🧠 System Prompt: Meeting Summarizer & Action Item Extractor\n\nYou are an intelligent meeting assistant. Your job is to carefully listen to or read through the meeting transcript and:\n\nSummarize Key Discussion Points – Highlight the main topics discussed, decisions made, issues raised, and relevant insights. Keep it concise and organized.\n\nExtract Action Items – Identify specific tasks or follow-ups. For each action item, include:\n\nTask Description\n\nAssigned Person (if mentioned)\n\nDeadline (if mentioned)\n\nPriority (if indicated or can be inferred)\n\nUse clear formatting, such as bullet points and headings, to make the output easy to scan.\n\nTone: Professional, clear, and neutral.\nAvoid: Irrelevant chatter, filler content, or personal commentary.\nFocus on: Clarity, accuracy, and actionable information."
+            },
+            {
+              "content": "={{ $json.text }}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1.8
+    },
+    {
+      "id": "da7cec5f-301d-456b-8ca6-f6b676579e2d",
+      "name": "Get date",
+      "type": "n8n-nodes-base.dateTime",
+      "position": [
+        2760,
+        120
+      ],
+      "parameters": {
+        "options": {},
+        "outputFieldName": "Date"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "b51f7dc9-2973-4f03-b160-90dc3ac0c0d2",
+      "name": "Format date",
+      "type": "n8n-nodes-base.dateTime",
+      "position": [
+        3060,
+        120
+      ],
+      "parameters": {
+        "date": "={{ $json.Date }}",
+        "options": {},
+        "operation": "formatDate"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "dc26f36b-7781-472f-86f4-6bd83270c95f",
+      "name": "Save the summary",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3320,
+        120
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "Date": "={{ $json.formattedDate }}",
+            "Meeting Summary": "={{ $('Create summary').item.json.message.content }}"
+          },
+          "schema": [
+            {
+              "id": "Date",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Date",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Meeting Summary",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Meeting Summary",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Date"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_AWS_SECRET_KEY_HERE-2Nc/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_AWS_SECRET_KEY_HERE-2Nc",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_AWS_SECRET_KEY_HERE-2Nc/edit?usp=drivesdk",
+          "cachedResultName": "meeting"
+        }
+      },
+      "typeVersion": 4.5
+    },
+    {
+      "id": "cf384106-5413-4a92-9bdb-cce26b2452d4",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1560,
+        0
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 500,
+        "height": 300,
+        "content": "## Download the file \nThese two nodes are responsible for looking and downloading the uploaded file"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a060bdea-3526-41c7-b16e-7a98bb843c98",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2120,
+        0
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 560,
+        "height": 300,
+        "content": "## Generate Summary \nThese two nodes are responsible for looking and downloading the uploaded file"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f65f26e5-03f5-4c49-bb41-69c3dd4ac6a8",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2740,
+        0
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 480,
+        "height": 300,
+        "content": "## Get date\nThese two nodes are responsible for getting and formatting date"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "71991313-d9c3-406f-a4d8-177a5d853dd8",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 1300,
+        "height": 320,
+        "content": "=======================================\n            WORKFLOW ASSISTANCE\n=======================================\nFor any questions or support, please contact:\n    Yaron@nofluff.online\n\nExplore more tips and tutorials here:\n   - YouTube: https://www.youtube.com/@YaronBeen/videos\n   - LinkedIn: https://www.linkedin.com/in/yaronbeen/\n=======================================\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "54716f9a-097b-4e6e-82a0-5fcf9ff8e27b",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        340
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 1289,
+        "height": 2098,
+        "content": "### 🎤 Meeting Audio to Summary in Google Sheets\n\nAutomatically transcribe a meeting audio file, generate a concise summary using AI, and log it in Google Sheets. Perfect for:\n✅ Team syncs — stay aligned without rewatching recordings\n✅ Client calls — quick insight into discussions\n✅ Knowledge management — searchable summaries\n\n---\n\n### ⚙️ What's Used\n\n**n8n Nodes:**\nDrive Upload → Download File → Transcribe Recording → Create Summary → Get Date → Format Date → Append to Google Sheets\n\n**External Tools:**\n\n* **Google Drive** – Upload and host meeting recordings\n* **OpenAI / Whisper** – Audio transcription\n* **ChatGPT** – Summary generation\n* **Google Sheets** – Final summary storage\n\n---\n\n### 🔑 Setup – Credentials Needed\n\n* **Google Drive OAuth2** → To access and download files\n* **OpenAI API Key** → For transcription & summary\n* **Google Sheets OAuth2** → To append rows to the sheet\n\n---\n\n### 📝 Upload Flow\n\n**Trigger:** Upload audio file to a designated Google Drive folder\n\n**Input Format:**\n\n* **Audio Type:** MP3 / WAV / M4A\n* **File Size:** Recommended < 100MB\n* **Language:** English (default; can customize for others)\n\n---\n\n### 🚀 Workflow Steps\n\n1. **Detect File Upload:**\n   Monitor a specific Google Drive folder for new audio files\n2. **Download File:**\n   Fetch the uploaded audio file\n3. **Transcribe Audio:**\n   Use Whisper (OpenAI) to convert speech to text\n4. **Generate Summary:**\n   Pass transcript to GPT to summarize key points\n5. **Get & Format Date:**\n   Add timestamp to summary\n6. **Save Summary:**\n   Append date + summary into a Google Sheet\n\n**Sheet Example Columns:**\n`Date`, `Meeting Summary`\n\n---\n\n### 🧠 Use Cases\n\n* **Project Managers** → Share concise updates with stakeholders\n* **Sales Teams** → Summarize discovery or demo calls\n* **Consultants** → Keep track of discussions for reporting\n\n---\n\n### 💡 Pro Tips\n\n* Add speaker labels to transcript if using enhanced audio models\n* Customize the prompt to tailor summaries for specific departments (e.g., sales, product)\n* Schedule the workflow to run daily/weekly with new uploads\n\n---\n\n### 🛠️ Customize It\n\n* Use a form trigger if you want users to submit metadata with uploads\n* Add Slack integration to share summaries with the team\n* Store full transcripts alongside summaries for deeper context\n\n---\n\nThis setup gives your team an always-on assistant for meetings — listen once, never retype. Upload audio, get insight, move forward.\n"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get date": {
+      "main": [
+        [
+          {
+            "node": "Format date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format date": {
+      "main": [
+        [
+          {
+            "node": "Save the summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download file": {
+      "main": [
+        [
+          {
+            "node": "Transcribe the file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create summary": {
+      "main": [
+        [
+          {
+            "node": "Get date",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe the file": {
+      "main": [
+        [
+          {
+            "node": "Create summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Looking for uploading file": {
+      "main": [
+        [
+          {
+            "node": "Download file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

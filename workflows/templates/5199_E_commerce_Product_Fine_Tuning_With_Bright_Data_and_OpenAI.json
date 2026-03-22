@@ -1,0 +1,252 @@
+{
+  "_templateId": 5199,
+  "_templateName": "E-commerce Product Fine-Tuning With Bright Data and OpenAI",
+  "_templateDescription": "\n\nThis workflow contains community nodes that are only compatible with the self-hosted version of n8n. \n\nThis workflow automates the process of scraping product data from e-commerce websites and using it to fine-tune a custom OpenAI GPT model for generating high-quality marketing copy and product descriptions.\n\nMain Use Cases\n\nFine-tune OpenAI models with real product data from hundreds of supported e-commerce websites for marketing content generation.\nCreate custom AI models specialized in writing compelling product descriptions across different industries and platforms.\nAutomate the entire pipeline from data collection to model training using Bright Data's extensive scraper library.\nGenerate marketing copy using your custom-trained model via an interactive chat interface.\n\nHow it works\n\nThe workflow operates in two main phases: model training and model usage, organized into these stages:\n\nData Collection & Processing\n   Manually triggered to start the fine-tuning process.\n   Uses Bright Data's web scraper to extract product information from any supported e-commerce platform (Amazon, eBay, Shopify stores, Walmart, Target, and hundreds of other websites).\n   Collects product titles, brands, features, descriptions, ratings, and availability status from your chosen platform.\n   Easily customizable to scrape from different websites by simply changing the dataset configuration and product URLs.\n\nTraining Data Preparation\n   A Code node processes the scraped product data to create training examples in OpenAI's required JSONL format.\n   For each product, generates a complete training example with:\n     System message defining the AI's role as a marketing assistant.\n     User prompt containing specific product details (title, brand, features, original description snippet).\n     Assistant response providing an ideal marketing description template.\n   Compiles all training examples into a single JSONL file ready for OpenAI fine-tuning.\n\nModel Fine-Tuning\n   Uploads the training file to OpenAI using the OpenAI File Upload node.\n   Initiates a fine-tuning job via HTTP Request to OpenAI's fine-tuning API using the GPT-4o-mini model as the base.\n   The fine-tuning process runs on OpenAI's servers to create your custom model.\n\nInteractive Chat Interface\n   Provides a chat trigger that allows real-time interaction with your fine-tuned model.\n   An AI Agent node connects to your custom-trained OpenAI model.\n   Users can chat with the model to generate product descriptions, marketing copy, or other content based on the training.\n\nCustom Model Integration\n   The OpenAI Chat Model node is configured to use your specific fine-tuned model ID.\n   Delivers responses trained on your product data for consistent, high-quality marketing content.\n\nSummary Flow:\n\nManual Trigger → Scrape E-commerce Products (Bright Data) → Process & Format Training Data (Code) → Upload Training File (OpenAI) → Start Fine-Tuning Job (HTTP Request) | Parallel: Chat Trigger → AI Agent → Custom Fine-Tuned Model Response\n\nBenefits:\n\nFully automated pipeline from raw product data to trained AI model.\nWorks with hundreds of different e-commerce websites through Bright Data's extensive scraper library.\nCreates specialized models trained on real e-commerce data for authentic marketing copy across various industries.\nScalable solution that can be adapted to different product categories, niches, or websites.\nInteractive chat interface for immediate access to your custom-trained model.\nCost-effective fine-tuning using OpenAI's most efficient model (GPT-4o-mini).\nEasily customizable with different websites, product URLs, training prompts, and model configurations.\n\nSetup Requirements:\n\nBright Data API credentials for web scraping (supports hundreds of e-commerce websites).\nOpenAI API key with fine-tuning access.\nReplace placeholder credential IDs and model IDs with your actual values.\nCustomize the product URLs list and Bright Data dataset for your specific website and use case.\nThe workflow can be adapted for any e-commerce platform supported by Bright Data's scraping infrastructure.\n",
+  "_templateCreatedAt": "2025-06-24T12:51:08.885Z",
+  "_templateTotalViews": 216,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:47:13.079Z",
+  "meta": {
+    "instanceId": "8212eef3ce503a3ff3b5a20b8326474820fb627fc1c3dc8486795debd39d8d25",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "93bc29f2-3004-4daa-8def-89cf9b4ad46a",
+      "name": "When clicking 'Execute workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "8a6e68ec-ff87-4c6b-b629-34021258a582",
+      "name": "BrightData",
+      "type": "@brightdata/n8n-nodes-brightdata.brightData",
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "urls": "[\n  {\"url\":\"https://www.amazon.com/AmazonBasics-Multipurpose-Copy-Printer-Paper/dp/B01FV0F8H8/ref=zg_bs_g_office-products_d_sccl_1/142-6608713-4877828?psc=1\"},\n  {\"url\":\"https://www.amazon.com/Scotch-Shipping-Packaging-Dispenser-142-6/dp/B000J07BRQ/ref=zg_bs_g_office-products_d_sccl_2/142-6608713-4877828?psc=1\"},\n  {\"url\":\"https://www.amazon.com/Amazon-Basics-Premium-Colored-Multicolor/dp/B07D93R5HV/ref=zg_bs_g_office-products_d_sccl_3/142-6608713-4877828?psc=1\"},\n  {\"url\":\"https://www.amazon.com/HP-Cartridge-Black-3YM57AN-Tri-Color/dp/B08412PTS8/ref=zg_bs_g_office-products_d_sccl_4/142-6608713-4877828?psc=1\"},\n  {\"url\":\"https://www.amazon.com/HP-Printer-Paper-Print20-200060R/dp/B001AFL8GY/ref=zg_bs_g_office-products_d_sccl_5/142-6608713-4877828?psc=1\"},\n  {\"url\":\"https://www.amazon.com/Scotch-Shipping-Packaging-Dispenser-142L/dp/B000MVV6AA/ref=zg_bs_g_office-products_d_sccl_6/142-6608713-4877828?psc=1\"},\n  {\"url\":\"https://www.amazon.com/Amazon-Basics-50-Sheet-Legal-Inches/dp/B00QSR9URI/ref=zg_bs_g_office-products_d_sccl_7/142-6608713-4877828?psc=1\"},\n  {\"url\":\"https://www.amazon.com/Sharpie-Permanent-Markers-Resistant-Coloring/dp/B00006IFHD/ref=zg_bs_g_office-products_d_sccl_8/142-6608713-4877828?psc=1\"},\n  {\"url\":\"https://www.amazon.com/AmazonBasics-Thermal-Laminating-Plastic-Laminator/dp/B079KL4C91/ref=zg_bs_g_office-products_d_sccl_9/142-6608713-4877828?psc=1\"},\n  {\"url\":\"https://www.amazon.com/YSAGi-Leather-Protector-Non-Slip-Waterproof/dp/B0BMTPC44X/ref=zg_bs_g_office-products_d_sccl_10/142-6608713-4877828?psc=1\"},\n  {\"url\":\"https://www.amazon.com/EZlifego-Multipurpose-Removable-Transparent-Household/dp/B07VNSXY31/ref=zg_bs_g_office-products_d_sccl_11/142-6608713-4877828?psc=1\"},\n  {\"url\":\"https://www.amazon.com/BIC-Highlighter-Chisel-Assorted-5-Count/dp/B000Q5ZGIA/ref=zg_bs_g_office-products_d_sccl_12/142-6608713-4877828?psc=1\"},\n  {\"url\":\"https://www.amazon.com/Academic-Planner-2025-2026-Monthly-Calendar/dp/B0DXPSZDP9/ref=zg_bs_g_office-products_d_sccl_22/142-6608713-4877828?psc=1\"}\n]\n",
+        "resource": "webScrapper",
+        "dataset_id": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gd_l1vijixj9g2vp7563",
+          "cachedResultName": "Amazon best seller products"
+        },
+        "requestOptions": {}
+      },
+      "credentials": {
+        "brightdataApi": {
+          "id": "credential-id",
+          "name": "brightdataApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "7a817929-aa8a-4813-9fd0-e778c46ad173",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// get all incoming items\nconst allInputItems = $input.all(); \n\nlet jsonlString = \"\";\n// define the training prompt\nconst systemMessage = \"You are an expert marketing assistant specializing in writing compelling and informative product descriptions.\";\n\n// loop through each item retrieved from the input\nfor (const item of allInputItems) {\n  const product = item.json; \n\n  // validate if the product data exists and is an object\n  if (!product || typeof product !== 'object') {\n    console.warn('Skipping an item because product data is missing or not an object:', item);\n    continue;\n  }\n\n  // extract product data\n  const title = product.title || \"N/A\";\n  const brand = product.brand || \"N/A\";\n  let featuresString = \"Not specified\";\n  if (product.features && Array.isArray(product.features) && product.features.length > 0) {\n    featuresString = product.features.slice(0, 5).join(', '); \n  }\n  // create a snippet of the original product description for training\n  const originalDescSnippet = (product.description || \"No original description available.\").substring(0, 250) + \"...\";\n  // create prompt with specific details about the product\n  const userPrompt = `Generate a product description for the following item. Title: ${title}. Brand: ${brand}. Key Features: ${featuresString}. Original Description Snippet: ${originalDescSnippet}.`;\n\n  // create template for the kind of description the AI should generate\n  let idealDescription = `Discover the ${title} from ${brand}, a top-choice for discerning customers. `;\n  idealDescription += `Key highlights include: ${featuresString}. `;\n  if (product.rating) {\n    idealDescription += `Boasting an impressive customer rating of ${product.rating} out of 5 stars! `;\n  }\n  idealDescription += `This product, originally described as \"${originalDescSnippet}\", is perfect for anyone seeking quality and reliability. `;\n  idealDescription += `Don't miss out on the ${product.availability === \"In Stock\" ? \"readily available\" : \"upcoming\"} ${title} – enhance your collection today!`;\n\n  // create a training example object in the format expected by OpenAI\n  const trainingExample = {\n    messages: [\n      { role: \"system\", content: systemMessage },\n      { role: \"user\", content: userPrompt },\n      { role: \"assistant\", content: idealDescription }\n    ]\n  };\n  jsonlString += JSON.stringify(trainingExample) + \"\\n\";\n}\n\n// remove any leading or trailing whitespace\nconst fileContentString = jsonlString.trim();\n\n// check if any product data was actually processed\nif (fileContentString.length === 0) {\n  console.warn(\"No product data was processed, outputting empty file content.\");\n  return [{ \n    json: { error: \"No products processed\", fileNameToUse: \"data.jsonl\" },\n    binary: {} \n  }];\n}\n\n// convert the final JSONL string into a Buffer (raw binary data)\nconst buffer = Buffer.from(fileContentString, 'utf-8');\n// define the filename that will be used when this data is sent to OpenAI\nconst actualFileNameForOpenAI = \"data.jsonl\";\n// define the MIME type for the file\nconst mimeType = 'application/jsonl'; \n\n// prepare the binary data for output\nconst binaryData = await this.helpers.prepareBinaryData(buffer, actualFileNameForOpenAI, mimeType);\n\n// return the processed data\nreturn [{\n  json: {\n    processedFileName: actualFileNameForOpenAI \n  },\n  binary: {\n    // the \"Input Data Field Name\" in the OpenAI node\n    \"data.jsonl\": binaryData \n  }\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "9e8f8656-79c5-4d8a-8e27-f07907ba852e",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {
+        "options": {
+          "purpose": "fine-tune"
+        },
+        "resource": "file",
+        "binaryPropertyName": "data.jsonl"
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 1.8
+    },
+    {
+      "id": "f391f934-1804-41ad-9ad5-303c613999b6",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        840,
+        0
+      ],
+      "parameters": {
+        "url": "https://api.openai.com/v1/fine_tuning/jobs",
+        "method": "POST",
+        "options": {},
+        "jsonBody": "={\n  \"training_file\": \"{{ $json.id }}\",\n  \"model\": \"gpt-4o-mini-2024-07-18\"\n} ",
+        "sendBody": true,
+        "specifyBody": "json",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "openAiApi"
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "add8279c-fdaf-4e6c-9b6b-242a85295cf5",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        0,
+        200
+      ],
+      "webhookId": "aa97eb0d-e190-40b8-aecd-f36f239f7ad1",
+      "parameters": {
+        "options": {}
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "72c8af8d-45e0-4ae8-b10b-723e8bf1f61c",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        220,
+        200
+      ],
+      "parameters": {
+        "options": {}
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "392b85ba-0ded-4838-ba17-df858e7f922d",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        260,
+        420
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_FINE_TUNED_MODEL_ID"
+        },
+        "options": {
+          "responseFormat": "text"
+        }
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "cab8fbc8-5cff-4b14-a36d-d7d89a83cf6e",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -380,
+        -480
+      ],
+      "parameters": {
+        "width": 280,
+        "height": 1080,
+        "content": "This n8n workflow automates scraping Amazon product data and uses it for fine-tuning a custom OpenAI model for marketing copy.\n\n## Steps Overview\n\n1. **Manual Trigger:**  \n   The workflow starts when you click \"Execute workflow\" in n8n.\n\n2. **Bright Data Node:**  \n   Scrapes product data from a list of Amazon URLs using Bright Data's web scraper integration.\n\n3. **Code Node:**  \n   Processes the scraped product data:\n   - Generates training examples (system prompt, user prompt, assistant response) for each product.\n   - Aggregates these examples into a `.jsonl` file formatted for OpenAI fine-tuning.\n\n4. **OpenAI File Upload Node:**  \n   Uploads the `.jsonl` training file to OpenAI, declaring it for use in fine-tuning.\n\n5. **HTTP Request Node:**  \n   Starts a fine-tuning job for an OpenAI GPT model using the uploaded file.\n\n6. **Chat/Agent Subworkflow:**  \n   Contains a chat trigger and an AI agent. This uses the newly fine-tuned OpenAI model to generate product descriptions or marketing content via chat.\n\n---\n\n**Important:**  \nYou must replace the placeholder API credentials and IDs in the workflow (Bright Data API, OpenAI API, and the fine-tuned model ID in the agent node) with your own valid keys and model identifiers for the workflow to function correctly.\n"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BrightData": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "BrightData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

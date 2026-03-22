@@ -1,0 +1,89 @@
+{
+  "_templateId": 7982,
+  "_templateName": "Generate and Email PDF Invoices from Tally Forms with Google Docs",
+  "_templateDescription": "Stop copy-pasting invoice details!\n\nThis gentle workflow turns a simple Tally form into a beautiful PDF invoice and delivers it to your client before you finish your latte ☕.**\n\nPerfect for Etsy sellers, coaches, freelancers and side-hustlers who want soft-tech automation that feels like magic, not middleware.\n\nHow it works\n\n1️⃣ You (or your VA) fill a 4-question Tally form: client name, email, amount, due date.\n\n2️⃣ n8n instantly merges the data into a Google Docs template you pre-design (logo, colours, your vibe).\n\n3️⃣ PDF is generated & emailed with a warm, on-brand note.\n\n4️⃣ Optional: same PDF is auto-saved to a “2024-Invoices” Google Drive folder for painless bookkeeping 📁.\n\nZero code, zero Zapier, zero monthly fees—just pure calm productivity.\n\nBonus: template includes placeholder variables so you can add discount lines, PO numbers or custom thank-you messages in seconds.\n\nGrab it, swap in your own Tally & Gmail credentials, and watch your invoicing shrink from 15 minutes to 15 seconds. Your future self (and your accountant) will send you heart emojis 💌.\n\n🗂️ Tally form schema (share with buyers)\n\nQuestion 1: Client Name (Short text)\n\nQuestion 2: Client Email (Email)\n\nQuestion 3: Amount (Number)\n\nQuestion 4: Due Date (Date)\n\nQuestion 5: Invoice Number (Short text, auto-increment or manual)\n\nWebhook URL: copy from the “📝 Tally Webhook” node after import.\n",
+  "_templateCreatedAt": "2025-08-28T09:56:41.818Z",
+  "_templateTotalViews": 7,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:49:38.700Z",
+  "meta": {
+    "instanceId": "__PLACEHOLDER__"
+  },
+  "name": "Tally-to-PDF Invoice Bot",
+  "nodes": [
+    {
+      "id": "webhook-tally",
+      "name": "📝 Tally Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        200,
+        300
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "gdocs-pdf",
+      "name": "📄 Google Docs → PDF",
+      "type": "n8n-nodes-base.googleDocs",
+      "position": [
+        480,
+        300
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "email-client",
+      "name": "💌 Email Invoice",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        760,
+        300
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "drive-backup",
+      "name": "☁️ Drive Backup",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        760,
+        480
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "📝 Tally Webhook": {
+      "main": [
+        [
+          {
+            "node": "📄 Google Docs → PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📄 Google Docs → PDF": {
+      "main": [
+        [
+          {
+            "node": "💌 Email Invoice",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "☁️ Drive Backup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

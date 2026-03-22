@@ -1,0 +1,319 @@
+{
+  "_templateId": 4236,
+  "_templateName": "Gmail to Google Drive Email Export Workflow",
+  "_templateDescription": "📬 Gmail to Google Drive Email Export Workflow (n8n)\n\n🧩 Overview\n\nThis n8n workflow automates the process of:\n\nRetrieving all emails from a specific sender using Gmail.\nExtracting essential fields like subject, message, and date.\nFormatting the email date to the desired time zone (e.g., IST).\nExporting the parsed data as a CSV file.\nUploading the file to a specified folder in Google Drive.\n\n🛠 Nodes Breakdown\n\n1. Start Workflow (Manual Trigger)\nType**: Manual Trigger  \nPurpose**: Initiates the workflow manually.\n\n2. Gmail Node (Get All Emails)\nType**: Gmail  \nOperation**: getAll  \nFilters**:  \n  sender: akhilgadiraju@gmail.com  \nReturns**: All emails from the specified sender.  \nCredentials**: Gmail OAuth2 - Akhil\n\n3. Parse Data (Set Node)\nPurpose**: Extracts key fields from the email JSON.  \nMapped Fields**:\n  id: Email ID\n  subject: Email subject\n  message: Email text\n  time: Email date\n\n4. Convert Time Field (Code Node)\nPurpose**: Converts the email time (ISO 8601) to a human-readable format.  \nOutput Format**:\n  Local time using Asia/Kolkata timezone.\n  Format: \"Month Day, Year, Hour:Minute AM/PM\"  \nCustomizable**: Change the timezone as needed:\n\ntimeZone: 'Asia/Kolkata'\n\n5. Convert to File\nType**: Convert to File Node  \nPurpose**: Converts JSON data to a downloadable .csv file.  \nOutput File**: CSV containing id, subject, message, and time.\n\n6. Google Drive\nType**: Google Drive  \nPurpose**: Uploads the generated CSV file to Google Drive.  \nDrive**: My Drive  \nFolder**: Root  \nFile Name**: Current timestamp + _n8n_export.csv\n\n7. End Workflow (NoOp)\nPurpose**: Final node to explicitly end the workflow.\n\n✅ Use Cases\n\nPersonal Email Archiving**: Back up or export emails from a specific sender (e.g., invoices, reports).\nAudit Logs**: Save conversations for compliance.\nTeam Reports**: Aggregate project emails into a central file store.\n\n🔧 Customization Guide\n\n| Customization             | How to Do It                                               |\n|---------------------------|------------------------------------------------------------|\n| Change Sender Email       | Update the sender field in the Gmail node.              |\n| Filter by Date/Subject    | Add filters in the Gmail node settings.                   |\n| Change Time Zone          | Edit timeZone in the Code node.                         |\n| Add More Email Fields     | Modify the Set node to include more fields.             |\n| Change File Format        | Use a different format in the Convert to File node.       |\n| Rename Output File        | Adjust the name in the Google Drive node.               |\n| Change Upload Folder      | Set a different folderId in the Google Drive node.      |\n\n🚀 Deployment Tips\n\nSchedule the Workflow**: Replace Manual Trigger with a Cron node.\nAvoid Duplicates**: Store email IDs and skip duplicates using conditional logic.\nSecurity**: Use environment variables for sensitive credentials.\n\n🧪 Testing Steps\n\nManually trigger the workflow.\nVerify email data is parsed and formatted.\nConfirm CSV is generated correctly.\nEnsure the file is uploaded to Google Drive.\n\n🧰 Requirements\n\nConnected Gmail and Google Drive OAuth2 credentials.\nn8n instance (self-hosted or cloud).\nRequired nodes available in the n8n environment.\n\n&gt; 💡 Need more features? You can add:\n&gt; - Error handling\n&gt; - Slack/Email notifications\n&gt; - Conditional filters\n&gt; - Google Sheets integration instead of Drive",
+  "_templateCreatedAt": "2025-05-20T06:50:43.706Z",
+  "_templateTotalViews": 1118,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:50:23.088Z",
+  "meta": {
+    "instanceId": "7d8066d2f56a07000fe7d753d3eeabf0ecdf68413466f30d10afe0906f058427",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "00de0985-997a-4c97-9a4a-d28fae9a9641",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        380,
+        0
+      ],
+      "webhookId": "75613b2e-370c-4ecf-bc04-8170d2f594d4",
+      "parameters": {
+        "simple": false,
+        "filters": {
+          "sender": "user@example.com"
+        },
+        "options": {},
+        "operation": "getAll",
+        "returnAll": true
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "credential-id",
+          "name": "gmailOAuth2 Credential"
+        }
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "7b167ae9-5a1d-4bd3-b18e-c1cd8da06559",
+      "name": "Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1260,
+        0
+      ],
+      "parameters": {
+        "name": "={{ $now + \"_n8n_export.csv\" }}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "options": {},
+        "folderId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "root",
+          "cachedResultName": "/ (Root folder)"
+        }
+      },
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleDriveOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 3
+    },
+    {
+      "id": "522a4ece-e0dc-4639-81d3-2f4a1b9f459e",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        1040,
+        0
+      ],
+      "parameters": {
+        "options": {}
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "f2e29c64-91c7-48b4-8416-eaf98b014596",
+      "name": "Parse Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        600,
+        0
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2b446be8-1d0c-4a61-8896-f0a90f5100ea",
+              "name": "id",
+              "type": "string",
+              "value": "={{ $json.id }}"
+            },
+            {
+              "id": "8263ed23-ae85-4bdc-8c24-fe5fc3f12601",
+              "name": "subject",
+              "type": "string",
+              "value": "={{ $json.subject }}"
+            },
+            {
+              "id": "09ceff74-3064-4103-aa06-f56693d02765",
+              "name": "message",
+              "type": "string",
+              "value": "={{ $json.text }}"
+            },
+            {
+              "id": "6df559f5-d6b4-4fa4-8f7e-7e63a3c27994",
+              "name": "time",
+              "type": "string",
+              "value": "={{ $json.date }}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "399c6f2c-b59a-4e44-aba7-b0a65eb61423",
+      "name": "Start Workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        160,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "4d245499-f824-4887-85f0-5cd199c2e648",
+      "name": "End Workflow",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        1480,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "d76bc543-75d6-4c9c-ac84-4b05be377e06",
+      "name": "Convert Time Field",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        820,
+        0
+      ],
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const isoTime = item.json.time;\n\n  const date = new Date(isoTime).toLocaleString('en-US', {\n    timeZone: 'Asia/Kolkata',  // 🔁 Change this to your UAT timezone\n    year: 'numeric',\n    month: 'long',\n    day: 'numeric',\n    hour: 'numeric',\n    minute: '2-digit',\n    hour12: true\n  });\n\n  return {\n    json: {\n      ...item.json,\n      time: date\n    }\n  };\n});\n"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "93d5dfcf-c902-4471-9a04-6e7473417bd0",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        300,
+        -120
+      ],
+      "parameters": {
+        "width": 280,
+        "height": 100,
+        "content": "### Change Sender Email\nUpdate the `sender` field in the Gmail node."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "97f660ed-281b-4ba9-9656-777b9aea2ef0",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        520,
+        160
+      ],
+      "parameters": {
+        "width": 280,
+        "height": 100,
+        "content": "### Add More Email Fields\t\nModify the Set node to include more fields."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "825055a9-8e4f-4e39-ae2f-729c103568d6",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        740,
+        -100
+      ],
+      "parameters": {
+        "height": 80,
+        "content": "### Change Time Zone\nEdit timeZone in the Code node."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "3f78a5a8-5cd4-40a0-be5f-d984e952d975",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        920,
+        160
+      ],
+      "parameters": {
+        "width": 300,
+        "height": 100,
+        "content": "### Change File Format\nUse a different format in the Convert to File node."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ffbf9a23-dc2c-4ebe-986e-2aff8a170b51",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1160,
+        -220
+      ],
+      "parameters": {
+        "width": 280,
+        "height": 200,
+        "content": "### Rename Output File \nAdjust the name in the Google Drive nod\n\n### Change Upload Folder\nSet a different folderId in the Google Drive node."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "93836b97-81d9-47d4-b8dc-3d856e78090a",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        100,
+        -580
+      ],
+      "parameters": {
+        "width": 580,
+        "height": 200,
+        "content": "## 🚀 Use Cases\n\n- **Personal Email Archiving**: Back up or export emails from a specific sender (e.g., invoices, reports).\n- **Audit Logs**: Save conversations for compliance.\n- **Team Reports**: Aggregate project emails into a central file store. "
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Parse Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Data": {
+      "main": [
+        [
+          {
+            "node": "Convert Time Field",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "End Workflow",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Workflow": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert Time Field": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,510 @@
+{
+  "_templateId": 11254,
+  "_templateName": "Create a Calendly Availability API Endpoint for Real-time Scheduling Data",
+  "_templateDescription": "This n8n template implements a Calendly Availability Checker that provides real-time availability information for your Calendly event types via a simple API endpoint\n\nWho's it for\n\nThis template is designed for developers, businesses, and service providers who need to programmatically check Calendly availability. It's perfect for:\n\nWeb developers** building custom booking interfaces that need real-time availability data\nChatbot developers** who want to suggest available times to users\nWebsite builders** who want to display available slots on their site\nIntegration developers** who need to check availability before creating bookings\nBusinesses** that want to build custom scheduling experiences on top of Calendly\nService providers** who need availability data for their own applications or dashboards\n\nHow it works / What it does\n\nThis workflow creates a RESTful API endpoint that returns real-time availability information from your Calendly account. The system:\n\nAccepts webhook requests via POST with optional parameters:\n   event_type_uri (optional) - Specific event type to check\n   days_ahead (optional, default: 7) - Number of days to check ahead\n\nAuthenticates with Calendly API using OAuth2 credentials to access your account\n\nRetrieves user information to get your Calendly user URI and account details\n\nLists all active event types from your Calendly account\n\nSelects the target event type:\n   Uses the event_type_uri from the request if provided\n   Otherwise defaults to the first active event type\n\nFetches available time slots from Calendly's availability API for the specified date range\n\nFormats the availability data into a structured response including:\n   Total number of available slots\n   Next available slot (formatted and ISO timestamp)\n   Array of all available slots with formatted times and booking URLs\n   Slots grouped by day for easy consumption\n   Complete list of all event types\n\nReturns a comprehensive JSON response with all availability information ready for integration\n\nHow to set up\n\n1. Configure Calendly OAuth2 Credentials\nGo to calendly.com/integrations\nClick \"API & Webhooks\"\nCreate an OAuth2 application or use Personal Access Token\nIn n8n, create a new credential:\n  Type: \"Calendly OAuth2 API\"\n  Follow the OAuth flow to connect your Calendly account\nThe credential will be used by all HTTP Request nodes in the workflow\n\n2. Activate the Workflow\nOpen the workflow in n8n\nEnsure the Calendly OAuth2 credential is properly configured\nActivate the workflow to make the webhook endpoint available\n\n3. Test the Workflow\nUse the \"Test workflow\" button in n8n to manually trigger it\nOr send a POST request to the webhook URL:\n    {\n    \"event_type_uri\": \"optional-event-uri\",\n    \"days_ahead\": 7\n  }\n  Verify the response contains availability data\nCheck that the \"Get Current User\" node successfully retrieves your account info\n\n4. Customize (Optional)\nAdjust the default days_ahead value in the \"Set Configuration\" node (currently 7 days)\nModify the date range calculation in \"Get Available Times\" node\nCustomize the response format in \"Respond with Availability\" node\nAdd filtering logic to select specific event types\nAdd caching to reduce API calls\n\nRequirements\n\nCalendly account** with at least one active event type\nn8n instance** (self-hosted or cloud)\nCalendly OAuth2 API credentials** configured in n8n\nWebhook access** (if using n8n cloud, webhooks are automatically available)\n\nHow to customize the workflow\n\nModify Date Range\nEdit the \"Set Configuration\" node to change the default days_ahead value\nUpdate the start_time and end_time calculations in \"Get Available Times\" node\nCurrently checks from tomorrow (1 day ahead) to 7 days ahead by default\nAdjust the date calculation expressions as needed\n\nFilter Specific Event Types\nModify the \"Select Event Type\" node to add filtering logic\nAdd an IF node to check event type names or slugs\nFilter by duration, active status, or custom criteria\nReturn multiple event types if needed\n\nCustomize Response Format\nEdit the \"Respond with Availability\" node to change the JSON structure\nAdd or remove fields from the response\nFormat dates/times differently\nInclude additional metadata from event types\nAdd pagination for large slot lists\n\nAdd Caching\nInsert a Code node before \"Get Available Times\" to check cache\nStore availability data temporarily to reduce API calls\nSet appropriate cache expiration times\nConsider using n8n's built-in cache or external storage\n\nAdd Error Handling\nEnhance error handling in HTTP Request nodes\nAdd validation for request parameters\nReturn meaningful error messages in the response\nHandle cases where no event types exist\nHandle cases where no availability exists\n\nIntegrate with Other Services\nAdd nodes to log availability checks to a database\nSend availability data to analytics platforms\nTrigger notifications when availability changes\nSync availability with external calendars\nBuild availability dashboards\n\nKey Features\n\nRESTful API endpoint** - Simple POST endpoint for checking availability\nReal-time availability** - Fetches current availability directly from Calendly API\nFlexible event type selection** - Supports specific event type or auto-selects first available\nConfigurable date range** - Customizable number of days to check ahead\nComprehensive response format** - Returns formatted and raw availability data\nMultiple data views** - Provides slots as array, grouped by day, and summary statistics\nEvent type information** - Includes details about all available event types\nHuman-readable formatting** - Formats dates and times for easy display\nBooking URLs included** - Each slot includes direct booking URL\nError resilience** - Nodes configured with continueRegularOutput to handle API errors gracefully\n\nUse Cases\n\nCustom booking widgets** - Display available slots on your website without embedding Calendly\nChatbot integration** - Let AI assistants suggest available times to users\nMobile app integration** - Check availability before showing booking options in mobile apps\nMulti-calendar systems** - Aggregate availability from multiple Calendly accounts\nAvailability dashboards** - Build internal dashboards showing team availability\nSmart scheduling** - Check availability before sending meeting invitations\nBooking confirmation flows** - Verify availability before processing bookings\nCalendar sync verification** - Ensure Calendly availability matches other calendar systems\nAnalytics and reporting** - Track availability patterns and booking trends\nCustom scheduling UIs** - Build completely custom scheduling interfaces using availability data\n\nData Fields Returned\n\nUser Information\nUser name, email, scheduling URL\nUser URI and organization URI\n\nEvent Type Information\nEvent type name, duration (minutes), URI\nComplete list of all active event types with details\n\nAvailability Summary\nhas_slots - Boolean indicating if any slots are available\ntotal_slots - Total number of available slots\nnext_available - Human-readable formatted string of next available slot\nnext_available_iso - ISO 8601 timestamp of next available slot\n\nAvailable Slots Array\nEach slot includes:\nstart_time - ISO 8601 timestamp\nformatted - Human-readable date/time string\nbooking_url - Direct URL to book this specific slot\n\nSlots by Day\nGrouped object with days as keys\nEach day contains array of time slots with formatted times and booking URLs\nFormat: { \"Monday, Dec 2\": [{ time: \"10:00 AM\", url: \"...\" }] }\n\nMetadata\nchecked_at - ISO timestamp of when availability was checked\nsuccess - Boolean indicating successful execution\n\nWorkflow Architecture\n\nThe workflow uses a linear processing pattern with data transformation at each step:\n\nWebhook Trigger → Receives POST requests with optional parameters\nSet Configuration → Extracts and sets default values for event_type_uri and days_ahead\nGet Current User → Authenticates and retrieves Calendly user information\nExtract User Info → Parses user data to extract URIs and account details\nGet Event Types → Fetches all active event types for the user\nSelect Event Type → Chooses target event type (from request or first available)\nGet Available Times → Queries Calendly API for available time slots\nFormat Availability → Transforms raw API data into structured, formatted response\nRespond with Availability → Returns comprehensive JSON response to caller\n\nExample Scenarios\n\nScenario 1: Check Default Availability\nDeveloper sends POST request to webhook endpoint with empty body\nWorkflow uses default 7-day lookahead period\nWorkflow selects first active event type automatically\nReturns availability for next 7 days with all slots formatted\nDeveloper displays slots in custom booking interface\n\nScenario 2: Check Specific Event Type\nDeveloper sends POST request with specific event_type_uri\nWorkflow uses provided event type instead of default\nChecks availability for that specific event type only\nReturns slots grouped by day for easy calendar display\nDeveloper shows availability in day-by-day calendar view\n\nScenario 3: Extended Date Range\nDeveloper sends POST request with days_ahead: 30\nWorkflow checks availability for next 30 days\nReturns comprehensive list of all available slots\nDeveloper uses data to show monthly availability view\nUser can see all available times for the next month\n\nScenario 4: Chatbot Integration\nUser asks chatbot \"When are you available?\"\nChatbot calls webhook endpoint to get availability\nWorkflow returns next available slot and total count\nChatbot responds: \"I have 15 slots available. Next available: Monday, Dec 2 at 10:00 AM\"\nChatbot offers to book the next available slot\n\nThis template provides a powerful API endpoint for checking Calendly availability, enabling developers to build custom scheduling experiences while leveraging Calendly's robust scheduling infrastructure.\n",
+  "_templateCreatedAt": "2025-11-26T16:16:53.437Z",
+  "_templateTotalViews": 1,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:46:07.121Z",
+  "id": "oYwsgPiHu1rbAnF3",
+  "meta": {
+    "instanceId": "50631c03cbd88440965b74e5a58aada5437cbc43e90372b516e36154908ad374"
+  },
+  "name": "Calendly Availability Checker",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "9f5a31b3-8662-4c93-b7e8-15f9612ef3e0",
+      "name": "📋 WORKFLOW OVERVIEW",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -192,
+        480
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 440,
+        "height": 496,
+        "content": "## 🗓️ Calendly Availability Checker\n\n**What this workflow does:**\n1. 🔐 Authenticates with Calendly API\n2. 👤 Gets your user information\n3. 📋 Lists all your event types\n4. ⏰ Checks real-time availability for next 7 days\n5. 📊 Returns formatted availability data\n\n**Use Cases:**\n- Display available slots on your website\n- Check availability before suggesting times\n- Build custom booking interfaces\n- Integrate with chatbots for scheduling\n\n**Trigger Options:**\n- Webhook (API call)\n- Manual (for testing)\n- Schedule (periodic checks)"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "884e26b4-9f13-4d49-bfa2-3e86f37b6b30",
+      "name": "⚙️ SETUP GUIDE",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        480
+      ],
+      "parameters": {
+        "color": 6,
+        "width": 448,
+        "height": 488,
+        "content": "## ⚙️ Setup Instructions\n\n**Step 1: Calendly Credentials**\n1. Go to calendly.com/integrations\n2. Click \"API & Webhooks\"\n3. Create Personal Access Token\n   OR set up OAuth2 app\n4. In n8n, create credential:\n   - Type: \"Calendly OAuth2 API\"\n   - Follow OAuth flow\n\n**Step 2: Configure Workflow**\n1. Update credential in HTTP nodes\n2. Test \"Get Current User\" first\n3. Verify event types are returned\n\n**Step 3: Customize (Optional)**\n- Change date range (default: 7 days)\n- Filter specific event types\n- Add response formatting\n\n---"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "dfb1be1c-9d70-420b-a6fc-491935039ebe",
+      "name": "Webhook Trigger",
+      "type": "n8n-nodes-base.webhook",
+      "notes": "POST /check-calendly-availability\nOptional body: { \"event_type_uri\": \"...\" }",
+      "position": [
+        320,
+        528
+      ],
+      "webhookId": "availability-checker",
+      "parameters": {
+        "path": "check-calendly-availability",
+        "options": {},
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "d4c04dcb-99d3-4a69-a459-99fe3e1735fa",
+      "name": "🎯 TRIGGERS",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -192,
+        1008
+      ],
+      "parameters": {
+        "color": 6,
+        "width": 436,
+        "height": 316,
+        "content": "## 🎯 Triggers\n\n**Webhook POST Body:**\n```json\n{\n  \"event_type_uri\": \"optional\",\n  \"days_ahead\": 7\n}\n```\n\nIf no event_type_uri provided,\nuses first active event type."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a443b254-4970-4e23-8bff-d1498a356b01",
+      "name": "Set Configuration",
+      "type": "n8n-nodes-base.set",
+      "notes": "Extract optional parameters from request",
+      "position": [
+        560,
+        528
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cfg1",
+              "name": "requested_event_type",
+              "type": "string",
+              "value": "={{ $json.body?.event_type_uri || '' }}"
+            },
+            {
+              "id": "cfg2",
+              "name": "days_ahead",
+              "type": "number",
+              "value": "={{ $json.body?.days_ahead || 7 }}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "8bafde54-7d0f-43cc-b939-ea7dd7fe67dd",
+      "name": "Get Current User",
+      "type": "n8n-nodes-base.httpRequest",
+      "notes": "GET /users/me",
+      "onError": "continueRegularOutput",
+      "position": [
+        800,
+        528
+      ],
+      "parameters": {
+        "url": "https://api.calendly.com/users/me",
+        "options": {
+          "response": {
+            "response": {}
+          }
+        },
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "calendlyOAuth2Api"
+      },
+      "credentials": {
+        "calendlyOAuth2Api": {
+          "id": "credential-id",
+          "name": "calendlyOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.3
+    },
+    {
+      "id": "9d75a542-8b3a-4094-a275-bb57130b706b",
+      "name": "Extract User Info",
+      "type": "n8n-nodes-base.set",
+      "notes": "Parse user data from response",
+      "position": [
+        560,
+        752
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "u1",
+              "name": "user_uri",
+              "type": "string",
+              "value": "={{ $json.resource?.uri }}"
+            },
+            {
+              "id": "u2",
+              "name": "user_name",
+              "type": "string",
+              "value": "={{ $json.resource?.name }}"
+            },
+            {
+              "id": "u3",
+              "name": "user_email",
+              "type": "string",
+              "value": "={{ $json.resource?.email }}"
+            },
+            {
+              "id": "u4",
+              "name": "organization_uri",
+              "type": "string",
+              "value": "={{ $json.resource?.current_organization }}"
+            },
+            {
+              "id": "u5",
+              "name": "scheduling_url",
+              "type": "string",
+              "value": "={{ $json.resource?.scheduling_url }}"
+            }
+          ]
+        },
+        "includeOtherFields": true
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "92a97501-5f67-4a4a-8ffc-9d506eee4532",
+      "name": "Get Event Types",
+      "type": "n8n-nodes-base.httpRequest",
+      "notes": "GET /event_types?user={uri}&active=true",
+      "onError": "continueRegularOutput",
+      "position": [
+        800,
+        752
+      ],
+      "parameters": {
+        "url": "https://api.calendly.com/event_types",
+        "options": {},
+        "sendQuery": true,
+        "authentication": "predefinedCredentialType",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "user",
+              "value": "={{ $json.user_uri }}"
+            },
+            {
+              "name": "active",
+              "value": "true"
+            }
+          ]
+        },
+        "nodeCredentialType": "calendlyOAuth2Api"
+      },
+      "credentials": {
+        "calendlyOAuth2Api": {
+          "id": "credential-id",
+          "name": "calendlyOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.3
+    },
+    {
+      "id": "222a18e8-f366-4e92-a950-9ea75387cdc9",
+      "name": "Select Event Type",
+      "type": "n8n-nodes-base.set",
+      "notes": "Select requested or first event type",
+      "position": [
+        560,
+        992
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "et1",
+              "name": "event_types_count",
+              "type": "number",
+              "value": "={{ ($json.collection || []).length }}"
+            },
+            {
+              "id": "et2",
+              "name": "event_types_list",
+              "type": "array",
+              "value": "={{ ($json.collection || []).map(e => ({ uri: e.uri, name: e.name, duration: e.duration, slug: e.slug })) }}"
+            },
+            {
+              "id": "et3",
+              "name": "selected_event_type_uri",
+              "type": "string",
+              "value": "={{ $('Set Configuration').item.json.requested_event_type || ($json.collection && $json.collection.length > 0 ? $json.collection[0].uri : '') }}"
+            },
+            {
+              "id": "et4",
+              "name": "selected_event_type_name",
+              "type": "string",
+              "value": "={{ $json.collection && $json.collection.length > 0 ? $json.collection[0].name : 'No event types' }}"
+            },
+            {
+              "id": "et5",
+              "name": "selected_event_duration",
+              "type": "number",
+              "value": "={{ $json.collection && $json.collection.length > 0 ? $json.collection[0].duration : 0 }}"
+            }
+          ]
+        },
+        "includeOtherFields": true
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "9aab3b00-d855-4ea2-9389-e2b43c0c7d94",
+      "name": "Get Available Times",
+      "type": "n8n-nodes-base.httpRequest",
+      "notes": "GET /event_type_available_times",
+      "onError": "continueRegularOutput",
+      "position": [
+        800,
+        992
+      ],
+      "parameters": {
+        "url": "https://api.calendly.com/event_type_available_times",
+        "options": {},
+        "sendQuery": true,
+        "authentication": "predefinedCredentialType",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "event_type",
+              "value": "={{ $json.selected_event_type_uri }}"
+            },
+            {
+              "name": "start_time",
+              "value": "={{ new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString() }}"
+            },
+            {
+              "name": "end_time",
+              "value": "={{ new Date(Date.now() + ($('Set Configuration').item.json.days_ahead || 7) * 24 * 60 * 60 * 1000).toISOString() }}"
+            }
+          ]
+        },
+        "nodeCredentialType": "calendlyOAuth2Api"
+      },
+      "credentials": {
+        "calendlyOAuth2Api": {
+          "id": "credential-id",
+          "name": "calendlyOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.3
+    },
+    {
+      "id": "dabe7159-de5b-45a6-bdaa-eeffe493f3f0",
+      "name": "Format Availability",
+      "type": "n8n-nodes-base.set",
+      "notes": "Format slots for easy consumption",
+      "position": [
+        560,
+        1232
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "av1",
+              "name": "total_slots_available",
+              "type": "number",
+              "value": "={{ ($json.collection || []).length }}"
+            },
+            {
+              "id": "av2",
+              "name": "has_availability",
+              "type": "boolean",
+              "value": "={{ ($json.collection || []).length > 0 }}"
+            },
+            {
+              "id": "av3",
+              "name": "next_available_slot",
+              "type": "string",
+              "value": "={{ ($json.collection && $json.collection.length > 0) ? $json.collection[0].start_time : null }}"
+            },
+            {
+              "id": "av4",
+              "name": "next_available_formatted",
+              "type": "string",
+              "value": "={{ ($json.collection && $json.collection.length > 0) ? new Date($json.collection[0].start_time).toLocaleString('en-US', { weekday: 'long', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'No slots available' }}"
+            },
+            {
+              "id": "av5",
+              "name": "available_slots",
+              "type": "array",
+              "value": "={{ ($json.collection || []).slice(0, 20).map(slot => ({ start_time: slot.start_time, formatted: new Date(slot.start_time).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }), booking_url: slot.scheduling_url })) }}"
+            },
+            {
+              "id": "av6",
+              "name": "slots_by_day",
+              "type": "object",
+              "value": "={{ Object.entries(($json.collection || []).reduce((acc, slot) => { const day = new Date(slot.start_time).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' }); if (!acc[day]) acc[day] = []; acc[day].push({ time: new Date(slot.start_time).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }), url: slot.scheduling_url }); return acc; }, {})).reduce((obj, [k, v]) => { obj[k] = v; return obj; }, {}) }}"
+            }
+          ]
+        },
+        "includeOtherFields": true
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "f67a6696-b3b0-4ad2-a38c-f9040aaba04c",
+      "name": "Respond with Availability",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "notes": "Returns comprehensive availability data",
+      "position": [
+        992,
+        1232
+      ],
+      "parameters": {
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        },
+        "respondWith": "json",
+        "responseBody": "={\n  \"success\": true,\n  \"user\": {\n    \"name\": \"{{ $('Extract User Info').item.json.resource.name }}\",\n    \"email\": \"{{ $('Extract User Info').item.json.resource.email }}\",\n    \"scheduling_url\": \"{{ $('Extract User Info').item.json.resource.scheduling_url }}\"\n  },\n  \"event_type\": {\n    \"name\": \"{{ $('Select Event Type').item.json.selected_event_type_name }}\",\n    \"duration_minutes\": {{ $('Select Event Type').item.json.selected_event_duration }},\n    \"uri\": \"{{ $('Select Event Type').item.json.selected_event_type_uri }}\"\n  },\n  \"availability\": {\n    \"has_slots\": {{ $json.has_availability }},\n    \"total_slots\": {{ $json.total_slots_available }},\n    \"next_available\": \"{{ $json.next_available_formatted }}\",\n    \"next_available_iso\": {{ $json.next_available_slot ? '\"' + $json.next_available_slot + '\"' : 'null' }}\n  },\n  \"slots\": {{ JSON.stringify($json.available_slots) }},\n  \"slots_by_day\": {{ JSON.stringify($json.slots_by_day) }},\n  \"all_event_types\": {{ JSON.stringify($('Select Event Type').item.json.event_types_list) }},\n  \"checked_at\": \"{{ new Date().toISOString() }}\"\n}"
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "11b7d4fb-b6ce-479a-b8c7-bbfcb6b3dea9",
+      "name": "📤 RESPONSE FORMAT",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        992
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 452,
+        "height": 372,
+        "content": "## 📤 Response Format\n\n```json\n{\n  \"success\": true,\n  \"user\": { ... },\n  \"event_type\": { ... },\n  \"availability\": {\n    \"has_slots\": true,\n    \"total_slots\": 45,\n    \"next_available\": \"Mon, Dec 2, 10:00 AM\"\n  },\n  \"slots\": [...],\n  \"slots_by_day\": {\n    \"Monday, Dec 2\": [...],\n    \"Tuesday, Dec 3\": [...]\n  }\n}\n```"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4e611e92-190b-4e4d-9b3a-270808b3be07",
+  "connections": {
+    "Get Event Types": {
+      "main": [
+        [
+          {
+            "node": "Select Event Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Configuration",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Current User": {
+      "main": [
+        [
+          {
+            "node": "Extract User Info",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract User Info": {
+      "main": [
+        [
+          {
+            "node": "Get Event Types",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Select Event Type": {
+      "main": [
+        [
+          {
+            "node": "Get Available Times",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Configuration": {
+      "main": [
+        [
+          {
+            "node": "Get Current User",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Availability": {
+      "main": [
+        [
+          {
+            "node": "Respond with Availability",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Available Times": {
+      "main": [
+        [
+          {
+            "node": "Format Availability",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

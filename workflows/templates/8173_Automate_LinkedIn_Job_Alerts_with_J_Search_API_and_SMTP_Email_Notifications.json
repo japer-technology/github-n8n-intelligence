@@ -1,0 +1,225 @@
+{
+  "_templateId": 8173,
+  "_templateName": "Automate LinkedIn Job Alerts with J-Search API and SMTP Email Notifications",
+  "_templateDescription": "Automate LinkedIn Job Alerts with Google Sheets, J-Search (RapidAPI), and SMTP\n\nDescription\nFetch LinkedIn-style job listings from the J-Search API using predefined parameters, then deliver a professional HTML job alert digest to your inbox via SMTP. Get actionable “Apply Now” links in your email—no manual searching required. ✉️💼\n\nWhat This Template Does\nManual Trigger:** Initiates the workflow on demand.  \nSet Preferences:** Captures job search parameters (role, date, page count, country, language) from a Set node.  \nJob Listing Extraction:** Uses HTTP Request to J-Search API with dynamic parameters from the Set node.  \nCategorizing Job Listings:** Filters and structures job data (job_id, job_title, employment_type, apply_link) via JavaScript Code node.  \nDrafting HTML for Mail:** Generates a LinkedIn-themed HTML email with job cards and “Apply Now” buttons.  \nSending Job Listings via Mail:** Delivers the job alert digest using SMTP, with a dynamic subject line.\n\nKey Benefits\nSave time** with one-click manual or scheduled alerts. ⏱️  \nStay organized with clean, mobile-friendly job summaries. 📊  \nAct faster using one-click “Apply Now” links. 🔗  \nRefine job searches using flexible parameters in the workflow. 🧭\n\nFeatures\nManual or scheduled workflow execution.  \nSet node for custom job search preferences.  \nHTTP Request node for dynamic API calls.  \nJavaScript nodes for filtering and HTML formatting.  \nLinkedIn-inspired, responsive HTML email.  \nSMTP email delivery with customizable sender/recipient.\n\nRequirements\nn8n instance (cloud or self-hosted). 🧩  \nJ-Search API access via RapidAPI; add x-rapidapi-key in n8n Credentials. 🔑  \nSMTP email account (e.g., Gmail/Outlook) configured in n8n; set valid From/To addresses. 📧  \nSet node configured with search parameters (query, page, num_pages, date posted, country, language).  \nNo Google Sheets integration required in this version (parameters set directly in workflow).\n\nTarget Audience\nJob seekers automating their search. 👩‍💼  \nRecruiters streamlining lead discovery. 🧑‍💼  \nHR teams wanting timely candidate outreach. 🧠\n\nStep-by-Step Setup Instructions (Concise)\nConfigure the Set node with desired job search parameters.  \nRapidAPI: Subscribe to J-Search API and add the API key in n8n Credentials. 🔑  \nSMTP: Connect your email account in n8n Credentials; set From/To in the workflow. ✉️  \nImport the workflow, assign credentials, and replace placeholders. 📥  \nRename the email node to “Sending Job Listings via Mail.” 🏷️  \nRun manually or schedule with a Cron node as needed. ⏲️\n\nSecurity Best Practices\nNever hardcode** API keys—use n8n Credentials. 🔐  \nRestrict access to credentials within your workspace. 🛡️  \nRemove personal email addresses before sharing templates. 🧹  \nMonitor executions for failures or anomalies. 📜",
+  "_templateCreatedAt": "2025-09-02T13:55:46.959Z",
+  "_templateTotalViews": 3,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:44:54.027Z",
+  "id": "e7NIaSaCd364XuUh",
+  "meta": {
+    "instanceId": "8443f10082278c46aa5cf3acf8ff0f70061a2c58bce76efac814b16290845177"
+  },
+  "name": "Linkedin Job Alert-test",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "f05ac1bb-5c20-4c79-ae08-d7c582210042",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -432,
+        208
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "9c8848a3-47f3-4478-a78d-a7dd8a0f8630",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        640
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "fb701072-f02a-4d67-b192-76f89010c125",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e26128cf-07ee-4d84-9f26-6bdcf4c51aae",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        304,
+        624
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "1edb5458-8ad5-48ad-a8a6-14e25ad7ae54",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        528,
+        0
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "9ec6e262-84d6-4a31-b91a-a825ca62fa11",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        752,
+        624
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "5ed26bdc-7585-4309-8b13-6fce26df01de",
+      "name": "Setting Preferences",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -64,
+        464
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "f3e847d5-f747-4504-a069-7afb120e7239",
+      "name": "Sending Job Listings via Mail",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        832,
+        464
+      ],
+      "webhookId": "75c1ce39-8ca3-4dc8-9342-186dabbdc32c",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "27fde378-8bca-43e7-9c22-2d065f64fd84",
+      "name": "Drafting HTML for Mail",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        608,
+        464
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "1382c990-0123-4087-a883-92c3e1a7a270",
+      "name": "Categorizing Job Listings",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        384,
+        464
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "423490bc-3de8-4f9e-a269-2d7b7cbfb21e",
+      "name": "Job Listing Extraction",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        160,
+        464
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "04ba5d8c-3fd2-418c-a692-e5568fb514d7",
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -288,
+        464
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d37ed09f-5fd3-40db-8ee7-45184530ef97",
+  "connections": {
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Setting Preferences",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Setting Preferences": {
+      "main": [
+        [
+          {
+            "node": "Job Listing Extraction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Drafting HTML for Mail": {
+      "main": [
+        [
+          {
+            "node": "Sending Job Listings via Mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Job Listing Extraction": {
+      "main": [
+        [
+          {
+            "node": "Categorizing Job Listings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Categorizing Job Listings": {
+      "main": [
+        [
+          {
+            "node": "Drafting HTML for Mail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

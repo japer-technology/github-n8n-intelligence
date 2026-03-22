@@ -1,0 +1,554 @@
+{
+  "_templateId": 9974,
+  "_templateName": "Automate HVAC Service Scheduling with AI Agent, Google Calendar and Gmail",
+  "_templateDescription": "Instant, automated scheduling. This AI Scheduling Agent manages real-time appointments, availability checks, and rescheduling across Google Calendar and Sheets, eliminating human hold times.\n\n🎯 Problem Statement\n\nTraditional call center or online booking systems often lack the flexibility to handle complex, multi-step customer requests like rescheduling, checking dynamic availability across multiple time slots, or handling context-aware conversational booking. This leads to friction, missed bookings, and high administrative overhead for service companies like HVAC providers.\n\n✨ Solution\n\nThis workflow deploys a sophisticated AI Scheduling Agent that acts as a virtual receptionist. It uses the Language Model's (LLM) \"tool-use\" capability to intelligently execute complex, sequential business logic (e.g., check availability before booking, find existing events before rescheduling) and manages the entire lifecycle of a service appointment, from initial inquiry to final confirmation.\n\n⚙️ How It Works (Multi-Step Execution)\n\nTrigger: A customer request (e.g., from an external voice or text platform) hits the Webhook Trigger with intent details (e.g., tool\\_request: 'reschedule\\_appointment').\n    \nAgent Logic: The Receptionist Agent uses a strict system prompt and its internal tools to formulate an execution plan. It maintains conversational state via the simple-memory node.\n    \nTool Execution (Example: Reschedule): The Agent executes a predefined sequence of private tools:\n    \n    find\\_old\\_event: Locates the existing booking ID using the customer's email.\n        \n    check\\_calendar: Verifies the proposed new time is available (2-hour window).\n        \n    reschedule\\_appointment: Updates the calendar event.\n        \n    log\\_lead: Updates the central Google Sheet.\n        \nSynchronous Response: The Agent sends a confirmation or follow-up question via the respond\\_to\\_webhook node.\n    \nAsynchronous Confirmation: The log\\_lead action triggers a secondary workflow that composes a professional email via a second LLM (Anthropic) and sends it to the customer via Gmail, followed by an internal alert via Google Chat.\n🛠️ Setup Steps\n\nCredentials:\n    \n    AI/LLM: Configure credentials for the Language Model used (OpenAI or Gemini) for the core Agent.\n        \n    Google Services: Set up OAuth2 credentials for Google Calendar (for booking/checking), Google Sheets (for logging), and Gmail (for customer confirmation).\n        \nGoogle Calendar: Specify the technician's calendar ID (bhuvaneshx13@gmail.com in the template) in all Calendar nodes.\n    \nGoogle Sheets: Create a new Google Sheet to serve as the Lead Log and update the Document ID and Sheet Name in the log\\_lead and log\\_lead\\_trigger nodes.\n    \nTool Configuration: Review and customize the Agent's system prompt in the Receptionist node to align time zone rules (currently Asia/Kolkata - IST) and business hours (9:00 AM to 6:00 PM) with your operations.\n✅ Benefits\n\nIncreased Efficiency: Fully automates complex scheduling and rescheduling, freeing up human staff.\n    \nContextual Service: AI handles multi-turn conversations and adheres to strict business rules (e.g., 2-hour slots, maximum tool usage).\n    \nData Integrity: Ensures all bookings are immediately logged to Google Sheets, maintaining a centralized record (CRM).\n    \nProfessional Flow: Provides immediate confirmation to the customer via email and instant notification to the internal team via chat.\n🚀 Other Use Cases\n\nThe underlying multi-step, tool-execution pattern is highly versatile and can be adapted for any service industry requiring complex, rules-based scheduling:\n\nReal Estate:** Scheduling property viewings (Check agent availability → Book viewing → Send directions).\n\nHVAC Services:** Managing maintenance and repair visits (Diagnose issue type → Match with qualified technician → Check part availability → Schedule visit → Send service confirmation).\n    \nMedical/Dental:** Booking patient appointments (Check insurance eligibility → Check doctor availability → Book → Send pre-visit forms).\n    \nLegal Services:** Intake for consultations (Collect client issue → Check specialist availability → Book → Send retainer agreement).\n    \nAutomotive Repair:** Scheduling service bays (Check bay and mechanic availability → Book → Update internal service board).",
+  "_templateCreatedAt": "2025-10-21T09:41:32.806Z",
+  "_templateTotalViews": 741,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:43:47.510Z",
+  "id": "TO2hDehR19idos0A",
+  "meta": {
+    "instanceId": "766c8c237f056d009bb1bd53e73633458b146427b1ae9c6ec10561694aa89152",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "AI-Powered HVAC Scheduling Agent with Multi-Step Tool Execution",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "2ccf6d62-a308-4a3e-8b82-a376de5e0b92",
+      "name": "webhook_trigger",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        0,
+        112
+      ],
+      "webhookId": "4fe15a31-6365-4b96-a3d5-3b02bbe3d31a",
+      "parameters": {},
+      "executeOnce": false,
+      "typeVersion": 2,
+      "alwaysOutputData": false
+    },
+    {
+      "id": "d42e76fa-26df-4be2-be3c-e2a8a88c4531",
+      "name": "think",
+      "type": "@n8n/n8n-nodes-langchain.toolThink",
+      "position": [
+        576,
+        224
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "34c5f195-f586-44f8-bf7c-1809b5095c21",
+      "name": "respond_to_webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        1760,
+        112
+      ],
+      "parameters": {},
+      "typeVersion": 1.4
+    },
+    {
+      "id": "dd362a16-58ab-4fa0-abee-f57c99891767",
+      "name": "simple-memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        448,
+        224
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "92934f03-f69c-48dc-9f9b-c7424656396a",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        288,
+        224
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "6792bc09-e55c-47e8-b6c0-9d58ce470023",
+      "name": "Receptionist",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        784,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "d33ce44a-5f2b-4529-9ec9-27d7a442c334",
+      "name": "check_calendar",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        976,
+        224
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "10dd7349-cb7e-4ac1-ba9b-fe62bc9bac39",
+      "name": "log_lead",
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "position": [
+        592,
+        432
+      ],
+      "parameters": {},
+      "typeVersion": 4.6
+    },
+    {
+      "id": "f0359235-d7c0-471d-afa7-b310ca518c1e",
+      "name": "log_lead_trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "position": [
+        400,
+        1584
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "2319722d-88c4-45af-9d43-0a9e28c574de",
+      "name": "find_old_event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        832,
+        448
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "13b5af09-dc4f-41f0-ad1d-b2a6a779def9",
+      "name": "reschedule_appointment",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        1312,
+        224
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "56ac1673-24cb-476b-8505-067c75dfc177",
+      "name": "Compose a mail",
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "position": [
+        848,
+        1440
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "80b630b7-7717-4b5f-89f1-c383e093e701",
+      "name": "booking_confirmation",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1200,
+        1440
+      ],
+      "webhookId": "64196f69-bf10-40ae-9884-3c59723d896b",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "21ca1911-48cf-454a-90a9-7066a6220575",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        848,
+        1696
+      ],
+      "webhookId": "e35977e3-a248-4884-8450-2ab2d7450638",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "d33aaad1-0ba4-46df-9a3c-0391bb606c59",
+      "name": "cancel_appointment",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        1488,
+        224
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "46241300-0c37-49d3-8806-448974811dbf",
+      "name": "book_appointment",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        1136,
+        224
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "8ec1fc4a-f8ae-4695-ab07-93d18e31c996",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -784,
+        -400
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "d108f20e-1067-41e1-8f07-1be7cfb2726d",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        240,
+        -304
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "120da344-4834-4be9-b2ed-a8360f192280",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        784,
+        416
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "fd59daab-b6ae-4535-bb74-d2e976c47443",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        240,
+        416
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f895d446-0051-48e0-9483-7bc349ad9a1a",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        -400
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "c1b8440b-8874-463d-893f-3555200e7b9a",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        1040
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4eb412e9-cec2-42fb-bf22-33b69bebb445",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -784,
+        1040
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "803fa3dd-75e5-46a3-b009-c9c04243e8bc",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        256,
+        1376
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "c387f635-2efd-4668-9b21-e0bc36ac5018",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        1136
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "bb9dee76-f95b-435a-9a7b-3c61ce6d6737",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        688,
+        1664
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "1c5e21d0-2e8c-4ada-8149-6d595e0fdcfa",
+      "name": "message_team",
+      "type": "n8n-nodes-base.googleChat",
+      "position": [
+        1056,
+        1696
+      ],
+      "webhookId": "85d2c83a-f3c6-47a9-8f2b-81292ef4faf4",
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "5024afe7-0336-4113-861b-e12185794c2e",
+      "name": "Sticky Note10",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -96,
+        -64
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "c3636b1e-a2cf-4763-bc79-100043767eba",
+      "name": "Sticky Note11",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1648,
+        -64
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "78320267-cb8b-4a66-a18e-910be28a66c9",
+      "name": "Sticky Note12",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2096,
+        -400
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "timezone": "Asia/Kolkata",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionOrder": "v1"
+  },
+  "versionId": "a8ebce93-e3e0-4b48-90c3-bbe148d31357",
+  "connections": {
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "message_team",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "think": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "log_lead": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receptionist": {
+      "main": [
+        [
+          {
+            "node": "respond_to_webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "simple-memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Receptionist",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compose a mail": {
+      "main": [
+        [
+          {
+            "node": "booking_confirmation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "check_calendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "find_old_event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "webhook_trigger": {
+      "main": [
+        [
+          {
+            "node": "Receptionist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "book_appointment": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "log_lead_trigger": {
+      "main": [
+        [
+          {
+            "node": "Compose a mail",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Receptionist",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "cancel_appointment": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "booking_confirmation": {
+      "main": [
+        []
+      ]
+    },
+    "reschedule_appointment": {
+      "ai_tool": [
+        [
+          {
+            "node": "Receptionist",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

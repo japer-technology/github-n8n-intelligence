@@ -1,0 +1,191 @@
+{
+  "_templateId": 3822,
+  "_templateName": "Auto-Post Breaking News Content Using Perplexity AI to X (Twitter)",
+  "_templateDescription": "Stay ahead of the curve and keep your followers informed—automatically.  \nThis n8n workflow uses Perplexity AI to generate insightful answers to scheduled queries, then auto-posts the responses directly to X (Twitter).\n\n⚙️ What this workflow does\n\nScheduled Trigger – Runs at set times (daily, hourly, etc.).\nsearchQuery – Define what kind of trending or relevant insight you want (e.g. “latest AI trends”).\nset API Key – Securely insert your Perplexity API key.\nPerplexity API Call – Fetches a short, insightful response to your query.\nPost to X – Automatically publishes the result as a tweet.\n\n🧩 Requirements\n\nAn n8n account (self-hosted or cloud)\nA Perplexity API key\nA connected X (Twitter) account via n8n’s credentials\n\n✅ Setup Steps\n\nAdd this workflow into your n8n account.\nEdit the searchQuery node with a topic (e.g. “What’s new in ecommerce automation?”).\nPaste your Perplexity API key into the set API key node.\nConnect your X (Twitter) account in the final node.\nAdjust the schedule timing to suit your content frequency.\n\n💡 Ideas to Improve\n\n💬 Add a formatting step to shorten or hashtag the response.\n📊 Pull multiple trending questions and auto-schedule posts.\n🔁 Loop responses to queue a full week of content.\n🌐 Translate content before posting to reach a global audience.\n\n🆘 Need help?\n\nFeel free to contact us at 1 Node.\nGet instant access to a library of free resources we created.\n",
+  "_templateCreatedAt": "2025-05-01T16:38:32.582Z",
+  "_templateTotalViews": 2412,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:47:40.171Z",
+  "id": "v9K61fCQhrG6gt6Z",
+  "meta": {
+    "instanceId": "9219ebc7795bea866f70aa3d977d54417fdf06c41944be95e20cfb60f992db19",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Search news using Perplexity AI and post to X (Twitter)",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "9b2fdc0f-8c71-4ea9-a9d0-df470f2778df",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -560,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 21,
+              "triggerAtMinute": "={{Math.floor(Math.random() * 60)}}\n"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "d549c019-1f3e-4758-a5ee-e4ac7e03cc2d",
+      "name": "searchQuery",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -340,
+        0
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4cfbc312-5dcd-444d-ae08-0bab417c084c",
+              "name": "searchInput",
+              "type": "string",
+              "value": "What's the latest news in artificial intelligence?"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "87c28d43-6cd6-4292-a563-a9f22467e162",
+      "name": "Perplexity",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        100,
+        0
+      ],
+      "parameters": {
+        "url": "https://api.perplexity.ai/chat/completions",
+        "method": "POST",
+        "options": {},
+        "jsonBody": "={\n  \"model\": \"llama-3.1-sonar-small-128k-online\",\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are a social media assistant summarizing tech news for Twitter/X. Only return one article. Your output must follow this exact format: a short, engaging headline (max 140 characters), followed by a single space, then the direct article link. Do not use markdown, hashtags, emojis, or line breaks. Keep the total output under 200 characters. Be precise, objective, and newsworthy.Example: Mastercard launches Agent Pay, allowing AI agents to make purchases for users. https://www.perplexity.ai/page/mastercard-unveils-agent-pay-e-qWXnaUEzQZWCqsxF4l43zA\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"{{ $('searchQuery').item.json.searchInput }}\"\n    }\n  ],\n  \"temperature\": 0.3,\n  \"top_p\": 0.9,\n  \"return_citations\": true,\n  \"search_domain_filter\": [\n    \"perplexity.ai\"\n  ],\n  \"search_recency_filter\": \"day\",\n  \"return_images\": true,\n  \"return_related_questions\": false,\n  \"max_tokens\": 80,\n  \"stream\": false,\n  \"presence_penalty\": 0,\n  \"frequency_penalty\": 1\n}\n",
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.perplexityAPI }}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "c1ed633d-d318-403c-9577-c3c63ac2e68e",
+      "name": "set API key",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -120,
+        0
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4f9bd3a0-5587-410f-b145-a287f65f9576",
+              "name": "perplexityAPI",
+              "type": "string",
+              "value": "<yourPerplexityAPI>"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "e228e352-2ddd-4e2c-a434-993910ced7be",
+      "name": "Post to X",
+      "type": "n8n-nodes-base.twitter",
+      "position": [
+        320,
+        0
+      ],
+      "parameters": {
+        "text": "={{ $json.choices[0].message.content }}",
+        "additionalFields": {}
+      },
+      "credentials": {
+        "twitterOAuth2Api": {
+          "id": "credential-id",
+          "name": "twitterOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 2
+    }
+  ],
+  "active": true,
+  "pinData": {},
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "qFOYM3IA9QZ7fMym",
+    "executionOrder": "v1"
+  },
+  "versionId": "74e316fe-561f-4c80-b446-bba795654cef",
+  "connections": {
+    "Post to X": {
+      "main": [
+        []
+      ]
+    },
+    "Perplexity": {
+      "main": [
+        [
+          {
+            "node": "Post to X",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "searchQuery": {
+      "main": [
+        [
+          {
+            "node": "set API key",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "set API key": {
+      "main": [
+        [
+          {
+            "node": "Perplexity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "searchQuery",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

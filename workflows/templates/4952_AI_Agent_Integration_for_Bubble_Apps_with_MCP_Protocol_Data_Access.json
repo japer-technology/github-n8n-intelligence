@@ -1,0 +1,150 @@
+{
+  "_templateId": 4952,
+  "_templateName": "AI Agent Integration for Bubble Apps with MCP Protocol Data Access",
+  "_templateDescription": "Let AI agents fetch communicate with your Bubble app automatically. It connects direcly with your Bubble data API. This workflow is designed for teams building AI tools or copilots that need seamless access to Bubble backend data via natural language queries.\n\n\nHow it works\nTriggered via a webhook from an AI agent using the MCP (Model-Chain Prompt) protocol.\nThe agent selects the appropriate data tool (e.g., projects, user, bookings) based on user intent.\nThe workflow queries your Bubble database and returns the result.\nIdeal for integrating with ChatGPT, n8n AI-Agents, assistants, or autonomous workflows that need real-time access to app data.\n\n\nSet up steps\nEnable access to your Bubble data or backend APIs (as needed).\nCreate a Bubble admin token.\nAdd your Bubble node/s to your n8n workflow.\nAdd your Bubble admin token.\nConfiger your Bubble node/s.\nCopy the generated webhook URL from the MCP Server Trigger node and register it with your AI tool (e.g., LangChain tool loader).\n(Optional) Adjust filters in the “Get an Object Details” node to match your dataset needs.\n\nOnce connected, your AI agents can automatically retrieve context-aware data from your Bubble app, no manual lookups required.\n\n",
+  "_templateCreatedAt": "2025-06-16T04:52:57.476Z",
+  "_templateTotalViews": 281,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:48:39.343Z",
+  "id": "CqlwywHbmlc7eHNT",
+  "meta": {
+    "instanceId": "dce9fe04a7fdbf241de6b7362a58adc4ade77ecf936745b8085d24de3b25eb12",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Bubble MCP server",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "d4e05c6f-939b-465f-a8f2-36b6eed6e868",
+      "name": "MCP Server Trigger",
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "position": [
+        -148,
+        -180
+      ],
+      "webhookId": "db8e6f1e-863d-4889-b56b-f88fad0b24af",
+      "parameters": {
+        "path": "db8e6f1e-863d-4889-b56b-f88fad0b24af"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "47b0e90e-c6e0-4e97-9629-f56dce348d5e",
+      "name": "Get Project details",
+      "type": "n8n-nodes-base.bubbleTool",
+      "position": [
+        -180,
+        40
+      ],
+      "parameters": {
+        "objectId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Object_ID', `Get project details using project unique ID`, 'string') }}",
+        "typeName": "project",
+        "descriptionType": "manual",
+        "toolDescription": "Get project information in our Bubble app"
+      },
+      "credentials": {
+        "bubbleApi": {
+          "id": "credential-id",
+          "name": "bubbleApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f2c5e7d6-c75c-4271-b60d-36e2454bb77e",
+      "name": "Get user info",
+      "type": "n8n-nodes-base.bubbleTool",
+      "position": [
+        -60,
+        40
+      ],
+      "parameters": {
+        "objectId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Object_ID', `Get user information using user unique id`, 'string') }}",
+        "typeName": "user",
+        "descriptionType": "manual",
+        "toolDescription": "Get user information in our Bubble app"
+      },
+      "credentials": {
+        "bubbleApi": {
+          "id": "credential-id",
+          "name": "bubbleApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "65361b3d-efe3-44da-ab8a-e23fce5ef6e5",
+      "name": "Get Plugin details",
+      "type": "n8n-nodes-base.bubbleTool",
+      "position": [
+        60,
+        40
+      ],
+      "parameters": {
+        "options": {
+          "filters": {
+            "filter": [
+              {
+                "key": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('filter0_Key', ``, 'string') }}",
+                "value": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('filter0_Value', ``, 'string') }}",
+                "constraint_type": "text contains"
+              }
+            ]
+          }
+        },
+        "typeName": "plugin",
+        "operation": "getAll",
+        "descriptionType": "manual",
+        "toolDescription": "Get plugins information in our Bubble app"
+      },
+      "credentials": {
+        "bubbleApi": {
+          "id": "credential-id",
+          "name": "bubbleApi Credential"
+        }
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": true,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "88e83d75-e334-4bb1-a2ca-3043701353eb",
+  "connections": {
+    "Get user info": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Plugin details": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Project details": {
+      "ai_tool": [
+        [
+          {
+            "node": "MCP Server Trigger",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

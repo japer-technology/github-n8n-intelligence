@@ -1,0 +1,138 @@
+{
+  "_templateId": 4704,
+  "_templateName": "JSON String Validator via Webhook",
+  "_templateDescription": "This n8n template provides a simple yet powerful utility for validating if a given string input is a valid JSON format. You can use this to pre-validate data received from external sources, ensure data integrity before further processing, or provide immediate feedback to users submitting JSON strings.\n\n🔧 How it works\nWebhook: This node acts as the entry point for the workflow, listening for incoming POST requests. It expects a JSON body with a single property:\n\n  jsonString: The string that you want to validate as JSON.\n\nCode (JSON Validator): This node contains custom JavaScript code that attempts to parse the jsonString provided in the webhook body.\n\n  If the jsonString can be successfully parsed, it means it's valid JSON, and the node returns an item with valid: true.\n  If parsing fails, it catches the error and returns an item with valid: false and the specific error message.\n  This logic is applied to each item passed through the node, ensuring all inputs are validated.\n\nRespond to Webhook: This node sends the validation result (either valid: true or valid: false with an error message) back to the service that initiated the webhook request.\n\n👤 Who is it for?\nThis workflow is ideal for:\n\nDevelopers & Integrators: Pre-validate JSON payloads from external systems (APIs, webhooks) before processing them in your workflows, preventing errors.\nData Engineers: Ensure the integrity of JSON data before storing it in databases or data lakes.\nAPI Builders: Offer a dedicated endpoint for clients to test their JSON strings for validity.\nCustomer Support Teams: Quickly check user-provided JSON configurations for errors.\nAnyone handling JSON data: A quick and easy way to programmatically check JSON string correctness without writing custom code in every application.\n\n📑 Data Structure\nWhen you trigger the webhook, send a POST request with a JSON body structured as follows:\n\n{\n  \"jsonString\": \"{\\\"name\\\": \\\"n8n\\\", \\\"type\\\": \\\"workflow\\\"}\"\n}\n\nExample of an invalid JSON string:\n\n{\n  \"jsonString\": \"{name: \\\"n8n\\\"}\" // Missing quotes around 'name'\n}\n\nThe workflow will return a JSON response indicating validity:\n\nFor a valid JSON string:\n\n{\n  \"valid\": true\n}\n\nFor an invalid JSON string:\n\n{\n  \"valid\": false,\n  \"error\": \"Unexpected token 'n', \\\"{name: \\\"n8n\\\"}\\\" is not valid JSON\"\n}\n\n⚙️ Setup Instructions\nImport Workflow:\n  In your n8n editor, click \"Import from JSON\" and paste the provided workflow JSON.\n\nConfigure Webhook Path:\n  Double-click the Webhook node.\n  In the 'Path' field, set a unique and descriptive path (e.g., /validate-json).\n\nActivate Workflow:\n  Save and activate the workflow.\n\n📝 Tips\nThis JSON validator workflow is a solid starting point. Consider these enhancements:\n\nEnhanced Error Feedback:\n  Upgrade: Add a Set node after the Code node to format the error message into a more user-friendly string before responding.\n  Leverage: Make it easier for the caller to understand the issue.\n\nLogging Invalid Inputs:\n  Upgrade: After the Code node, add an IF node to check if valid is false. If so, branch to a node that logs the invalid jsonString and error to a Google Sheet, database, or a logging service.\n  Leverage: Track common invalid inputs for debugging or improvement.\n\nTransforming Valid JSON:\n  Upgrade: If the JSON is valid, you could add another Function node to parse the jsonString and then operate on the parsed JSON data directly within the workflow.\n  Leverage: Use this validator as the first step in a larger workflow that processes JSON data.\n\nAsynchronous Validation:\n  Upgrade: For very large JSON strings or high-volume requests, consider using a separate queueing mechanism (e.g., RabbitMQ, SQS) and an asynchronous response pattern.\n  Leverage: Prevent webhook timeouts and improve system responsiveness.",
+  "_templateCreatedAt": "2025-06-05T18:12:14.340Z",
+  "_templateTotalViews": 500,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:48:47.298Z",
+  "id": "6GzSyLakqBN2hYIe",
+  "meta": {
+    "instanceId": "1777696fb9fddfee653e70940936c2b1e28ba1f1bde53b7182fbd6eb01988706"
+  },
+  "name": "JSON String Validator via Webhook",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "72785a1d-32f6-4f0d-a412-5327c059ddd3",
+      "name": "Webhook: Receive JSON String",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -680,
+        -140
+      ],
+      "webhookId": "2604aa77-b575-4c3f-b1df-feab9c775603",
+      "parameters": {
+        "path": "validate-json-string",
+        "options": {},
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "940b04da-3f16-434d-8181-9452dd3ba007",
+      "name": "Respond to Webhook with Result",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        100,
+        -140
+      ],
+      "parameters": {
+        "options": {},
+        "respondWith": "allIncomingItems"
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "4546866f-9376-47cf-ac19-caf0eb197cca",
+      "name": "Code: Validate JSON String",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -300,
+        -140
+      ],
+      "parameters": {
+        "jsCode": "// This node validates if the 'jsonString' in the webhook body is valid JSON.\n// It returns 'valid: true' or 'valid: false' along with an error message if invalid.\n\nconst results = [];\n\nfor (const item of $input.all()) {\n  try {\n    // Attempt to parse the jsonString from the webhook body\n    // Ensure 'jsonString' exists before attempting to parse\n    if (item.json.body && typeof item.json.body.jsonString === 'string') {\n      JSON.parse(item.json.body.jsonString);\n      results.push({ json: { valid: true } });\n    } else {\n      // Handle cases where jsonString is missing or not a string\n      results.push({ json: { valid: false, error: \"Input 'jsonString' is missing or not a string.\" } });\n    }\n  } catch (e) {\n    // If parsing fails, push the error message\n    results.push({ json: { valid: false, error: e.message } });\n  }\n}\n\nreturn results;"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "52ea0a9b-863d-4d09-b96b-ab707571738b",
+      "name": "Note: Webhook Input",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -760,
+        -360
+      ],
+      "parameters": {
+        "width": 280,
+        "height": 380,
+        "content": "## Webhook Input\n\nThis node listens for incoming POST requests. It expects a JSON body containing a single property: `jsonString` (the string you wish to validate as JSON)."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f3f93504-93b2-40e9-93e6-45366a681ac0",
+      "name": "Note: JSON Validation Logic",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -420,
+        -320
+      ],
+      "parameters": {
+        "color": 2,
+        "width": 350,
+        "height": 360,
+        "content": "## JSON Validation Logic\n\nThis node contains custom JavaScript code to parse the `jsonString` from the webhook input. It returns `valid: true` if successful, or `valid: false` with an `error` message if parsing fails."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e8632087-424b-40b4-a894-301885137f49",
+      "name": "Note: Webhook Response",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -320
+      ],
+      "parameters": {
+        "color": 3,
+        "width": 350,
+        "height": 360,
+        "content": "## Webhook Response\n\nThis node sends the validation result (whether the `jsonString` was valid JSON or not, including an error if applicable) back to the system that triggered the webhook."
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ecec4bf1-c92e-485f-9f8f-fc98441310eb",
+  "connections": {
+    "Code: Validate JSON String": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook with Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: Receive JSON String": {
+      "main": [
+        [
+          {
+            "node": "Code: Validate JSON String",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

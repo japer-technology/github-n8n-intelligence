@@ -1,0 +1,506 @@
+{
+  "_templateId": 9153,
+  "_templateName": "Collect LinkedIn Profiles with SerpAPI Google Search and Sheets",
+  "_templateDescription": "[LI] – Search Profiles\n\n&gt; ⚠️ Self-hosted disclaimer:  \n&gt; This workflow uses the SerpAPI community node, which is available only on self-hosted n8n instances.  \n&gt; For n8n Cloud, you may need to use an HTTP Request node with the SerpAPI REST API instead.\n\nWho’s it for\nRecruiters, talent sourcers, SDRs, and anyone who wants to automatically gather public LinkedIn profiles from Google search results based on keywords — across multiple pages — and log them to a Google Sheet for further analysis.\n\nWhat it does / How it works\nThis workflow extends the standard LinkedIn profile search to include pagination, allowing you to fetch results from multiple Google result pages in one go.\n\nHere’s the step-by-step process:\n\nForm Trigger – “LinkedIn Search”\n   Collects:\n     Keywords (comma separated) – e.g., python, fintech, warsaw\n     Pages to fetch – number of Google pages to scrape (each page ≈ 10 results)\n   Triggers the workflow when submitted.\n\nFormat Keywords (Set)\n   Converts the keywords into a Google-ready query string:\n          (\"python\") (\"fintech\") (\"warsaw\")\n        These parentheses improve relevance in Google searches.\n\nBuild Page List (Code)\n   Creates a list of pages to iterate through.\n   For example, if “Pages to fetch” = 3, it generates 3 search batches with proper start offsets (0, 10, 20).\n   Keeps track of:\n     Grouped keywords (keywordsGrouped)\n     Raw keywords\n     Submission timestamp\n\nLoop Over Items (Split In Batches)\n   Loops through the page list one batch at a time.\n   Sends each batch to SerpAPI Search and continues until all pages are processed.\n\nSerpAPI Search\n   Queries Google with:\n          site:pl.linkedin.com/in/ (\"keyword1\") (\"keyword2\") (\"keyword3\")\n        Fixed to the Warsaw, Masovian Voivodeship, Poland location.\n   The start parameter controls pagination.\n\nCheck how many results are returned (Switch)\n   If no results → Triggers No profiles found.\n   If results found → Passes data forward.\n\nSplit Out\n   Extracts each LinkedIn result from the organic_results array.\n\nGet Full Name to property of object (Code)\n   Extracts a clean full name from the search result title (text before “–” or “|”).\n\nAppend profile in sheet (Google Sheets)\n   Saves the following fields into your connected sheet:\n     | Column | Description |\n     |---------|-------------|\n     | Date | Submission timestamp |\n     | Profile | Public LinkedIn profile URL |\n     | Full name | Extracted candidate name |\n     | Keywords | Original keywords from the form |\n\nLoop Over Items (continue)\n    After writing each batch, it loops to the next Google page until all pages are complete.\n\nForm Response (final step)\n    Sends a confirmation back to the user after all pages are processed:\n            Check linked file\n🧾 Google Sheets Setup\n\nBefore using the workflow, prepare your Google Sheet with these columns in row 1:\n\n| Column Name | Description |\n|--------------|-------------|\n| Date | Automatically filled with the form submission time |\n| Profile | LinkedIn profile link |\n| Full name | Extracted name from search results |\n| Keywords | Original search input |\n\n&gt; You can expand the sheet to include optional fields like Snippet, Job Title, or Notes if you modify the mapping in the Append profile in sheet node.\n\nRequirements\nSerpAPI account* – with API key stored securely in *n8n Credentials**.  \nGoogle Sheets OAuth2 credentials** – connected to your target sheet with edit access.  \nn8n instance (Cloud or self-hosted)**  \n  &gt; Note: SerpAPI node is part of the Community package and may require self-hosted n8n.\n\nHow to set up\nImport the [LI] - Search profiles workflow into n8n.  \nConnect your credentials:\n   SerpAPI – use your API key.\n   Google Sheets OAuth2 – ensure you have write permissions.\nUpdate the Google Sheets node to point to your own spreadsheet and worksheet.\n(Optional) Edit the location field in SerpAPI Search for different regions.\nActivate the workflow and open the public form (via webhook URL).\nEnter your keywords and specify the number of pages to fetch.\n\nHow to customize the workflow\nChange search region:** Modify the location in the SerpAPI node or change the domain to site:linkedin.com/in/ for global searches.  \nAdd pagination beyond 3–4 pages:** Increase “Pages to fetch” — but note that excessive pages may trigger Google rate limits.  \nAvoid duplicates:* Add a *Google Sheets → Read* + *IF** node before appending new URLs.  \nAdd notifications:* Add *Slack, **Discord, or Email nodes after Google Sheets to alert your team when new data arrives.  \nCapture more data:** Map additional fields like title, snippet, or position into your Sheet.\n\nSecurity notes\nNever store API keys directly in nodes — always use n8n Credentials.  \nKeep your Google Sheet private and limit edit access.  \nRemove identifying data before sharing your workflow publicly.\n\n💡 Improvement suggestions\n\n| Area | Recommendation | Benefit |\n|-------|----------------|----------|\n| Dynamic location | Add a “Location” field to the form and feed it to SerpAPI dynamically. | Broader and location-specific searches |\n| Rate limiting | Add a short Wait node (e.g., 1–2s) between page fetches. | Prevents API throttling |\n| De-duplication | Check for existing URLs before appending. | Prevents duplicates |\n| Logging | Add a second sheet or log file with timestamps per run. | Easier debugging and tracking |\n| Data enrichment | Add a LinkedIn or People Data API enrichment step. | Collect richer candidate data |\n\n✅ Summary:  \nThis workflow automates the process of searching public LinkedIn profiles from Google across multiple pages. It formats user-entered keywords into advanced Google queries, iterates through paginated SerpAPI results, extracts profile data, and stores it neatly in a Google Sheet — all through a single, user-friendly form.",
+  "_templateCreatedAt": "2025-10-01T12:12:54.838Z",
+  "_templateTotalViews": 1,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:46:41.618Z",
+  "id": "oghc0ynE1x8iSAgb",
+  "meta": {
+    "instanceId": "2295c029f4cb86c8f849f9c87dade323734dc279619eb9e2704f8473c381e4d1"
+  },
+  "name": "[LI] - Search profiles",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "55003493-01ab-4ea1-a22e-d2d97df0fa71",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -1536,
+        48
+      ],
+      "webhookId": "9048da22-9150-4b78-9de3-e07ba9c25f57",
+      "parameters": {
+        "options": {},
+        "formTitle": "LinkedIn Search",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Keywords (comma separated)",
+              "requiredField": "={{ false }}"
+            },
+            {
+              "fieldType": "number",
+              "fieldLabel": "Pages to fetch",
+              "requiredField": "={{ false }}"
+            }
+          ]
+        },
+        "responseMode": "lastNode"
+      },
+      "typeVersion": 2.3
+    },
+    {
+      "id": "9a9b9b56-a179-41b6-a7ae-8723d92510de",
+      "name": "Format Keywords",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -1296,
+        48
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "name": "keywords",
+              "type": "string",
+              "value": "={{ \n  (() => {\n    const keywords = $json[\"Keywords (comma separated)\"]\n      .split(',')\n      .map(k => k.trim())\n      .filter(Boolean);\n    return '(\"' + keywords.join('\") (\"') + '\")';\n  })()\n}}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "50b03fa5-2e7c-4e4a-a575-8ca09aa95e71",
+      "name": "Build Page List",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -1008,
+        48
+      ],
+      "parameters": {
+        "jsCode": "// Build one item per requested page with the proper SerpAPI start offsets\nconst pagesRequested = parseInt($('On form submission').item.json['Pages to fetch'] ?? 1, 10) || 1;\nconst perPage = 10;\nconst ctx = {\n  keywordsGrouped: $('Format Keywords').item.json.keywords,\n  rawKeywords: $('On form submission').item.json['Keywords (comma separated)'],\n  submittedAt: $('On form submission').item.json.submittedAt\n};\nreturn Array.from({ length: pagesRequested }, (_, i) => ({\n  json: {\n    page: i,\n    start: $('On form submission').first().json['Page (offset)'] * perPage,\n    ...ctx\n  }\n}));"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "bc93179f-578b-4fd1-9701-8fefb5f3f650",
+      "name": "SerpAPI Search",
+      "type": "n8n-nodes-serpapi.serpApi",
+      "position": [
+        -480,
+        64
+      ],
+      "parameters": {
+        "q": "=site:pl.linkedin.com/in/ {{$json.keywordsGrouped}}",
+        "location": "Warsaw,Masovian Voivodeship,Poland",
+        "requestOptions": {},
+        "additionalFields": {
+          "start": "={{$json.start}}"
+        }
+      },
+      "credentials": {
+        "serpApi": {
+          "id": "credential-id",
+          "name": "serpApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e3a373df-29f4-408d-a286-9a2761c30b49",
+      "name": "Check how many results are returned",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        -256,
+        64
+      ],
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "outputKey": "Empty list",
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "loose"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "leftValue": "={{ parseInt($json.search_information.total_results) }}",
+                    "rightValue": "=0"
+                  }
+                ]
+              },
+              "renameOutput": true
+            },
+            {
+              "outputKey": "Not empty list",
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "loose"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "operator": {
+                      "type": "number",
+                      "operation": "gt"
+                    },
+                    "leftValue": "={{ $json.search_information.total_results }}",
+                    "rightValue": 0
+                  }
+                ]
+              },
+              "renameOutput": true
+            }
+          ]
+        },
+        "options": {},
+        "looseTypeValidation": true
+      },
+      "typeVersion": 3.3
+    },
+    {
+      "id": "aaa5aa78-d3c0-474b-8329-2a9f17012540",
+      "name": "No profiles found",
+      "type": "n8n-nodes-base.form",
+      "position": [
+        -80,
+        -160
+      ],
+      "webhookId": "25b9af18-87bd-4e8f-b25c-2b7ee230b12a",
+      "parameters": {
+        "options": {},
+        "operation": "completion",
+        "completionTitle": "Response",
+        "completionMessage": "No profiles found based on params."
+      },
+      "typeVersion": 2.3
+    },
+    {
+      "id": "7529e706-afb5-4878-a388-2ff04fd67842",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        -80,
+        288
+      ],
+      "parameters": {
+        "options": {},
+        "fieldToSplitOut": "organic_results"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "20e568aa-9be7-4d97-85f1-a01725300699",
+      "name": "Get Full Name to property of object",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        112,
+        288
+      ],
+      "parameters": {
+        "jsCode": "for (const item of $input.all()) {\n  if (typeof item.json.title === 'string') {\n    item.json.fullName = item.json.title.split('-')[0].trim();\n  }\n}\nreturn $input.all();"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "c7331bd5-8680-4651-97f4-6a09c0b40fe2",
+      "name": "Append profile in sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        368,
+        288
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "Date": "={{ $('On form submission').item.json.submittedAt }}",
+            "Profile": "={{ $json.link }}",
+            "Keywords": "={{ $('On form submission').item.json['Keywords (comma separated)'] }}",
+            "Full name": "={{ $json.fullName }}"
+          },
+          "schema": [
+            {
+              "id": "Date",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Date",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Full name",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Full name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Profile",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Profile",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Keywords",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Keywords",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1f_wxWdSr2hfmmRTWIHqpCKn6-63J0UUflFJnLj_M7ls/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1f_wxWdSr2hfmmRTWIHqpCKn6-63J0UUflFJnLj_M7ls",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1f_wxWdSr2hfmmRTWIHqpCKn6-63J0UUflFJnLj_M7ls/edit?usp=drivesdk",
+          "cachedResultName": "[LI Profiles]"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.7
+    },
+    {
+      "id": "119be8c8-5b9e-44a8-a845-2a2e34ed2baa",
+      "name": "Form Response",
+      "type": "n8n-nodes-base.form",
+      "position": [
+        -480,
+        -384
+      ],
+      "webhookId": "25b9af18-87bd-4e8f-b25c-2b7ee230b12a",
+      "parameters": {
+        "options": {},
+        "operation": "completion",
+        "completionTitle": "Response",
+        "completionMessage": "Check linked file"
+      },
+      "typeVersion": 2.3
+    },
+    {
+      "id": "87fe340d-f481-4158-954a-136150adbdad",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        -768,
+        48
+      ],
+      "parameters": {
+        "options": {}
+      },
+      "typeVersion": 3
+    },
+    {
+      "id": "0b168e74-c995-4bd0-9b24-9bdf997c1570",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1392,
+        -224
+      ],
+      "parameters": {
+        "width": 288,
+        "height": 432,
+        "content": "## Change form data to query \n```\nelemnt1, element2\n```\nchanged to \n```\n(\"elemnt1\") (\"element2\")\n```"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "367edf17-e444-426b-aeb6-f6385fbbdff4",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -560,
+        -64
+      ],
+      "parameters": {
+        "color": 5,
+        "height": 304,
+        "content": "## Google query\nSerpAPI used to make a query"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "6915509d-bba4-4ce3-83c5-65faa6599fbc",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        288,
+        -16
+      ],
+      "parameters": {
+        "color": 4,
+        "height": 464,
+        "content": "## Save profiles in Google Sheet\n\nSetup Google Sheet with the following columns:\n- Date\n- Profile\n- Keywords\n\n"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {
+    "On form submission": [
+      {
+        "json": {
+          "formMode": "test",
+          "submittedAt": "2025-10-20T12:17:44.944+02:00",
+          "Page (offset)": 4,
+          "Pages to fetch": 2,
+          "Keywords (comma separated)": "automotive, plant manager, kierownik, kielce"
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "50438f28-0644-4777-b599-a257510b1f55",
+  "connections": {
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Get Full Name to property of object",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SerpAPI Search": {
+      "main": [
+        [
+          {
+            "node": "Check how many results are returned",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Page List": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Keywords": {
+      "main": [
+        [
+          {
+            "node": "Build Page List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Form Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "SerpAPI Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Format Keywords",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append profile in sheet": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check how many results are returned": {
+      "main": [
+        [
+          {
+            "node": "No profiles found",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Full Name to property of object": {
+      "main": [
+        [
+          {
+            "node": "Append profile in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

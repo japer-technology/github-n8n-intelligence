@@ -1,0 +1,494 @@
+{
+  "_templateId": 4396,
+  "_templateName": "Smart Shopify Agent: AI-Powered Abandoned Cart Recovery",
+  "_templateDescription": "🤖 AI Cart Recovery Agent: Smart Abandoned Checkout Assistant\n\nTransform abandoned carts into recovered sales with intelligent automation. This sophisticated n8n workflow monitors checkout abandonment, implements smart waiting periods, and sends AI-generated personalized recovery emails only when needed - maximizing conversions while respecting customer experience.\n\n🔄 How It Works\n\nThis intelligent 7-step recovery system recovers lost sales automatically:\n\nStep 1: Initial Abandonment Detection\nThe workflow fetches current abandoned checkout data from your e-commerce platform (Shopify, WooCommerce, etc.), identifying customers who added items but didn't complete their purchase.\n\nStep 2: Strategic Grace Period\nInstead of immediately sending recovery emails, the system waits 1 hour (customizable), giving customers natural time to complete their purchase without pressure or interruption.\n\nStep 3: Smart Re-verification\nAfter the waiting period, the workflow rechecks the abandonment status by fetching updated checkout data, ensuring accuracy before taking action.\n\nStep 4: Intelligent Decision Logic\nAdvanced conditional logic compares initial and updated abandonment lists, determining if customers are still abandoned or have completed their purchase during the grace period.\n\nStep 5: AI-Powered Email Generation\nFor customers still showing abandonment, GPT generates personalized recovery emails featuring:\nCustomer's actual name for personal connection\nSpecific products left in their cart\nFriendly, non-pushy messaging tone\nOptional discount incentives\nCompelling call-to-action to complete purchase\n\nStep 6: Automated Email Delivery\nPersonalized recovery emails are sent directly to abandoned customers via Gmail or your preferred email service, maintaining professional branding and deliverability.\n\nStep 7: Comprehensive Activity Logging\nAll recovery attempts are logged in Google Sheets for tracking, including customer details, email content, and campaign performance analytics.\n\n⚙️ Setup Steps\n\nPrerequisites\nE-commerce platform with API access (Shopify, WooCommerce, BigCommerce)\nOpenAI API key for personalized email generation\nGmail or SMTP email service for delivery\nGoogle Sheets for activity tracking and analytics\nn8n instance (cloud or self-hosted)\n\nE-commerce Platform Configuration\n\nShopify Setup:\nAPI Endpoint: https://your-store.myshopify.com/admin/api/2023-10/checkouts.json\nAuthentication: X-Shopify-Access-Token header\nRequired Permissions: Read checkouts, Read customers\nParameters: status=abandoned\n\nWooCommerce Setup:\nAPI Endpoint: https://your-site.com/wp-json/wc/v3/orders\nAuthentication: Consumer Key/Secret or JWT\nParameters: status=pending, status=failed\nRequired Plugins: WooCommerce REST API\n\nConfiguration Steps\n\n1. Credential Setup\nE-commerce API**: Store admin API access tokens or keys\nOpenAI API Key**: GPT-4 access for intelligent email generation\nGmail OAuth2**: Professional email delivery service\nGoogle Sheets OAuth2**: Activity logging and performance tracking\n\n2. Abandonment Detection Configuration\nMonitoring Frequency**: Set workflow trigger schedule (hourly, daily)\nGrace Period Duration**: Customize wait time (default: 1 hour)\nPlatform Integration**: Configure API endpoints for your specific platform\nData Filtering**: Set criteria for what constitutes abandonment\n\n3. AI Email Customization\nDefault email generation includes:\nPersonalization Level**: Customer name, product specifics, cart value\nTone Customization**: Friendly, urgent, helpful, or premium\nDiscount Integration**: Optional percentage or fixed amount offers\nBrand Voice**: Maintain consistent company messaging and style\n\n4. Recovery Campaign Settings\nEmail Timing**: Optimal sending times based on customer time zones\nFrequency Limits**: Prevent over-emailing with cooldown periods\nSegmentation Rules**: Different approaches for high-value vs standard carts\nFollow-up Sequences**: Multi-email recovery campaigns with escalating incentives\n\n5. Performance Tracking Setup\nAnalytics Dashboard**: Google Sheets with recovery metrics and ROI\nSuccess Tracking**: Monitor completion rates and revenue recovered\nA/B Testing**: Compare different email approaches and timing\nCustomer Journey**: Track from abandonment through recovery completion\n\n🚀 Use Cases\n\nE-commerce Retailers\nFashion & Apparel**: Recover high-value clothing and accessory purchases\nElectronics**: Target abandoned tech purchases with technical support offers\nHome & Garden**: Remind customers about seasonal or home improvement items\nBeauty & Cosmetics**: Recover abandoned skincare and makeup purchases\n\nSubscription & SaaS Businesses\nSoftware Trials**: Convert abandoned trial signups into paid subscriptions\nMembership Sites**: Recover incomplete membership purchases\nOnline Courses**: Re-engage learners who abandoned course purchases\nDigital Services**: Follow up on abandoned service bookings or consultations\n\nB2B E-commerce\nOffice Supplies**: Recover bulk order abandonments with volume discounts\nIndustrial Equipment**: Follow up on high-value equipment quote requests\nProfessional Services**: Re-engage businesses that abandoned service bookings\nSoftware Licenses**: Recover enterprise software purchase abandonments\n\nSpecialty Retailers\nLuxury Goods**: Provide white-glove service for high-value abandoned purchases\nCustom Products**: Follow up on personalized or custom order abandonments\nSeasonal Items**: Time-sensitive recovery for holiday or event-specific products\nLimited Edition**: Create urgency for exclusive or limited availability items\n\nService-Based Businesses\nTravel & Hospitality**: Recover abandoned hotel, flight, or package bookings\nEvent Tickets**: Re-engage customers who abandoned concert or event purchases\nProfessional Services**: Follow up on abandoned consultation or service bookings\nFitness & Wellness**: Recover abandoned membership or class package purchases\n\n🔧 Advanced Customization Options\n\nMulti-Platform Integration\nExtend beyond single platform monitoring:\nShopify Plus: Advanced checkout analytics and customer segmentation\nWooCommerce: Custom post-purchase and abandonment tracking\nMagento: Enterprise-level cart recovery with customer journey mapping\nBigCommerce: API-driven recovery with advanced personalization\nCustom Platforms: Webhook-based abandonment detection and recovery\n\nIntelligent Email Sequencing\nCreate sophisticated recovery campaigns:\nProgressive Incentives**: Escalating discounts over multiple touchpoints\nBehavioral Triggers**: Different emails based on cart value, customer history\nSeasonal Campaigns**: Holiday-specific recovery messaging and offers\nWin-Back Sequences**: Long-term customer re-engagement beyond immediate recovery\n\nAdvanced Personalization\nEnhance AI-generated content with:\nPurchase History Analysis**: Reference previous purchases and preferences\nBrowsing Behavior**: Include recently viewed items and categories\nGeographic Personalization**: Local offers, shipping options, or store locations\nDemographic Targeting**: Age, gender, or interest-based messaging customization\n\nPerformance Optimization\nImplement advanced tracking and optimization:\nRevenue Attribution**: Track exact recovery amounts and ROI calculations\nCustomer Lifetime Value**: Prioritize high-value customer recovery efforts\nConversion Funnel Analysis**: Identify optimal timing and messaging strategies\nPredictive Analytics**: Use ML to predict recovery likelihood and optimize approaches\n\n📊 Recovery Email Examples\n\nFashion Retailer Example:\nSubject: You left something stylish behind, Sarah!\n\nHi Sarah,\n\nI noticed you were checking out those gorgeous items in your cart earlier - the Bohemian Summer Dress and Classic Leather Handbag have been waiting for you!\n\nI completely understand if you got busy or needed time to think it over. These pieces are still available and ready to ship to you today.\n\nSince you showed such great taste in selecting these items, I'd love to offer you 10% off your order to make the decision easier. Just use code WELCOME10 at checkout.\n\nYour cart includes:\n• Bohemian Summer Dress (Size M) - $89.99\n• Classic Leather Handbag (Brown) - $156.99\n\nComplete your purchase now and get free shipping to your door!\n\n[Complete My Purchase] \n\nBest regards,\nThe StyleHub Team\n\nP.S. These items are popular and inventory is limited - don't wait too long!\n\nSoftware/SaaS Example:\nSubject: Your ProductivityPro trial is waiting, Mike\n\nHi Mike,\n\nYou were just one step away from unlocking the full power of ProductivityPro for your team at TechStartup Inc.\n\nI noticed you explored our Premium Plan features - the advanced reporting and team collaboration tools that could streamline your workflow and boost productivity by up to 40%.\n\nSince you invested time exploring our platform, I'd like to offer you an exclusive 25% discount on your first year. This offer is valid for the next 48 hours.\n\nYour selected plan:\n• ProductivityPro Premium (5 users) - $99/month\n• With 25% discount: $74/month (Save $300/year!)\n\nReady to transform your team's productivity?\n\n[Activate My Account]\n\nQuestions? Reply to this email or schedule a quick 15-minute demo call.\n\nBest regards,\nDavid Chen\nCustomer Success Manager, ProductivityPro\n\nHigh-Value B2B Example:\nSubject: Your equipment quote is ready for approval, Jennifer\n\nHi Jennifer,\n\nThank you for your interest in our Industrial Packaging System for ManuCorp's new facility expansion.\n\nI understand that equipment investments of this scale require careful consideration and stakeholder alignment. Your configured system includes:\n\n• Model X5000 Packaging Line - $45,000\n• Installation & Training Package - $8,000  \n• Extended 3-Year Warranty - $3,500\nTotal Investment: $56,500\n\nGiven the scope of your project, I'd like to extend our Q1 promotion pricing, which provides:\n15% discount on equipment ($6,750 savings)\nFree installation supervision ($2,000 value)\nExpedited 6-week delivery\n\nThis brings your total to $48,750 - a savings of $7,750.\n\nI'm available for a brief call to address any technical questions or help facilitate internal approvals. \n\n[Accept Quote & Proceed]\n\nBest regards,\nRobert Martinez\nSenior Sales Engineer\nIndustrial Solutions Inc.\nDirect: (555) 123-4567\n\n🛠️ Troubleshooting & Best Practices\n\nCommon Issues & Solutions\n\nAPI Rate Limiting\nImplement exponential backoff for API requests\nStagger workflow execution times across different stores\nMonitor API usage and upgrade plans as needed\nCache frequently accessed data to reduce API calls\n\nEmail Deliverability Challenges\nUse authenticated SMTP services with proper SPF/DKIM setup\nMonitor sender reputation and email engagement metrics\nImplement opt-out mechanisms and respect unsubscribe requests\nSegment email lists and avoid over-emailing customers\n\nFalse Positive Recoveries\nExtend grace periods for complex checkout processes\nImplement more sophisticated abandonment detection logic\nAdd customer behavior analysis before triggering recovery\nCreate exception rules for technical checkout failures\n\nOptimization Strategies\n\nRecovery Timing Optimization\nA/B test different grace period durations (30 min, 1 hour, 3 hours)\nAnalyze customer behavior patterns to optimize sending times\nConsider time zone differences for global customer bases\nImplement seasonal timing adjustments for holidays and events\n\nContent Personalization Enhancement\nContinuously refine AI prompts based on successful recoveries\nImplement dynamic discount strategies based on cart value\nCreate customer segment-specific messaging approaches\nAdd urgency elements for time-sensitive or limited inventory items\n\nPerformance Measurement\nTrack recovery rates, revenue impact, and customer satisfaction\nImplement cohort analysis for long-term customer value impact\nMonitor email engagement metrics and optimize accordingly\nCalculate true ROI including customer acquisition costs and lifetime value\n\n📈 Success Metrics\n\nRecovery Performance Indicators\nRecovery Rate**: Percentage of abandoned carts successfully recovered\nRevenue Recovery**: Total dollar amount recovered from abandoned purchases\nEmail Engagement**: Open rates, click rates, and conversion rates\nTime to Recovery**: Average time from abandonment to completed purchase\n\nBusiness Impact Measurements\nROI Calculation**: Revenue recovered vs workflow operational costs\nCustomer Retention**: Impact on long-term customer relationships\nAverage Order Value**: Effect on overall purchase values post-recovery\nOperational Efficiency**: Automation savings vs manual recovery efforts\n\n📞 Questions & Support\n\nNeed help implementing your AI Cart Recovery Agent?\n\n📧 E-commerce Automation Expert Support\nEmail**: Yaron@nofluff.online\nResponse Time**: Within 24 hours on business days\nSpecialization**: E-commerce automation, cart recovery optimization, AI email personalization\n\n🎥 Comprehensive Implementation Resources\nYouTube Channel**: https://www.youtube.com/@YaronBeen/videos\n  Complete setup guides for major e-commerce platforms\n  Advanced AI email personalization techniques\n  Recovery campaign optimization strategies\n  Integration tutorials for Shopify, WooCommerce, and custom platforms\n  Performance tracking and analytics implementation\n\n🤝 E-commerce Automation Community\nLinkedIn**: https://www.linkedin.com/in/yaronbeen/\n  Connect for ongoing e-commerce automation support and consulting\n  Share your cart recovery success stories and ROI achievements\n  Access exclusive templates for different industry verticals\n  Join discussions about e-commerce automation trends and innovations\n\n💬 Support Request Guidelines\nInclude in your support message:\nYour e-commerce platform and current cart abandonment rates\nAverage order values and customer segments you serve\nCurrent recovery processes and conversion challenges\nIntegration requirements with existing marketing tools\nSpecific technical errors or workflow execution issues\n\n",
+  "_templateCreatedAt": "2025-05-26T11:59:22.062Z",
+  "_templateTotalViews": 1210,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:48:55.060Z",
+  "meta": {
+    "instanceId": "5aaf4236c70e34e423fbdb2c7b754d19253a933bb1476d548f75848a01e473cf"
+  },
+  "nodes": [
+    {
+      "id": "ecbb99d3-d896-48cc-b6b1-72e178329a3c",
+      "name": "Generate Recovery Email",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        100,
+        500
+      ],
+      "parameters": {
+        "text": "=Write a friendly and persuasive abandoned cart recovery email for a customer named {{ $json.checkouts[0].customer.first_name }} {{ $json.checkouts[0].customer.last_name }}. The cart contains: {{ $json.checkouts }}. Encourage them to complete their purchase with a subtle reminder and optionally a discount. do not include subject and don't add extra stuff\n",
+        "options": {},
+        "promptType": "define"
+      },
+      "typeVersion": 1.9
+    },
+    {
+      "id": "0b156bce-50ec-4e56-9c67-be4b34791b3e",
+      "name": "Email Writer",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        40,
+        700
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "49b21bce-bece-40a3-b9c0-86e4adc3e167",
+      "name": "Log Email Activity",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        740,
+        500
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "email": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].email }}",
+            "customer": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].customer.first_name }} {{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].customer.last_name }}",
+            "GPT response": "={{ $('Generate Recovery Email').item.json.output }}"
+          },
+          "schema": [
+            {
+              "id": "customer",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "customer",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "email",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "GPT response",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "GPT response",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H83mXsl_gjgwOWrwNYak6ISihoWsgx-EFxSbPlvQx7M/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1H83mXsl_gjgwOWrwNYak6ISihoWsgx-EFxSbPlvQx7M",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1H83mXsl_gjgwOWrwNYak6ISihoWsgx-EFxSbPlvQx7M/edit?usp=drivesdk",
+          "cachedResultName": "Shopify abandoned checkout"
+        }
+      },
+      "typeVersion": 4.5
+    },
+    {
+      "id": "e55ea939-10fd-423b-99ef-90a89b0effc8",
+      "name": "Send Email to Customer",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        520,
+        500
+      ],
+      "webhookId": "fb71183d-2a4d-4eca-a73b-225d4cfa4d2d",
+      "parameters": {
+        "sendTo": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].email }}",
+        "message": "={{ $json.output }}",
+        "options": {},
+        "subject": "=You left something behind, {{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].customer.first_name }}"
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "b5a6e9ac-6d54-4d6f-bf4d-ced260eecd00",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -680,
+        400
+      ],
+      "parameters": {
+        "color": 3,
+        "width": 420,
+        "height": 520,
+        "content": "🔍 Section 3: Conditional Decision\n5. Is Customer Still Abandoned?\nNode Type: Conditional (If Statement).\n\nLogic: Compares the initial abandoned list with the new one using Customer ID.\n\nOutcome:\n\n✅ Yes – customer is still in the abandoned list → proceed to email.\n\n❌ No – customer has completed checkout → do nothing."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "5462049f-2c8d-4f94-9475-33b16cbf4074",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 920,
+        "height": 840,
+        "content": "📧 Section 4: Recovery Email Flow\n6. Create Personalized Recovery Email\nNode Type: AI Content Generation (GPT-based).\n\nInput: Customer name, product(s) left in cart, etc.\n\nOutput: A personalized recovery email message.\n\nPurpose: Increases the chances of recovery through customized messaging.\n\n7. Send Recovery Email\nNode Type: Email Action (e.g., Gmail, SMTP).\n\nPurpose: Sends the generated email to the customer.\n\n8. Log Email Sent\nNode Type: Spreadsheet Append (Google Sheets, etc.).\n\nPurpose: Logs customer email, customer name and Response.\n\nHelps With: Tracking open rates, click-throughs, and future optimizations."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ef86a495-60f4-49c0-a5ca-bbc4b36724b8",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3520,
+        300
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 1300,
+        "height": 320,
+        "content": "=======================================\n            WORKFLOW ASSISTANCE\n=======================================\nFor any questions or support, please contact:\n    Yaron@nofluff.online\n\nExplore more tips and tutorials here:\n   - YouTube: https://www.youtube.com/@YaronBeen/videos\n   - LinkedIn: https://www.linkedin.com/in/yaronbeen/\n=======================================\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0f722fcc-e05a-4b9d-9250-487a049779eb",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -3520,
+        640
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 1289,
+        "height": 2238,
+        "content": "Here's a full, polished write-up of your **Abandoned Checkout Recovery Workflow** following the format of your **High-Value Order Alert Workflow** example:\n\n---\n\n# 🛒 Abandoned Checkout Recovery Workflow\n\n**Description:**\nThis workflow helps recover lost sales by identifying customers who abandon their checkout process. It begins by fetching abandoned cart data from a store, waits for a specific duration (1 hour), and rechecks to see if the customer has still not completed the purchase. If abandonment persists, the workflow generates a personalized recovery email using AI and sends it to the customer. This increases the chance of conversion and improves overall sales recovery rates.\n\n---\n\n## 🟢 Section 1: Checkout Monitoring & Initial Data Fetch\n\nThe workflow is initiated manually or on a scheduled basis to scan for abandoned checkouts via an API call to the store. This request returns a list of customers who added products to their cart but did not complete the purchase.\n\nThis initial fetch sets the baseline for comparison. The data includes essential customer identifiers and cart details, which will be used later to determine if the customer has recovered on their own.\n\nThis step ensures that the workflow only targets genuine abandonment scenarios and avoids acting on transient or temporary cases.\n\n---\n\n## ⏱️ Section 2: Grace Period Wait\n\nAfter the initial abandoned checkout list is retrieved, the workflow pauses for **1 hour**. This buffer period gives customers time to complete their checkout naturally, without being nudged prematurely.\n\nThis approach respects customer autonomy and avoids sending unnecessary reminders, thereby reducing the risk of annoying users or cluttering inboxes.\n\n---\n\n## 🔄 Section 3: Rechecking Abandonment Status\n\nOnce the wait time has elapsed, the workflow makes a second HTTP request to fetch the latest list of abandoned checkouts. It then uses a conditional check to determine if a particular customer from the initial list still appears in the updated data.\n\n* **If the customer is still present** in the new list, they are considered to still be in an abandoned state.\n* **If the customer is not present**, it is assumed that they completed their purchase and no further action is taken.\n\nThis section acts as a smart filter to prevent sending recovery emails unnecessarily.\n\n---\n\n## ✉️ Section 4: Personalized Recovery Email Flow\n\nIf the customer is confirmed to still have an abandoned cart, the workflow proceeds to engage them with a recovery email.\n\nAn AI email writer generates a **personalized email** based on the abandoned cart data. The message can include specific products, a friendly reminder, and optional incentives such as discounts.\n\nThe email is then sent to the customer via an integrated email service provider. Immediately after, the workflow logs the email activity to a spreadsheet or database for tracking purposes. This helps monitor campaign effectiveness and customer engagement over time.\n\n---\n\n## 🛑 Fallback: Customer Completed Purchase\n\nIf the customer is **not found** in the second check, it means they successfully completed the checkout during the wait period. In this case, the workflow follows a \"do nothing\" path — no email is sent, and the process ends gracefully.\n\nThis fallback mechanism ensures customers aren't contacted unnecessarily, maintaining a respectful user experience.\n\n---\n\n## 🔁 Full Workflow Logic Overview\n\n1. Start the workflow manually or on a schedule.\n2. Fetch a list of current abandoned checkouts.\n3. Wait for 1 hour.\n4. Fetch updated abandoned checkout data.\n5. Compare both datasets:\n\n   * If customer still appears:\n\n     * Use AI to generate a personalized recovery email.\n     * Send the email to the customer.\n     * Log the activity.\n   * If customer no longer appears:\n\n     * End the workflow without taking action.\n\n---\n\nLet me know if you’d like this converted into a PDF or added to a documentation system!\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "7a5fce94-6ae8-43a3-9e45-b15e1d6ecf61",
+      "name": "No Operation, do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        100,
+        1060
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "e8966160-eb7b-470c-9754-52048cb01551",
+      "name": "Start Workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -1720,
+        720
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "7ac542e0-5379-4416-a33e-c2ba13947a30",
+      "name": "Get Initial Abandoned Checkout",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -1420,
+        720
+      ],
+      "parameters": {
+        "url": "https://your-store.myshopify.com/admin/api/2023-10/checkouts.json",
+        "options": {},
+        "sendQuery": true,
+        "sendHeaders": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "abandoned"
+            }
+          ]
+        },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Shopify-Access-Token",
+              "value": "your-access-token"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "2409af7c-7df8-4825-b31a-7d2f4bb84a59",
+      "name": "Wait 1 Hour",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -1120,
+        720
+      ],
+      "webhookId": "12d15136-8aa1-4177-a572-04da4b88b28c",
+      "parameters": {
+        "unit": "hours",
+        "amount": 1
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "449c40d4-e1fa-4984-9b3b-c9dd6863e71a",
+      "name": "Recheck Abandoned Checkouts",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -900,
+        720
+      ],
+      "parameters": {
+        "url": "https://your-store.myshopify.com/admin/api/2023-10/checkouts.json",
+        "options": {},
+        "sendQuery": true,
+        "sendHeaders": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "status",
+              "value": "abandoned"
+            }
+          ]
+        },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Shopify-Access-Token",
+              "value": "your-access-token"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "023ea763-155f-4c3c-8c3b-d7de0ef1687a",
+      "name": "Is Customer Still Abandoned?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -620,
+        720
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "or",
+          "conditions": [
+            {
+              "id": "8119001f-78d5-40b4-bcd7-8f13495b6d51",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].id }}",
+              "rightValue": "={{ $json.checkouts[0].id }}"
+            },
+            {
+              "id": "229cf7e1-5490-4bd0-9004-2baadbe15b4f",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].id }}",
+              "rightValue": "={{ $json.checkouts[1].id }}"
+            },
+            {
+              "id": "163c04b1-6e4b-42da-9a5f-2168c4148023",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].id }}",
+              "rightValue": "={{ $json.checkouts[2].id }}"
+            },
+            {
+              "id": "42461258-29f4-4dc2-9c34-598654debaa6",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].id }}",
+              "rightValue": "={{ $json.checkouts[3].id }}"
+            },
+            {
+              "id": "a0c9d76f-66fc-454b-b59c-990291c85ebf",
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $('Get Initial Abandoned Checkout').item.json.checkouts[0].id }}",
+              "rightValue": "={{ $json.checkouts[4].id }}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "c0a92444-8d4d-4eeb-8c8f-7757d90dff2c",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1760,
+        320
+      ],
+      "parameters": {
+        "width": 520,
+        "height": 600,
+        "content": "🔁 Section 1: Initialization & First Abandoned Checkout Fetch\n1. Start Abandoned Checkout Recovery\nPurpose: Triggers the workflow.\n\nTrigger Type: Manual or Scheduled.\n\nWhen: Could be set to run periodically (e.g., every hour).\n\n2. Get Initial Abandoned Checkouts\nNode Type: HTTP Request (GET).\n\nURL: https://your_store.myshopify.com/admin/api/...\n\nPurpose: Fetches the list of all abandoned checkouts at the start of the workflow.\n\nOutput: A list of abandoned carts with customer ID."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4748bf2d-732b-48f5-a506-01ab5f5ebbe8",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1180,
+        320
+      ],
+      "parameters": {
+        "width": 460,
+        "height": 600,
+        "content": "⏳ Section 2: Wait and Re-evaluation\n3. Wait 1 Hour\nNode Type: Wait.\n\nDuration: 1 hour.\n\nPurpose: Gives the customer a grace period to complete the checkout naturally before initiating any recovery steps.\n\n4. Recheck Abandoned Checkouts\nNode Type: HTTP Request (GET).\n\nURL: Same as the initial fetch.\n\nPurpose: Fetches the updated list of abandoned checkouts.\n\nOutput: A new list of customer IDs who still haven’t completed their checkout."
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Wait 1 Hour": {
+      "main": [
+        [
+          {
+            "node": "Recheck Abandoned Checkouts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Writer": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Generate Recovery Email",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get Initial Abandoned Checkout",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Email to Customer": {
+      "main": [
+        [
+          {
+            "node": "Log Email Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Recovery Email": {
+      "main": [
+        [
+          {
+            "node": "Send Email to Customer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recheck Abandoned Checkouts": {
+      "main": [
+        [
+          {
+            "node": "Is Customer Still Abandoned?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Customer Still Abandoned?": {
+      "main": [
+        [
+          {
+            "node": "Generate Recovery Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Initial Abandoned Checkout": {
+      "main": [
+        [
+          {
+            "node": "Wait 1 Hour",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

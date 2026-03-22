@@ -1,0 +1,474 @@
+{
+  "_templateId": 11092,
+  "_templateName": "Create AI-Curated News Digests with GPT-5.1, NewsAPI, Tavily & Telegram",
+  "_templateDescription": "Overview\n\nStaying up to date with fast-moving topics like AI, machine learning, research, or your specific industry can be tricky.\n\nTo solve this for myself (for me, it is mostly AI and automation topics), I built and use this n8n workflow: it pulls fresh articles using NewsAPI based on my topics of interest, lets an AI agent pick the 5 most relevant ones, enriches them with a Tavily search engine, and sends a clean, readable newsletter straight to Telegram - in the language you specify.\n\nIn this post, I'll:\n\nExplain what the workflow does and why it's useful\nShow you how to import and configure it step by step\nHighlight the main advantages and common customisations\nOutline concrete next steps and improvements\n\nAfter following this guide, you'll end up with a fully automated weekly newsletter that delivers relevant news on the topics you care about - without any manual work.\n\nThis is ideal if you already run n8n and want a mostly no‑code way to get a curated weekly digest in Telegram.\n\nWhat this workflow does\n\nAt a high level, this workflow:\n\nRuns on a schedule (weekly at 9:00 on Sundays by default)\nAutomatically finds recent, relevant news via NewsAPI for your topics of interest\nLets AI select the top 5 most relevant news\nUses a Tavily-powered AI agent to fact-check and enrich each article\nAggregates the final results into a compact newsletter in the language you specify\nSends them as a Markdown-formatted Telegram message\n\nThe result: every week you get an AI-picked, enriched mini-newsletter with the latest news based on your own interests - delivered in Telegram.\n\nRequirements\n\nTo run this workflow, you need:\n\nNewsAPI key**  \n  Create an account here and generate an API key - it is free.\nTavily API key**  \n  You can sign up here and create an API key. They also have a generous free tier.\nOpenAI API key**  \n  Get one from OpenAI - we need this for the LLM agent calls.\nTelegram bot + chat ID**  \n  A Telegram bot (via BotFather) and the chat/channel ID where you want the newsletter. It is also free. See for example here how to set that up.\n\nHow it works\n\nThe exact logic of the workflow is as follows:\n\nSchedule Trigger**  \n  Runs the workflow on a fixed interval (in this version: weekly, at 9:00 on Sundays).\nSet topics and language**  \n  A Set node that defines topics (my default is AI,n8n - use a comma-separated list) and language (here I have English, but choose what you prefer). Change these to match your interests (e.g. health,fitness, macroeconomics,markets, climate,policy, or anything you care about).\nCall NewsAPI**  \n  HTTP Request node calling the NewsAPI API. It uses as arguments:\n  from: last 7 days¹  \n  q: the query, built from your topics (topics like AI,n8n become AI OR n8n expected by the API)²  \n  sortBy: relevancy - the most relevant ones at the top of the results returned  \n  Auth is handled via an httpQueryAuth credential, where your NewsAPI key is passed as a query parameter.\nAI Topic Selector**  \n  An OpenAI - Message a model node using gpt-5.1 via your OpenAI API key with the following prompt:\n\nYou are an assistant that selects the most relevant news articles for a user.\n\nInstructions:  \nChoose the 5 most relevant non-overlapping articles based on the user topics.  \nFor each article, provide:  \n   title  \n   short summary (1–2 sentences)  \n   source name  \n   url\nOutput the results in the language specified by the user.\n\nOutput as a \"articles\" JSON array of objects, each with \"title\", \"summary\", \"source\" and \"url\".\n\nUser topics of interest: {{ $('Set topics and language').item.json.topics }}\nOutput language: {{ $('Set topics and language').item.json.language }}\n\nNewsAPI articles:\n\n{{ \n  $json.articles.map(\n    article =&gt; \n      `Title: ${article.title}\nDescription: ${article.description}\nContent: ${article.content}\nSource: ${article.source.name}\nURL: ${article.url}`\n  ).join('\\n---\\n')\n}}\n\n  The prompt instructs the model to read your topics and language, look at all articles from the NewsAPI call (it returns a maximum of 100), select the 5 most relevant, non-overlapping articles, and output a JSON array with title, summary, source and url.\n\nSplit Out**  \n  Splits out the AI message so each article becomes its own item. This lets the downstream AI agent work on each article individually.\n\n  Under the hood, we parse the JSON array returned by the AI into individual items, so that each article becomes its own item in n8n. This lets the AI Agent node enrich each article separately.\nNewsletter AI Agent**  \n  An AI Agent node with gpt-5.1 as model, again accessed via your OpenAI API key. The agent takes the initial title, summary, source and url, uses the Tavily search tool to find 2–3 reliable, recent sources, and writes a concise 1–3 sentence article in the language you specified. The prompt for the model is shown below.\n\nYou are a research writer that updates short news summaries into concise, factual articles.\n\nInput:\nTitle: {{ $json[\"title\"] }}\nSummary: {{ $json[\"summary\"] }}\nSource: {{ $json[\"source\"] }}\nOriginal URL: {{ $json[\"url\"] }}\nLanguage: {{ $('Set topics and language').item.json.language }}\n\nInstructions:\n\nUse Tavily Search to gather 2–3 reliable, recent, and relevant sources on this topic.\nUpdate the title if a more accurate or engaging one exists.\nWrite 1–3 sentences summarizing the topic, combining the original summary and information from the new sources.\nReturn the original source name and url as well.\n\nOutput (JSON):\n\n{\n  \"title\": \"final article title\",\n  \"content\": \"concise 1–3 sentence article content\",\n  \"source\": \"the name of the original source\",\n  \"url\": \"the url of the original source\"\n}\n\nRules:\n\nEnsure the topic is relevant, informative, and timely.\nTranslate the article if necessary to comply with the desired language {{ $('Set topics and language').item.json.language }}.\n\n  In particular, the prompt instructs the model to \n  \n  Use Tavily Search to gather 2–3 reliable, recent, and relevant sources on this topic.\n  Update the title if a more accurate or engaging one exists\n  Write 1–3 sentences summarizing the topic, combining the original summary and information from the new sources\n  Reply in a pre-defined JSON format including the original source name and url. The Output Parser enforces a structured JSON output with title, content, source and url as fields.\n\n  Because the model is allowed to adjust titles, you may occasionally see slightly different titles than in the original feed; if you prefer minimal changes, you can tighten the prompt to only allow small tweaks.\n\nAggregate**  \n  Aggregate node collecting the output field from the agent. Combines the individual article objects back into one array to be used for messaging.\nSend a text message**  \n  A Telegram - Send a text message node that uses your Telegram bot credentials and chatId. Renders each article as title, content plus Source: source.\n\n&gt; To adjust this workflow for your needs, open the Set topics and language node to tweak topics (comma-separated, like AI,startups,LLMs or web dev,TypeScript,n8n) and switch the language to any target language, then inspect the Schedule Trigger to adjust interval and time, e.g. weekly at 07:30. These two tweaks control the content topics of your newsletter and when you will receive it.\n\nWhy this workflow is powerful\n\nEnd-to-end automation**  \n  From news discovery to curated delivery, everything is automated.\nAI-driven topic relevance**  \n  Instead of naïvely listing every headline the AI filters for relevance to your topics and avoids overlapping or duplicate stories.\nGrounded in facts**  \n  By using NewsAPI and Tavily, the newsletter stays fact-based, i.e. you get short, factual summaries grounded in multiple sources.\nFlexibility**  \n  A single parameter (language) lets you specify the output language, while the Schedule Trigger lets you set the frequency.\nLow friction and mobile-first**  \n  Using Telegram as a consumption surface provides quick, low-friction reading, with push notifications as notifiers.\n\nNext steps\n\nHere are concrete directions to take this workflow further:\n\nRAG-workflow for better topic selection**  \n  Use a Retrieval-Augmented Generation pattern to let the model better choose topics that align with your evolving preferences. Right now, all news articles go into the prompt, which may bias the model to pick articles that appear first.\nPrompt iteration and evaluation framework**  \n  Systematically experiment with different selection criteria (e.g. \"more technical\", \"more beginner-friendly\"), tone and length of the newsletter.\nLogging using n8n data tables**  \n  Persist previous newsletter to avoid repetition and for better debugging. Using the source links provided in the newsletter, track which articles were clicked to enable 1:1 personalization.\nEmail with HTML template**  \n  For more flexibility, send the newsletter via email.\nTrigger based on news relevance**  \n  Instead of (or in addition to) a fixed schedule, compute a \"relevance score\" or \"novelty score\" across articles. Trigger only when the score crosses a threshold.\nIncorporating other news APIs or RSS feeds**  \n  Add more sources such as other news APIs and RSS feeds from blogs, newsletters, or communities.\nAdjust for arxiv paper search and research news**  \n  Swap NewsAPI for arxiv search or other academic sources to obtain a personal research digest newsletter.\nAdd 1:1 personalization by tracking URL clicks**  \n  Use n8n data tables to track which URLs have been clicked. Use this information as input to future AI runs to refine the news suggestions.\nAudio and video news**  \n  Use audio or video models for better news communication.\n\nWrap-up\n\nThis workflow shows how I use n8n, NewsAPI, Tavily, OpenAI, and Telegram to create a personal weekly newsletter. It’s mostly no-code, easy to customize, and something I rely on myself to stay informed without spending time browsing news manually.\n\nContact me here, visit my website, or connect with me on LinkedIn.\n\nFootnotes\n\nwe do that here with the JS expression ={{ DateTime.fromISO($json.timestamp).minus({ days: 7 }) }}\nwe do that here with the JS expression {{ $json.topics.replaceAll(\",\" , \" OR \") }}\n",
+  "_templateCreatedAt": "2025-11-21T10:23:34.134Z",
+  "_templateTotalViews": 16,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:47:56.717Z",
+  "meta": {
+    "instanceId": "33096ba7f58f02bb80c1ae17821e6d79073a6c7ab685cc827f3faacd5f65f9e5",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "78c17a2b-6458-42e5-acb6-74b350d17e4a",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -592,
+        -32
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "41b2c6a0-7063-446e-9403-478e6c7b325b",
+      "name": "Call NewsAPI",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -80,
+        -32
+      ],
+      "parameters": {
+        "url": "https://newsapi.org/v2/everything",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          }
+        },
+        "sendQuery": true,
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpQueryAuth",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "from",
+              "value": "={{ DateTime.fromISO($json.timestamp).minus({ days: 7 }) }}"
+            },
+            {
+              "name": "q",
+              "value": "={{ $json.topics.replaceAll(\",\", \" OR \") }}"
+            },
+            {
+              "name": "sortBy",
+              "value": "relevancy"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "httpQueryAuth": {
+          "id": "credential-id",
+          "name": "httpQueryAuth Credential"
+        }
+      },
+      "typeVersion": 4.2,
+      "alwaysOutputData": false
+    },
+    {
+      "id": "81bdbf07-dc4a-4fef-9e69-eef731f4bb14",
+      "name": "Send a text message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1376,
+        -32
+      ],
+      "webhookId": "a8a903fe-d94b-4316-92c1-0806bd260745",
+      "parameters": {
+        "text": "={{ \n  $json.output.map(article => {\n    const title = JSON.stringify(article.title).slice(1, -1);\n    const content = JSON.stringify(article.content).slice(1, -1);\n    const source = JSON.stringify(article.source).slice(1, -1);\n    const url = JSON.stringify(article.url).slice(1, -1);\n\n    return `*${title}*\\n${content}\\nSource: [${source}](${url})`;\n  }).join('\\n\\n')\n}}",
+        "chatId": "89066090",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "credential-id",
+          "name": "telegramApi Credential"
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "a522827f-0470-452e-9b9a-1268dbc97ba2",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        528,
+        -32
+      ],
+      "parameters": {
+        "options": {},
+        "fieldToSplitOut": "message.content.articles"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "d34cda05-2f22-4358-8890-f53ec36600f9",
+      "name": "Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        944,
+        192
+      ],
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n\t\"type\": \"object\",\n\t\"properties\": {\n\t\t\"title\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n\t\t\"content\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n        \"source\": {\n\t\t\t\"type\": \"string\"\n\t\t},\n        \"url\": {\n\t\t\t\"type\": \"string\"\n\t\t}\n\t}\n}"
+      },
+      "typeVersion": 1.3
+    },
+    {
+      "id": "d1fe8abe-76cf-4ce2-934d-5c78c4de8662",
+      "name": "Tavily",
+      "type": "@tavily/n8n-nodes-tavily.tavilyTool",
+      "position": [
+        816,
+        192
+      ],
+      "parameters": {
+        "query": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Query', ``, 'string') }}",
+        "options": {}
+      },
+      "credentials": {
+        "tavilyApi": {
+          "id": "credential-id",
+          "name": "tavilyApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "137623d3-5bd0-44a8-a915-36e9e0db1331",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        1152,
+        -32
+      ],
+      "parameters": {
+        "options": {},
+        "fieldsToAggregate": {
+          "fieldToAggregate": [
+            {
+              "fieldToAggregate": "output"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "d9fdf9e3-b954-43cb-98f7-503f6015e2f3",
+      "name": "Set topics and language",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -368,
+        -32
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "2e1993fe-ae4d-46e0-be9f-6b02a18cc610",
+              "name": "topics",
+              "type": "string",
+              "value": "AI,n8n"
+            },
+            {
+              "id": "2c6e2dad-d54a-4387-9bf5-4751037f99d9",
+              "name": "language",
+              "type": "string",
+              "value": "English"
+            }
+          ]
+        },
+        "includeOtherFields": true
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "f96519e3-2626-4651-9157-30ab40ffbf60",
+      "name": "Newsletter AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        752,
+        -32
+      ],
+      "parameters": {
+        "text": "=You are a research writer that updates short news summaries into concise, factual articles.\n\n**Input:**\nTitle: {{ $json[\"title\"] }}\nSummary: {{ $json[\"summary\"] }}\nSource: {{ $json[\"source\"] }}\nOriginal URL: {{ $json[\"url\"] }}\nLanguage: {{ $('Set topics and language').item.json.language }}\n\n**Instructions:**\n\n1. Use **Tavily Search** to gather 2–3 reliable, recent, and relevant sources on this topic.\n2. Update the **title** if a more accurate or engaging one exists.\n3. Write **1–3 sentences** summarizing the topic, combining the original summary and information from the new sources.\n4. Return the original source name and url as well.\n\n**Output (JSON):**\n\n```json\n{\n  \"title\": \"final article title\",\n  \"content\": \"concise 1–3 sentence article content\",\n  \"source\": \"the name of the original source\",\n  \"url\": \"the url of the original source\"\n}\n```\n\n**Rules:**\n\n* Ensure the topic is relevant, informative, and timely.\n* Translate the article if necessary to comply with the desired language {{ $('Set topics and language').item.json.language }}.",
+        "options": {},
+        "promptType": "define",
+        "hasOutputParser": true
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "699ff0a8-4412-45cb-b20d-ac4fa39c6077",
+      "name": "AI Topic Selector",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        176,
+        -32
+      ],
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5.1",
+          "cachedResultName": "GPT-5.1"
+        },
+        "options": {},
+        "messages": {
+          "values": [
+            {
+              "content": "=You are an assistant that selects the most relevant news articles for a user.\n\nInstructions:  \n1. Choose the **5 most relevant non-overlapping articles** based on the user topics.  \n2. For each article, provide:  \n   - title  \n   - short summary (1–2 sentences)  \n   - source name  \n   - url\n3. Output the results in the language specified by the user.\n\nOutput as a \"articles\" JSON array of objects, each with \"title\", \"summary\", \"source\" and \"url\".\n\nUser topics of interest: {{ $('Set topics and language').item.json.topics }}\nOutput language: {{ $('Set topics and language').item.json.language }}\n\nNewsAPI articles:\n\n{{ \n  $json.articles.map(\n    article => \n      `Title: ${article.title}\nDescription: ${article.description}\nContent: ${article.content}\nSource: ${article.source.name}\nURL: ${article.url}`\n  ).join('\\n---\\n')\n}}\n"
+            }
+          ]
+        },
+        "jsonOutput": true
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 1.8
+    },
+    {
+      "id": "56bd39e6-6c7f-4357-898e-b5a85457e04a",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1296,
+        -256
+      ],
+      "parameters": {
+        "width": 640,
+        "height": 608,
+        "content": "# AI Newsletter Workflow\n\n## How it works\nThis workflow runs weekly, fetches fresh news for your chosen topics, lets an AI pick the five most relevant articles, enriches each with additional research, and then sends a compact Markdown newsletter to Telegram. It combines NewsAPI for discovery, GPT‑5 for reasoning and writing, and Tavily for fact-checked enrichment.\n\n## Setup steps\n1. Configure the schedule (weekly, Sunday 09:00 or your preferred time).  \n2. Set `topics` (comma-separated) and `language` in `Set topics and language`.  \n3. Add credentials: NewsAPI (query auth), OpenAI, Tavily, and Telegram bot/chat ID.  \n\n## Customization\n- Tweak `topics` and `language` for different audiences or languages.  \n- Adjust the schedule (day/time) to control when newsletters go out.  \n- Change the number of selected articles or the AI prompts if you want shorter or more in‑depth summaries."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "11b0c727-a68c-4849-a2a9-58cfaacc1e9a",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -640,
+        -256
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 432,
+        "height": 608,
+        "content": "## Schedule & Configuration\n\n• **Schedule Trigger**: Runs at 9am every Sunday per default.\n• **Set topics and language**: Configure your topics (comma-separated) and output language."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "72a31337-843c-41a2-9e1e-19dee208cd01",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -192,
+        -256
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 848,
+        "height": 608,
+        "content": "## Fetch & Select articles\n\n- **Call NewsAPI**: Queries the last 7 days of news for your topics.  \n- **AI Topic Selector**: Uses GPT‑5.1 to select 5 non-overlapping, relevant articles.  \n- **Split Out**: Turns the selected list into one item per article."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "7a1c47b9-48cb-40bd-ad7e-81d36c0180bb",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        672,
+        -256
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 416,
+        "height": 608,
+        "content": "## Enrich Articles using AI\n\n- **Newsletter AI Agent**: Orchestrates GPT‑5, Tavily and the parser per article.  \n- **GPT-5.1**: Writes short, clear newsletter-style summaries.  \n- **Tavily**: Adds fresh sources for grounding and factual checks.  \n- **Parser**: Enforces JSON with `title`, `content`, `source`, `url`."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "9b3ce9c9-34d5-419a-a53a-20b4c08ca57f",
+      "name": "GPT-5.1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        688,
+        192
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5.1",
+          "cachedResultName": "gpt-5.1"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "2fe6ee6c-9964-4bb0-be1d-30f9485637bf",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1104,
+        -256
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 496,
+        "height": 608,
+        "content": "## Aggregate & Send\n\n- **Aggregate**: Combines all enriched article objects into one list.  \n- **Send a text message**: Formats the newsletter in Markdown and posts it to Telegram."
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Newsletter AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tavily": {
+      "ai_tool": [
+        [
+          {
+            "node": "Newsletter AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GPT-5.1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Newsletter AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Newsletter AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call NewsAPI": {
+      "main": [
+        [
+          {
+            "node": "AI Topic Selector",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set topics and language",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Topic Selector": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Newsletter AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a text message": {
+      "main": [
+        []
+      ]
+    },
+    "Set topics and language": {
+      "main": [
+        [
+          {
+            "node": "Call NewsAPI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

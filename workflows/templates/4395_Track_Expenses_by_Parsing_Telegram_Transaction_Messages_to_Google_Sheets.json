@@ -1,0 +1,248 @@
+{
+  "_templateId": 4395,
+  "_templateName": "Track Expenses by Parsing Telegram Transaction Messages to Google Sheets",
+  "_templateDescription": "Overview\n\nThis n8n workflow template automatically parses incoming Telegram transaction messages and logs structured data into a Google Sheet. It’s designed to help individuals and small businesses track and record transactions shared via Telegram without manual data entry.\n\nTarget Audience\n\nThis template is ideal for:\n\nIndividuals, freelancers, and small businesses who receive transaction or payment notifications through Telegram and want to organize them in Google Sheets.\n\nAnyone using self-hosted n8n (required due to custom community nodes).\n\nProblem Solved\n\nManually copying transaction details from Telegram to Google Sheets is error-prone and time-consuming.\nThis workflow automates the process by:\n\nMonitoring a Telegram bot/chat for new messages.\n\nParsing transaction details (amount, sender, date, etc.).\n\nLogging them in real-time into a Google Sheet for easy tracking.\n\nSetup Instructions\n\nTelegram Bot Setup\nCreate a Telegram bot using BotFather.\n\nAdd the bot to the desired group/channel and grant admin permissions if needed.\n\nNote down the bot token.\n\nGoogle Sheets Setup\nCreate a Google Sheet with relevant columns (e.g., Date, Amount, Sender, Transaction ID).\n\nSet up Google Sheets credentials in n8n for access.\n\nn8n Workflow Configuration\nImport this template into your self-hosted n8n instance.\n\nUpdate the Telegram node: Add your bot token and specify the chat/group ID.\n\nUpdate the Google Sheets node: Link it to your created sheet and ensure column mapping matches your sheet structure.\n\nAdjust parsing logic if your message format varies (see next section for examples).\n\nCommunity Nodes\nThis workflow uses custom community nodes. Ensure these are installed via the n8n settings or CLI:\n\n[List your required community nodes here, e.g., n8n-nodes-telegram, n8n-nodes-gsheet, etc.]\n\nActivate the Workflow\nSave and activate your workflow. Send a test transaction message to your Telegram group/chat and verify data appears in your Google Sheet.\n\nTroubleshooting\nIf messages are not being picked up, check bot permissions and the chat ID.\n\nEnsure Google Sheets credentials are correct and the sheet is accessible.\n\nDouble-check that custom nodes are properly installed and up-to-date.\n\nExample Telegram Message Formats\n\nReceived: $75 from @john_doe on 2024-05-29. Transaction ID: 12345XYZ.\nPaid $120 to @vendor on 2024-05-28. Ref: 67890ABC.\nYou received ₹5,000 from @amit. ID: 54321PQR. Date: 29/05/2024\nThe workflow parses messages in the above formats and logs the following columns:\n\nDate\n\nAmount\n\nSender/Receiver\n\nTransaction/Reference ID\n\nIf your message format differs, update the regex in the parsing node.\n\nDisclaimer\n\nThis n8n workflow template uses custom community nodes and is only compatible with the self-hosted version of n8n.\n\nWorkflow Changes (For n8n Canvas)\nRename the Nodes:\n\n'If' node → “Is Transaction Message?”\n\n'Google Sheets' node → “Log to Google Sheet”\n\n(Rename other generic nodes for clarity, e.g., 'Telegram' → “Listen for Telegram Messages”, 'Function' → “Parse Transaction Details”)\n\nSticky Note Improvement:\n(Edit the sticky note or add one if missing)\n\nWorkflow Steps:\n\nListen for Telegram Messages: This node receives new messages from the Telegram bot.\n\nIs Transaction Message? Checks if the message matches known transaction patterns.\n\nParse Transaction Details: Extracts amount, sender, date, and transaction ID using regex.\n\nLog to Google Sheet: Records the parsed transaction in the linked Google Sheet for easy tracking.",
+  "_templateCreatedAt": "2025-05-26T09:38:42.548Z",
+  "_templateTotalViews": 836,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:50:19.333Z",
+  "id": "Yhi53ukpbhg8MLjl",
+  "meta": {
+    "instanceId": "b86e63fb7b4c07b78811296ef3f926059b6ec73d3e6f664717eae667877d753e",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Transactions",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "d4d52570-7ce4-4e61-a4ab-08a9cc80c090",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        260,
+        -260
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "19c3652b-36e2-43cd-9ec2-091cd9097e93",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "leftValue": "={{$json.message.text}}",
+              "rightValue": "="
+            }
+          ]
+        }
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "6ce64c44-f418-4d20-9f01-036e54804e79",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        700,
+        -260
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "Date": "={{ $json.Date }}",
+            "Time": "={{ $json.Time }}",
+            "Amount": "={{ $json.Amount }}",
+            "Merchant": "={{ $json.Merchant }}",
+            "Card Ending": "={{ $json['Card Ending'] }}",
+            "Available Limit": "={{ $json['Available Limit'] }}"
+          },
+          "schema": [
+            {
+              "id": "Card Ending",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Card Ending",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Merchant",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Merchant",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Amount",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Amount",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Date",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Time",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Available Limit",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "Available Limit",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tl5OVxvN-eRIPwauSwV4i7mhQrp67tlcWR8Lc6BGQz0/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1tl5OVxvN-eRIPwauSwV4i7mhQrp67tlcWR8Lc6BGQz0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1tl5OVxvN-eRIPwauSwV4i7mhQrp67tlcWR8Lc6BGQz0/edit?usp=drivesdk",
+          "cachedResultName": "transactions"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.6
+    },
+    {
+      "id": "1186ead6-2d97-460f-b90a-f81928f7cbfc",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        40,
+        -260
+      ],
+      "webhookId": "e5897f93-a169-4e26-8ca8-7201b9eaaf5a",
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "credential-id",
+          "name": "telegramApi Credential"
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "cd4479fa-bc73-436b-971f-65a5b6de0b9f",
+      "name": "transactions",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        480,
+        -260
+      ],
+      "parameters": {
+        "jsCode": "const text = $input.item.json.message.text.trim();\n\n// Format 1: \"Hello. You spent AED 19.00 at CAREEM PLUS on your Credit Card  526039****7003 on 18/05. Combined Available Balance: AED 5893.14.\"\nconst format1 = /You spent AED\\s*([\\d,.]+)\\s*at\\s*(.+?)\\s*on your Credit Card\\s+([\\d*Xx]+)\\s+on\\s*([\\d/]+)\\.\\s*Combined Available Balance: AED\\s*([\\d,.]+)/i;\n\n// Format 2: \n// \"Credit Card Purchase Card Ending: 0947 At: LAVASH RESTAURANT EST, DUBAI Amount: AED 188.00 Date: 25/05/2025, 15:51 Available Limit: AED 5,752.86\"\nconst format2 = /Card Ending:\\s*(\\d+)\\s*At:\\s*(.+?)\\s*Amount:\\s*AED\\s*([\\d,.]+)\\s*Date:\\s*([\\d/]+),\\s*(\\d{2}:\\d{2})\\s*Available Limit:\\s*AED\\s*([\\d,.]+)/i;\n\n// Format 3: \n// \"Payment for ENOC SITE 1066 of AED 129.00 has been made using Credit Card ending with 0947. Available limit AED 5,347.87.\"\nconst format3 = /Payment for\\s*(.+?)\\s*of AED\\s*([\\d,.]+).+ending (?:with|in)\\s*([\\d*Xx]+).+Available limit AED\\s*([\\d,.]+)/i;\n\nlet match;\nlet out = {};\n\nif (format1.test(text)) {\n    match = text.match(format1);\n    out = {\n        \"Amount\": match[1],\n        \"Merchant\": match[2],\n        \"Card Number\": match[3],\n        \"Date\": match[4],\n        \"Available Balance\": match[5]\n    };\n} else if (format2.test(text)) {\n    match = text.match(format2);\n    out = {\n        \"Card Ending\": match[1],\n        \"Merchant\": match[2],\n        \"Amount\": match[3],\n        \"Date\": match[4],\n        \"Time\": match[5],\n        \"Available Limit\": match[6]\n    };\n} else if (format3.test(text)) {\n    match = text.match(format3);\n    out = {\n        \"Merchant\": match[1],\n        \"Amount\": match[2],\n        \"Card Ending\": match[3],\n        \"Available Limit\": match[4]\n    };\n} else {\n    out = { error: \"No known transaction format matched.\", text };\n}\n\nreturn [{ json: out }];\n"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "30f6930a-aae3-4f95-9116-303dd8e07062",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        -460
+      ],
+      "parameters": {
+        "width": 920,
+        "height": 420,
+        "content": "# Expense Tracker Automation\n\n"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": true,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7f43bda5-1968-4eca-ae7d-d29ed1c562e7",
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "transactions",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "transactions": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

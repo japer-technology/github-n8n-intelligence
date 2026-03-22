@@ -1,0 +1,257 @@
+{
+  "_templateId": 7279,
+  "_templateName": "SEO Writer: Content Generator (2500 keywords) with Perplexity & Auto Publish",
+  "_templateDescription": "🔥 TLDR\n\n  Automatically generate and publish 2000+ word SEO-optimized blog posts to GitHub every 8 hours - Complete with trending topic research, AI content generation, and automatic JSON formatting for your blog platform. Instant SEO traffic upcoming! \n\n  ---\n  📌 Who's it for\n\n  Content creators, marketers, and developers who want to:\n  Maintain a consistent blog publishing schedule without manual effort\n  Generate high-quality, SEO-optimized content automatically\n  Keep up with trending topics in their industry\n  Build content libraries for their websites or applications\n\n  🚀 What it does\n\n  This workflow is a complete content generation pipeline that runs\n  automatically every 8 hours:\n\n  Discovers trending topics using Perplexity Sonar to find what's hot in\n   your chosen categories\n  Conducts deep research with real statistics, expert opinions, and\n  current data\n  Generates comprehensive content - 2000-2500 word articles using GPT-5\n  mini\n  Formats for web - Converts to JSON with proper metadata (slug,\n  keywords, reading time)\n  Publishes automatically to your GitHub repository as blog-ready JSON\n  files\n\n  ✨ Key Features\n\n  SEO Optimization\n\n  Keyword-rich content with targeted keywords naturally integrated\n  Proper heading structure (H1, H2, H3) for search engine crawling\n  Meta descriptions automatically generated from content\n  Reading time calculation for better user engagement metrics\n  URL-friendly slugs with timestamps for uniqueness\n\n  Content Quality\n\n  2000+ words minimum ensuring comprehensive coverage\n  Research-backed with current statistics and expert opinions\n  Structured format with clear sections: Introduction, Analysis,\n  Applications, Challenges, Future Outlook\n  Markdown formatting for easy rendering on any platform\n\n  🛠️ How to set up\n\n  Requirements\n\n  n8n instance (self-hosted or cloud)\n  Perplexity API account\n  OpenAI API account (GPT-5 mini access)\n  GitHub repository for storing blog content\n\n  Setup Steps\n\n  Import the workflow into your n8n instance\n  Configure credentials:\n    Add your Perplexity API key\n    Add your OpenAI API key\n    Connect your GitHub account via OAuth2\n  Customize the GitHub node:\n    Set your repository owner and name\n    Adjust the file path if needed (default: public/blog-data/)\n  Adjust the schedule (optional):\n    Default runs every 8 hours\n    Modify the Schedule Trigger node for your preferred frequency\n  Test the workflow with manual execution before enabling automatic\n  scheduling\n\n  🎨 How to customize\n\n  Topic Categories\n\n  Edit the \"Find trending topics\" node to focus on your niche:\n  Technology & AI\n  Social Media & Marketing\n  Business & Finance\n  Health & Wellness\n  Education & Career\n\n  Content Length\n\n  Adjust word count requirements in the \"Format Blog JSON\" node validation\n\n  Output Format\n\n  Modify the JSON structure in \"Format Blog JSON\" to match your blog platform's requirements\n\n  Publishing Destination\n\n  Change the GitHub repository path or integrate with other platforms like WordPress, Contentful, or Strapi\n\n  📊 Workflow Benefits\n\n  Consistency: Never miss a publishing deadline\n  Scale: Generate multiple articles daily without manual effort\n  Quality: Research-backed content with real data and sources\n  SEO-Ready: Optimized structure and metadata for search engines\n  Cost-Effective: Uses efficient AI models for sustainable content\n  generation\n",
+  "_templateCreatedAt": "2025-08-12T10:07:29.243Z",
+  "_templateTotalViews": 229,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:49:41.421Z",
+  "meta": {
+    "instanceId": "n8n-workflow-ai-blog-generator"
+  },
+  "name": "AI Blog Generator - Auto-publish SEO content to GitHub and then your website automatically",
+  "nodes": [
+    {
+      "id": "d72fcbb4-d0d3-4391-ad5b-29ed84b1c33c",
+      "name": "Set Topic Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -1248,
+        -240
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "272ddecc-86f8-4399-8def-9cb6feb8d854",
+      "name": "Deep Research",
+      "type": "n8n-nodes-base.perplexity",
+      "position": [
+        -1024,
+        -240
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "8fb7eff6-8e0b-41b4-9be4-1eaadf6c602c",
+      "name": "Format Blog JSON",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -576,
+        -240
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "4120db16-a7f4-4b12-a77f-69e5eb1b1a07",
+      "name": "Create File in GitHub",
+      "type": "n8n-nodes-base.github",
+      "position": [
+        -352,
+        -240
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "1a5c791f-0b03-447f-b9f8-749d424c869f",
+      "name": "Every 8 hours",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -1696,
+        -240
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "7e703b81-b391-4649-9b63-247ac0f6bd0f",
+      "name": "Find Trending Topics",
+      "type": "n8n-nodes-base.perplexity",
+      "position": [
+        -1472,
+        -240
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "9673b0fe-b33a-451e-83e8-ab6efa8fc1f8",
+      "name": "Generate 2000+ Word Article",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        -800,
+        -240
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "sticky_note_1",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1900,
+        -480
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "sticky_note_2",
+      "name": "Sticky Note 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1472,
+        -340
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "sticky_note_3",
+      "name": "Sticky Note 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1248,
+        -340
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "sticky_note_4",
+      "name": "Sticky Note 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1024,
+        -340
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "sticky_note_5",
+      "name": "Sticky Note 5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        -340
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "sticky_note_6",
+      "name": "Sticky Note 6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -576,
+        -340
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "sticky_note_7",
+      "name": "Sticky Note 7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -352,
+        -340
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Deep Research": {
+      "main": [
+        [
+          {
+            "node": "Generate 2000+ Word Article",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every 8 hours": {
+      "main": [
+        [
+          {
+            "node": "Find Trending Topics",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Topic Data": {
+      "main": [
+        [
+          {
+            "node": "Deep Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Blog JSON": {
+      "main": [
+        [
+          {
+            "node": "Create File in GitHub",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Trending Topics": {
+      "main": [
+        [
+          {
+            "node": "Set Topic Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create File in GitHub": {
+      "main": [
+        []
+      ]
+    },
+    "Generate 2000+ Word Article": {
+      "main": [
+        [
+          {
+            "node": "Format Blog JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

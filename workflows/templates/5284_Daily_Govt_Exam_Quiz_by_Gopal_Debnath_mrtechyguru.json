@@ -1,0 +1,166 @@
+{
+  "_templateId": 5284,
+  "_templateName": "Daily Govt Exam Quiz by Gopal Debnath (mrtechyguru)",
+  "_templateDescription": "💡 How It Works:\n\n⏰ Triggers daily at 6:00 AM\n\n\n📊 Fetches one random question from your Google Sheet\n\n\n🧠 Formats question, options, correct answer, and explanation\n\n\n📤 Sends it to:\n\n📧 Email\n\n💬 Telegram (via Bot)\n\n📱 WhatsApp/SMS (via Twilio)\n\n\n\n\n\n🔧 What You Need to Configure:\n\nYOUR_GOOGLE_SHEET_ID → your sheet with columns: question, optionA, optionB, optionC, optionD, correctAnswer, explanation\n\nEmail credentials (SMTP)\n\nTelegram Bot Token & Chat ID\n\nTwilio phone numbers and credentials",
+  "_templateCreatedAt": "2025-06-25T06:09:00.740Z",
+  "_templateTotalViews": 116,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:49:51.161Z",
+  "name": "Daily Govt Exam Quiz Delivery",
+  "nodes": [
+    {
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        250,
+        300
+      ],
+      "parameters": {
+        "cronExpression": "0 6 * * *"
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Fetch Question",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        450,
+        300
+      ],
+      "parameters": {
+        "range": "Sheet1!A2:F",
+        "sheetId": "YOUR_GOOGLE_SHEET_ID",
+        "valueRenderMode": "FORMATTED_VALUE"
+      },
+      "credentials": {
+        "googleApi": {
+          "id": "credential-id",
+          "name": "googleApi Credential"
+        }
+      },
+      "typeVersion": 2
+    },
+    {
+      "name": "Format Quiz",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        650,
+        300
+      ],
+      "parameters": {
+        "functionCode": "\nconst data = items[Math.floor(Math.random() * items.length)].json;\nreturn [{\n  json: {\n    question: data.question,\n    options: `A. ${data.optionA}\\nB. ${data.optionB}\\nC. ${data.optionC}\\nD. ${data.optionD}`,\n    correct: data.correctAnswer,\n    explanation: data.explanation || \"No explanation provided.\",\n    fullText: `🧠 *Daily Quiz Question*\\n\\n*Q:* ${data.question}\\n\\n${data.optionA ? \"A. \" + data.optionA : \"\"}\\n${data.optionB ? \"B. \" + data.optionB : \"\"}\\n${data.optionC ? \"C. \" + data.optionC : \"\"}\\n${data.optionD ? \"D. \" + data.optionD : \"\"}\\n\\n*Answer:* ${data.correctAnswer}\\n📘 Explanation: ${data.explanation || \"N/A\"}`\n  }\n}];"
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Send Email",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        850,
+        100
+      ],
+      "parameters": {
+        "text": "={{$json[\"fullText\"]}}",
+        "subject": "Your Daily Govt Exam Quiz",
+        "toEmail": "user@example.com",
+        "fromEmail": "user@example.com"
+      },
+      "credentials": {
+        "smtp": {
+          "id": "credential-id",
+          "name": "smtp Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Send to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        850,
+        300
+      ],
+      "parameters": {
+        "text": "={{$json[\"fullText\"]}}",
+        "chatId": "YOUR_TELEGRAM_CHAT_ID"
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "credential-id",
+          "name": "telegramApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Send via Twilio",
+      "type": "n8n-nodes-base.twilio",
+      "position": [
+        850,
+        500
+      ],
+      "parameters": {
+        "to": "+1234567890",
+        "from": "+1234567890",
+        "message": "={{$json[\"fullText\"]}}"
+      },
+      "credentials": {
+        "twilioApi": {
+          "id": "credential-id",
+          "name": "twilioApi Credential"
+        }
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "connections": {
+    "Format Quiz": {
+      "main": [
+        [
+          {
+            "node": "Send Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send to Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send via Twilio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch Question",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Question": {
+      "main": [
+        [
+          {
+            "node": "Format Quiz",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

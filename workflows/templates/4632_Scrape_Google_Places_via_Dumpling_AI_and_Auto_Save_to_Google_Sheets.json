@@ -1,0 +1,281 @@
+{
+  "_templateId": 4632,
+  "_templateName": "Scrape Google Places via Dumpling AI and Auto-Save to Google Sheets",
+  "_templateDescription": "Who is this for?\nThis workflow is perfect for lead generation experts, digital marketers, SEO professionals, and virtual assistants who need to quickly collect local business information based on specific search terms without manually navigating Google Places.\n\nWhat problem is this workflow solving?\nManually searching Google Places for business leads is time-consuming and inconsistent. This workflow automates the entire process using Dumpling AI’s Google Places search endpoint, helping users collect accurate and structured business data and log it into a Google Sheet automatically.\n\nWhat this workflow does\nThis workflow runs daily at 1 PM. It starts by reading a list of business-related search terms from a Google Sheet (for example, “dentists in Dallas”). Each term is sent to Dumpling AI’s search-places endpoint, which returns local business listings from Google Places. The data is split, structured, and logged row-by-row in a connected Google Sheet.\n\nNodes Overview\n\nRun Every Day at 1 PM  \n   A scheduled trigger that executes the workflow daily.\n\nGoogle Sheets (Input) – Fetch Search Terms from Sheet  \n   Pulls a list of search terms from a Google Sheet. Each term should describe a business category and location (e.g., “coffee shops in Atlanta”).\n\nHTTP Request – Scrape Google Places via Dumpling AI  \n   Sends each search term to Dumpling AI’s /search-places endpoint, returning data like business names, phone numbers, websites, ratings, and categories.\n\nSplit In Batches – Split Places Result  \n   Breaks the list of businesses returned for each search term into individual items for processing.\n\nGoogle Sheets (Output) – Save Each Business to Sheet  \n   Saves the scraped data into a second Google Sheet. Each row contains:\n   title\n   address\n   rating\n   category\n   phoneNumber\n   website\n\n📝 Notes\n\nYou must set up Dumpling AI and generate your API key from: Dumpling AI\nYou can change the run schedule in the schedule node to fit your needs (e.g., weekly or hourly).\n",
+  "_templateCreatedAt": "2025-06-03T22:42:31.611Z",
+  "_templateTotalViews": 474,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:50:13.105Z",
+  "id": "zKOSqoH6TJA6fmuM",
+  "meta": {
+    "instanceId": "a1ae5c8dc6c65e674f9c3947d083abcc749ef2546dff9f4ff01de4d6a36ebfe6",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Scrape Google Places via Dumpling AI and Auto-Save to Google Sheets",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "191b5e95-a169-421a-b922-951055926604",
+      "name": "Run Every Day at 1 PM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -480,
+        -180
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 13
+            }
+          ]
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "1738c371-415e-48cc-8449-48f2c2fc4e53",
+      "name": " Scrape Google Places with Dumpling AI",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -20,
+        -180
+      ],
+      "parameters": {
+        "url": "https://app.dumplingai.com/api/v1/search-places",
+        "method": "POST",
+        "options": {},
+        "jsonBody": "={\n  \"query\": \"{{ $json['places '] }}\"\n}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth"
+      },
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "credential-id",
+          "name": "httpHeaderAuth Credential"
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "70965a94-732e-4eac-b8c3-fdd3240ed9a7",
+      "name": "Split Resulting Places List",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        200,
+        -180
+      ],
+      "parameters": {
+        "options": {},
+        "fieldToSplitOut": "places"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "c017e3c2-8d58-412e-9d5b-41d3ee079a82",
+      "name": " Save Scraped Data to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        420,
+        -180
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "title": "={{ $json.title }}",
+            "rating": "={{ $json.rating }}",
+            "address": "={{ $json.address }}",
+            "website": "={{ $json.website }}",
+            "category": "={{ $json.category }}",
+            "phoneNumber": "={{ $json.phoneNumber }}"
+          },
+          "schema": [
+            {
+              "id": "title",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "address",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "address",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "rating",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "rating",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "category",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "category",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "phoneNumber",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "phoneNumber",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "website",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "website",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NkLQ4ZZ3qSv8HybYuKyW2BgViUij68ux4_SnoBphmWE/edit#gid=645811013",
+          "cachedResultName": "Sheet 2"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NkLQ4ZZ3qSv8HybYuKyW2BgViUij68ux4_SnoBphmWE/edit?usp=drivesdk",
+          "cachedResultName": "Google places"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.6
+    },
+    {
+      "id": "93d4c184-363b-4dac-a87c-c60ec2ec91f8",
+      "name": "Fetch Search Terms from Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -240,
+        -180
+      ],
+      "parameters": {
+        "options": {},
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NkLQ4ZZ3qSv8HybYuKyW2BgViUij68ux4_SnoBphmWE/edit#gid=0",
+          "cachedResultName": "Sheet1"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1NkLQ4ZZ3qSv8HybYuKyW2BgViUij68ux4_SnoBphmWE/edit?usp=drivesdk",
+          "cachedResultName": "Google places"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.6
+    },
+    {
+      "id": "dce04c8d-5991-4ddb-86ad-faaaca388048",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -500,
+        -360
+      ],
+      "parameters": {
+        "width": 660,
+        "height": 240,
+        "content": "### 🗺️ Scrape and Save Google Places Listings\n\nThis workflow runs daily at 1 PM. It reads business-related search terms from a Google Sheet (Sheet1), such as \"best dentist in Houston\", and passes each term to Dumpling AI's `search-places` API. The returned list of places is split and parsed. Each entry is appended to another Google Sheet (Sheet2), capturing title, address, rating, category, phone number, and website. Perfect for building local lead lists from Google Maps results.\n"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "c1bbe36f-5b6d-4cd0-827f-67990b139917",
+  "connections": {
+    "Run Every Day at 1 PM": {
+      "main": [
+        [
+          {
+            "node": "Fetch Search Terms from Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Resulting Places List": {
+      "main": [
+        [
+          {
+            "node": " Save Scraped Data to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Search Terms from Sheet": {
+      "main": [
+        [
+          {
+            "node": " Scrape Google Places with Dumpling AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    " Scrape Google Places with Dumpling AI": {
+      "main": [
+        [
+          {
+            "node": "Split Resulting Places List",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

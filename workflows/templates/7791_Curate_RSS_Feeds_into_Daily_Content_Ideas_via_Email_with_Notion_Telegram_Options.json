@@ -1,0 +1,356 @@
+{
+  "_templateId": 7791,
+  "_templateName": "Curate RSS Feeds into Daily Content Ideas via Email with Notion & Telegram Options",
+  "_templateDescription": "Graceful Content Sparks — RSS → Notion (n8n)\n\n📰 Curate RSS Feeds into Daily Content Ideas via Email with Optional Notion Storage\nWake up to a burst of inspiration every morning! 🌞\n🚀 What it does\n🔄 Polls unlimited RSS feeds (blogs, YouTube, Substack, podcasts, you name it)\n✍️ Re-writes each new headline into 5–10 scroll-stopping content angles\n📧 Delivers a tidy email digest at 9 AM sharp (or whenever you choose)\n🗂️ Auto-saves every idea into a Notion database (toggle on/off)\n🛟 Self-healing error alerts keep the pipeline bullet-proof\n📐 Angles? Think “ready-made tweets”\nAn angle is a bite-sized spin on the original post.\nExample:\nOriginal RSS headline: “TikTok Rolls Out 15-Minute Videos”\nAngle: “3 product-demo formats you can finally fit into TikTok’s new 15-min limit (+ templates)”\n🎯 Use-cases\n🧑‍💻 Social media managers who need fresh posts daily\n🖋️ Newsletter writers hunting for curated news blurbs\n📈 Growth teams mining competitor blogs for campaign sparks\n🏝️ Solopreneurs who’d rather sip coffee than scroll feeds\n⚙️ 30-second setup\nDrop your RSS URLs into the list node 🪄\nAdd SMTP or Gmail creds 📧\n(Optional) Flip on Notion mode → paste your Ideas DB ID\nHit Manual Trigger to test → switch to daily cron when you’re happy 🎉\n✅ Compliance checklist\n✅ Stickies\n✅ Manual trigger path\n✅ Zero secrets in JSON\n✅ Timezone-aware cron",
+  "_templateCreatedAt": "2025-08-24T15:34:43.275Z",
+  "_templateTotalViews": 9,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:49:39.039Z",
+  "meta": {
+    "templateCredsWarning": "Attach Email (+ Notion/Telegram if enabled) credentials after import. No secrets in JSON."
+  },
+  "name": "Graceful Content Sparks — RSS → Notion (n8n)",
+  "nodes": [
+    {
+      "name": "Sticky: README",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        40,
+        -120
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Sticky: Prereqs + Schema",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        40,
+        0
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Sticky: Setup Checklist",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        40,
+        120
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Sticky: Testing & Behavior",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        40,
+        240
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Sticky: Compliance + Troubleshooting",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        40,
+        360
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Daily Cron",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        -160,
+        40
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -160,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "name": "Set: User Config",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        80,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "Function: Build URL Items",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        360,
+        60
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "RSS: Read Feed",
+      "type": "n8n-nodes-base.rssFeedRead",
+      "position": [
+        540,
+        60
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "name": "Function: Collect & Angle",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        720,
+        60
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "Function: Trim",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        900,
+        60
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "Function: Build Email",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        960,
+        180
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "If: Notion Enabled?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        960,
+        300
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "Notion: Create Idea",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        1140,
+        420
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "Email: Send Digest",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        1140,
+        180
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "If: Telegram Enabled?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1140,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "Telegram: Ping",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1140,
+        300
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "name": "On Error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "position": [
+        -160,
+        360
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "name": "On Error → Email Owner",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        1140,
+        360
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On Error": {
+      "main": [
+        [
+          {
+            "node": "On Error → Email Owner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Daily Cron": {
+      "main": [
+        [
+          {
+            "node": "Set: User Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function: Trim": {
+      "main": [
+        [
+          {
+            "node": "Function: Build Email",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "If: Notion Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set: User Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS: Read Feed": {
+      "main": [
+        [
+          {
+            "node": "Function: Collect & Angle",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: User Config": {
+      "main": [
+        [
+          {
+            "node": "Function: Build URL Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If: Notion Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Notion: Create Idea",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Function: Build Email": {
+      "main": [
+        [
+          {
+            "node": "Email: Send Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If: Telegram Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Telegram: Ping",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Function: Build URL Items": {
+      "main": [
+        [
+          {
+            "node": "RSS: Read Feed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function: Collect & Angle": {
+      "main": [
+        [
+          {
+            "node": "Function: Trim",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

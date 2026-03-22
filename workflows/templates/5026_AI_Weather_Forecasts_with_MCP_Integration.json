@@ -1,0 +1,185 @@
+{
+  "_templateId": 5026,
+  "_templateName": "AI Weather Forecasts with MCP Integration",
+  "_templateDescription": "Real-time Weather Forecasts with MCP Tools\n\nThis n8n workflow demonstrates how to integrate real-time weather intelligence into any automation using the Model Context Protocol (MCP). Get current conditions and 5-day forecasts with natural language queries like \"What's the weather like in Miami?\" or \"Will it rain next Tuesday in Seattle?\" - all powered by live weather data and AI.\n\nGood to know\nNo API keys required - uses hosted MCP weather server with built-in WorldWeatherOnline integration\nProvides current conditions and detailed 5-day forecasts\nNatural language queries work for any location worldwide\nPowered by WorldWeatherOnline - the world's most accurate weather system\nFully preconfigured and ready to run out-of-the-box\nEnterprise-ready with error handling and rate limiting\n\nHow it works\nNatural Language Input**: Receives weather queries via webhook, chat, email, or voice\nAI Agent Processing**: n8n Agent node interprets requests and determines:\n Location extraction from natural language\n Weather data type needed (current or 5-day forecast)\n Response formatting preferences\nMCP Weather Tool**: Live hosted server provides:\n Real-time current conditions (temperature, humidity, wind, conditions)\n 5-day detailed forecasts with daily highs/lows\n Weather descriptions and condition codes\n Powered by WorldWeatherOnline's premium data\nIntelligent Responses**: AI formats weather data into:\n Conversational natural language responses\n Structured data for downstream automation\n Action-triggering data for workflows\n\nHow to use\nImport the workflow into n8n from the template\nAdd your preferred AI model API key to the Agent node\nCustomize the system prompt for your specific use case\nConnect to your preferred input/output channels\nRun and start querying weather with natural language\n\nUse Cases\nSmart Home Automation**: \"Turn on sprinklers if no rain forecast for 3 days\"\nTravel Planning**: \"Check weather for my Paris trip next week\"\nEvent Management**: \"Will outdoor wedding conditions be good Saturday?\"\nAgriculture/Farming**: \"Check 5-day forecast for planting schedule\"\nLogistics**: \"Delay shipping if severe weather forecast in delivery zone\"\nPersonal Assistant**: \"Should I wear a jacket today in Chicago?\"\nSports/Recreation**: \"Surf conditions and wind forecast for weekend\"\nConstruction**: \"Safe working conditions for outdoor project this week\"\n\nRequirements\nn8n instance (cloud or self-hosted)\nAI model provider account (OpenAI, Anthropic, Google, etc.)\nInternet connection for MCP weather server access\nOptional: Webhook endpoints for external integrations\n\nCustomizing this workflow\nLocation Intelligence**: Add geocoding for address-to-coordinates conversion\nData Storage**: Save weather history to databases for trend analysis\nDashboard Integration**: Connect to Grafana, Tableau, or custom visualizations\nVoice Integration**: Add speech-to-text for voice weather queries\nScheduling**: Set up automated daily/weekly weather briefings\nConditional Logic**: Trigger different actions based on weather conditions\n\nSample Input/Output\n\nNatural Language Queries:\n\"What's the weather like in Miami?\"\n\"Will it rain next Tuesday in Seattle?\"\n\"5-day forecast for London\"\n\"Temperature in Tokyo tomorrow\"\n\"Weather conditions for outdoor event Saturday\"\n\nRich Responses:\n{\n \"location\": \"Miami, FL\",\n \"current\": {\n   \"temperature\": \"78°F\",\n   \"condition\": \"Partly Cloudy\",\n   \"humidity\": \"65%\",\n   \"wind\": \"10 mph SE\"\n },\n \"forecast\": {\n   \"today\": \"High 82°F, Low 71°F, 20% rain\",\n   \"tomorrow\": \"High 85°F, Low 73°F, Sunny\"\n },\n \"ai_summary\": \"Perfect beach weather in Miami today! Partly cloudy with comfortable temperatures and light winds.\"\n}\n\nWhy This Workflow is Unique\nZero Setup Weather Data**: No API key management - MCP server handles everything\nWorld-Class Accuracy**: Powered by WorldWeatherOnline's premium weather data\nAI-Powered Intelligence**: Natural language understanding of complex weather queries\nEnterprise Ready**: Built-in error handling, rate limiting, and reliability\nGlobal Coverage**: Worldwide weather data with location intelligence\nAction-Oriented**: Designed for automation decisions, not just information display\n\nTransform your automations with intelligent weather awareness powered by the world's most accurate weather system!\n\n🧪 Setup Steps\n✅ The Agent node is already configured:\n  The system prompt is included\n  The tool endpoint is pre-set\nAll you need to do is:\n  Add your AI model API key to the existing Agent credential\n  Hit run and you're done ✅\n\n🔗 Full project link: Github: weathertrax-mcp-agent-demo",
+  "_templateCreatedAt": "2025-06-18T16:33:00.628Z",
+  "_templateTotalViews": 330,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:47:16.474Z",
+  "id": "DtcpXZZBN3IgksKb",
+  "meta": {
+    "instanceId": "04825daa9471a5540d9cbe929ad35145fdd237d05aa1593716515dbb7e6d5f84"
+  },
+  "name": "WeatherTrax MCP Agent Demo",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "5b4fa064-f1f9-4747-81a1-1d68f477850c",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -280,
+        160
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "07d3bb38-9e4e-4054-96f7-f1a47585525b",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -220,
+        -60
+      ],
+      "parameters": {
+        "text": "={{ $json['Weather Request'] }}",
+        "options": {
+          "systemMessage": "\n\nWhen users ask about weather, you MUST call the connected weatherTool function with these exact parameters:\n- location: (string) The city or location name\n- query_type: (string) Either \"current\" for current weather or \"multi_day\" for forecasts\n- num_days: (integer) Number of days for forecast (only when using \"multi_day\")\n\nIMPORTANT: Always use the function call format for weather requests.\n\nExamples:\n- \"Weather in Boca Raton\" → Call weatherTool with location=\"Boca Raton\", query_type=\"current\"\n- \"5 day forecast for Miami\" → Call weatherTool with location=\"Miami\", query_type=\"multi_day\", num_days=5\n\nAlways extract the location from the user's request and call the weatherTool function."
+        },
+        "promptType": "define"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "3b6d46cd-5fd5-4e1b-be6e-ee1d38243a0d",
+      "name": "MCP - WeatherTrax",
+      "type": "n8n-nodes-base.httpRequestTool",
+      "position": [
+        -40,
+        160
+      ],
+      "parameters": {
+        "url": "https://mcp-weathertrax.jaredco.com",
+        "method": "POST",
+        "options": {},
+        "jsonBody": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('JSON', ``, 'json') }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "toolDescription": "Get weather information for any location - supports current weather, forecasts, and multi-day predictions"
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "f85c933c-bbbc-4258-beef-730376bcdd78",
+      "name": "🧪 View Results Here",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        140,
+        -60
+      ],
+      "parameters": {
+        "jsCode": "return [{ fullAgentOutput: $json, toolCall: $json.tool_call, toolParams: $json.tool_call?.input, message: '✅ Click this node to view the tool call and parsed input!' }]"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "c6beafa9-b079-4c91-8dde-c9b44c18b155",
+      "name": "🧪 Enter weather request",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -440,
+        -60
+      ],
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "Weather Request",
+              "value": "What is the weather in New York City?"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "027ab837-512d-4fc5-9c5d-b7491e94e57d",
+      "name": "When clicking ‘Execute workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -680,
+        -60
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a6ff7fde-e347-45e3-8053-a74f9b099a06",
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "🧪 View Results Here",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP - WeatherTrax": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧪 Enter weather request": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "🧪 Enter weather request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

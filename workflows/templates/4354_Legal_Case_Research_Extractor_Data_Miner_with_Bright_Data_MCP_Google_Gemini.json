@@ -1,0 +1,601 @@
+{
+  "_templateId": 4354,
+  "_templateName": "Legal Case Research Extractor, Data Miner with Bright Data MCP & Google Gemini",
+  "_templateDescription": "\nNotice\nCommunity nodes can only be installed on self-hosted instances of n8n.\n\nWho this is for\nThe Legal Case Research Extractor is a powerful automated workflow designed for legal tech teams, researchers, law firms, and data scientists focused on transforming unstructured legal case data into actionable, structured insights.\n\nThis workflow is tailored for:\n\nLegal Researchers automating case law data mining\n\nLitigation Support Teams handling large volumes of case records\n\nLawTech Startups building AI-powered legal research assistants\n\nCompliance Analysts extracting case-specific insights\n\nAI Developers working on legal NLP, summarization, and search engines\n\nWhat problem is this workflow solving?\nLegal case data is often locked in semi-structured or raw HTML formats, scattered across jurisdiction-specific websites. Manually extracting and processing this data is tedious and inefficient.\n\nThis workflow automates:\n\nExtraction of legal case data via Bright Data's powerful MCP infrastructure\n\nParsing of HTML into clean, readable text using Google Gemini LLM\n\nStructuring and delivering the output through webhook and file storage\n\nWhat this workflow does\n\nInput\n\nSet the Legal Case Research URL node is responsible for setting the legal case URL for the data extraction.\n\nBright Data MCP Data Extractor\n\nBright Data MCP Client For Legal Case Research node is responsible for the legal case extraction via the Bright Data MCP tool - scrape_as_html\n\nCase Extractor\n\nGoogle Gemini based Case Extractor is responsible for producing a paginated list of cases\n\nLoop through Legal Case URLs\n\nReceives a collection of legal case links to process\n\nEach URL represents a different case from a target legal website\n\nBright Data MCP Scraping\n\nUtilizes Bright Data’s scrape_as_html MCP mode\n\nRetrieves raw HTML content of each legal case\n\nGoogle Gemini LLM Extraction\n\nTransforms raw HTML into clean, structured text\n\nPerforms additional information extraction if required (e.g., case summary, court, jurisdiction etc.)\n\nWebhook Notification\n\nSends extracted legal case content to a configurable webhook URL\n\nEnables downstream processing or storage in legal databases\n\nBinary Conversion & File Persistence\n\nConverts the structured text to binary format\n\nSaves the final response to disk for archival or further processing\n\nPre-conditions\n\nKnowledge of Model Context Protocol (MCP) is highly essential. Please read this blog post - model-context-protocol\nYou need to have the Bright Data account and do the necessary setup as mentioned in the Setup section below.\nYou need to have the Google Gemini API Key. Visit Google AI Studio\nYou need to install the Bright Data MCP Server @brightdata/mcp\nYou need to install the n8n-nodes-mcp\n\nSetup\nPlease make sure to setup n8n locally with MCP Servers by navigating to n8n-nodes-mcp\nPlease make sure to install the Bright Data MCP Server @brightdata/mcp  on your local machine.\nSign up at Bright Data.\nCreate a Web Unlocker proxy zone called mcp_unlocker on Bright Data control panel.\nNavigate to Proxies & Scraping and create a new Web Unlocker zone by selecting Web Unlocker API under Scraping Solutions.\nIn n8n, configure the Google Gemini(PaLM) Api account with the Google Gemini API key (or access through Vertex AI or proxy).\nIn n8n, configure the credentials to connect with MCP Client (STDIO) account with the Bright Data MCP Server as shown below.\n\n\n\nMake sure to copy the Bright Data API_TOKEN within the Environments textbox above as API_TOKEN=&lt;your-token&gt;\n\nHow to customize this workflow to your needs\n\nTarget New Legal Portals\nModify the legal case input URLs to scrape from different state or federal case databases\n\n\nCustomize LLM Extraction\nModify the prompt to extract specific fields: case number, plaintiff, case summary, outcome, legal precedents etc.\n\nAdd a summarization step if needed\n\nEnhance Loop Handling\nIntegrate with a Google Sheet or API to dynamically fetch case URLs\n\nAdd error handling logic to skip failed cases and log them\n\nImprove Security & Compliance\nRedact sensitive information before sending via webhook\n\nStore processed case data in encrypted cloud storage\n\nOutput Formats\nSave as PDF, JSON, or Markdown\n\nEnable output to cloud storage (S3, Google Drive) or legal document management systems",
+  "_templateCreatedAt": "2025-05-24T04:29:07.388Z",
+  "_templateTotalViews": 794,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:50:20.697Z",
+  "id": "Qgx75aQeRKXKtqm7",
+  "meta": {
+    "instanceId": "885b4fb4a6a9c2cb5621429a7b972df0d05bb724c20ac7dac7171b62f1c7ef40",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Legal Case Research Extractor, Data Miner with Bright Data MCP & Google Gemini",
+  "tags": [
+    {
+      "id": "ZOwtAMLepQaGW76t",
+      "name": "Building Blocks",
+      "createdAt": "2025-04-13T15:23:40.462Z",
+      "updatedAt": "2025-04-13T15:23:40.462Z"
+    },
+    {
+      "id": "ddPkw7Hg5dZhQu2w",
+      "name": "AI",
+      "createdAt": "2025-04-13T05:38:08.053Z",
+      "updatedAt": "2025-04-13T05:38:08.053Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "9e9a27ce-b95c-4ecd-b3c4-97aba420ce45",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -520,
+        140
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "3f9e30b5-7eb3-454d-a831-07be51f7a326",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -60,
+        40
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 440,
+        "height": 320,
+        "content": "## Bright Data Legal Case Research Scraper"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8f1934bf-ccec-4b25-b6cc-7607dcbdf798",
+      "name": "List all tools for Bright Data",
+      "type": "n8n-nodes-mcp.mcpClient",
+      "position": [
+        -300,
+        140
+      ],
+      "parameters": {},
+      "credentials": {
+        "mcpClientApi": {
+          "id": "credential-id",
+          "name": "mcpClientApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f8c4804a-85ad-462c-913d-e0bc5242bc74",
+      "name": "Create a binary data for LinkedIn company info extract",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        2440,
+        60
+      ],
+      "parameters": {
+        "functionCode": "items[0].binary = {\n  data: {\n    data: new Buffer(JSON.stringify(items[0].json, null, 2)).toString('base64')\n  }\n};\nreturn items;"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "c616db9f-fcf3-4f9d-b60f-a16c9da89456",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1220,
+        -180
+      ],
+      "parameters": {
+        "width": 440,
+        "height": 120,
+        "content": "## Disclaimer\nThis template is only available on n8n self-hosted as it's making use of the community node for MCP Client."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "048c1093-ea88-441c-98fa-a2d003ab6b8d",
+      "name": "Set the Legal Case Research URL",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -20,
+        140
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "214e61a0-3587-453f-baf5-eac013990857",
+              "name": "url",
+              "type": "string",
+              "value": "https://www.courtlistener.com/?q=IT%20laws%20for%20cyber%20crime&type=o&order_by=dateFiled%20desc&stat_Published=on"
+            },
+            {
+              "id": "45014942-0a2e-4f46-b395-f82f97bfa93e",
+              "name": "webhook_url",
+              "type": "string",
+              "value": "https://webhook.site/7b5380a0-0544-48dc-be43-0116cb2d52c2"
+            },
+            {
+              "id": "bf011e1f-7032-49db-8f25-31ec4c35b9c5",
+              "name": "base_url",
+              "type": "string",
+              "value": "https://www.courtlistener.com"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "8dc0a8cd-e4d9-4252-9dd2-94ee95d698e9",
+      "name": "Bright Data MCP Client For Legal Case Research",
+      "type": "n8n-nodes-mcp.mcpClient",
+      "notes": "Scrape a single webpage URL with advanced options for content extraction and get back the results in MarkDown language.",
+      "position": [
+        200,
+        140
+      ],
+      "parameters": {
+        "toolName": "scrape_as_html",
+        "operation": "executeTool",
+        "toolParameters": "={\n   \"url\": \"{{ $json.url }}\"\n} "
+      },
+      "credentials": {
+        "mcpClientApi": {
+          "id": "credential-id",
+          "name": "mcpClientApi Credential"
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 1
+    },
+    {
+      "id": "f3ea0d19-703b-4f99-955c-122162065363",
+      "name": "Case Extractor",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        600,
+        140
+      ],
+      "parameters": {
+        "text": "=Extract the content in a structured format. Here's the content : {{ $json.result.content[0].text }}",
+        "messages": {
+          "messageValues": [
+            {
+              "message": "You are an expert structured data extractor"
+            }
+          ]
+        },
+        "promptType": "define",
+        "hasOutputParser": true
+      },
+      "retryOnFail": true,
+      "typeVersion": 1.6
+    },
+    {
+      "id": "a3fe5ce7-3a91-459d-8ef8-17a06fbef12a",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        800,
+        360
+      ],
+      "parameters": {
+        "jsonSchemaExample": "[{\n\"Id\": \"\",\n\"Link\" : \"\",\n\"Title\": \n\"United States v. IXCOLGONZALEZ\"\n}]"
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "5fd6d0a3-46ca-4184-bc5c-dfc0966f0538",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        1320,
+        140
+      ],
+      "parameters": {
+        "options": {}
+      },
+      "typeVersion": 3
+    },
+    {
+      "id": "74a02ac0-859d-4611-aeb0-021a654c92b8",
+      "name": "Bright Data MCP Client For Legal Case Research Within Loop",
+      "type": "n8n-nodes-mcp.mcpClient",
+      "notes": "Scrape a single webpage URL with advanced options for content extraction and get back the results in MarkDown language.",
+      "position": [
+        1860,
+        160
+      ],
+      "parameters": {
+        "toolName": "scrape_as_html",
+        "operation": "executeTool",
+        "toolParameters": "={\n   \"url\": \"{{ $('Set the Legal Case Research URL').item.json.base_url }}/{{ $json.Link }}\"\n} "
+      },
+      "credentials": {
+        "mcpClientApi": {
+          "id": "credential-id",
+          "name": "mcpClientApi Credential"
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 1
+    },
+    {
+      "id": "beb67c30-dd39-4c7d-94f8-853410dec09b",
+      "name": "HTML to Textual Data Extract Within Loop",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        2080,
+        160
+      ],
+      "parameters": {
+        "text": "=Extract html to textual content  {{ $json.result.content[0].text }}",
+        "promptType": "define"
+      },
+      "retryOnFail": true,
+      "typeVersion": 1.6
+    },
+    {
+      "id": "b7fc74e5-4165-4b1a-9c0a-27565302c0e1",
+      "name": "Webhook Notification for HTML to Textual Data Extract Within the Loop",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2440,
+        260
+      ],
+      "parameters": {
+        "url": "={{ $('Set the Legal Case Research URL').item.json.webhook_url }}",
+        "options": {},
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "case_content",
+              "value": "={{ $json.text }}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "07b78de1-fdc8-4233-a231-37258fa5d1f0",
+      "name": "Write the case content to disk",
+      "type": "n8n-nodes-base.readWriteFile",
+      "position": [
+        2700,
+        60
+      ],
+      "parameters": {
+        "options": {},
+        "fileName": "=d:\\Case-{{ $('Loop Over Items').item.json['Id'] }}.json",
+        "operation": "write"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ff687082-9e3d-4043-9aa6-29e3029499d4",
+      "name": "Google Gemini Chat Model For Case Data Extract",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        580,
+        360
+      ],
+      "parameters": {
+        "options": {},
+        "modelName": "models/gemini-2.0-flash-exp"
+      },
+      "credentials": {
+        "googlePalmApi": {
+          "id": "credential-id",
+          "name": "googlePalmApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0057d772-732e-4e47-8ab8-eebe140df692",
+      "name": "Code to output the collection of cases",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        980,
+        140
+      ],
+      "parameters": {
+        "jsCode": "\nreturn $input.first().json.output"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "c843170b-e360-4eea-853c-ef38c9f3affe",
+      "name": "Google Gemini Chat Model for HTML to Textual Data Extract Within the Loop",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        2100,
+        360
+      ],
+      "parameters": {
+        "options": {},
+        "modelName": "models/gemini-2.0-flash-exp"
+      },
+      "credentials": {
+        "googlePalmApi": {
+          "id": "credential-id",
+          "name": "googlePalmApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "90f4670a-1fca-4826-9017-64a31f29cbc2",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1220,
+        0
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 1660,
+        "height": 520,
+        "content": "## Bright Data Legal Case Research Scraper\n\nLoop through and perform the data extraction using MCP and LLMs"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "58aac68b-2598-465b-ab3c-f5c0ebcdb595",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -60,
+        -260
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 440,
+        "height": 220,
+        "content": "## LLM Usages\n\nOpenAI 4o mini LLM is being utilized for the structured data extraction handling."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "14bbbc73-06cd-4513-b9e6-2aebb5009c3d",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -580,
+        -860
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 400,
+        "height": 400,
+        "content": "## Logo\n\n\n![logo](https://images.seeklogo.com/logo-png/43/1/brightdata-logo-png_seeklogo-439974.png)\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "96d74c50-074e-4b83-9422-ff2ce56bd55d",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -580,
+        -360
+      ],
+      "parameters": {
+        "width": 400,
+        "height": 320,
+        "content": "## Note\n\nDeals with the Legal Case data extraction by utilizing the Bright Data MCP and OpenAI GPT 4o LLM.\n\n**Please make sure to set the input fields node with the Legal case URL\n\nPlease make sure to update the Webhook Notification URL of your interest**"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "08c6a217-5773-4ebc-ba6e-326de99e90e5",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1580,
+        160
+      ],
+      "webhookId": "65c9fcd3-2c82-4bdd-80b6-271d65b7f61a",
+      "parameters": {
+        "amount": 10
+      },
+      "typeVersion": 1.1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "03af01f8-7276-4c3c-a610-6532f0d51ef7",
+  "connections": {
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Bright Data MCP Client For Legal Case Research Within Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Case Extractor": {
+      "main": [
+        [
+          {
+            "node": "Code to output the collection of cases",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Case Extractor",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List all tools for Bright Data": {
+      "main": [
+        [
+          {
+            "node": "Set the Legal Case Research URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write the case content to disk": {
+      "main": [
+        []
+      ]
+    },
+    "Set the Legal Case Research URL": {
+      "main": [
+        [
+          {
+            "node": "Bright Data MCP Client For Legal Case Research",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "List all tools for Bright Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code to output the collection of cases": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML to Textual Data Extract Within Loop": {
+      "main": [
+        [
+          {
+            "node": "Create a binary data for LinkedIn company info extract",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Webhook Notification for HTML to Textual Data Extract Within the Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bright Data MCP Client For Legal Case Research": {
+      "main": [
+        [
+          {
+            "node": "Case Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model For Case Data Extract": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Case Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a binary data for LinkedIn company info extract": {
+      "main": [
+        [
+          {
+            "node": "Write the case content to disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Bright Data MCP Client For Legal Case Research Within Loop": {
+      "main": [
+        [
+          {
+            "node": "HTML to Textual Data Extract Within Loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Notification for HTML to Textual Data Extract Within the Loop": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model for HTML to Textual Data Extract Within the Loop": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "HTML to Textual Data Extract Within Loop",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

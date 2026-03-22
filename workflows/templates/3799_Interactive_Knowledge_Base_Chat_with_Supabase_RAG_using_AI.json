@@ -1,0 +1,1026 @@
+{
+  "_templateId": 3799,
+  "_templateName": "Interactive Knowledge Base Chat with Supabase RAG using AI 📚💬",
+  "_templateDescription": "Google Drive File Ingestion to Supabase for Knowledge Base 📂💾\n\nOverview 🌟\n\nThis n8n workflow automates the process of ingesting files from Google Drive into a Supabase database, preparing them for a knowledge base system. It supports text-based files (PDF, DOCX, TXT, etc.) and tabular data (XLSX, CSV, Google Sheets), extracting content, generating embeddings, and storing data in structured tables. This is a foundational workflow for building a company knowledge base that can be queried via a chat interface (e.g., using a RAG workflow). 🚀\n\nProblem Solved 🎯\nManually managing a knowledge base with files from Google Drive is time-consuming and error-prone. This workflow solves that by:\nAutomatically ingesting files from Google Drive as they are created or updated.\nExtracting content** from various file types (text and tabular).\nGenerating embeddings for text-based files to enable vector search.\nStoring data in Supabase for efficient retrieval.\nHandling duplicates and errors to ensure data consistency.\n\nTarget Audience:\nKnowledge Managers**: Build a centralized knowledge base from company files.\nData Teams**: Automate the ingestion of spreadsheets and documents.\nDevelopers**: Integrate with other workflows (e.g., RAG for querying the knowledge base).\n\nWorkflow Description 🔍\n\nThis workflow listens for new or updated files in Google Drive, processes them based on their type, and stores the extracted data in Supabase tables for later retrieval. Here’s how it works:\n\nFile Detection: Triggers when a file is created or updated in Google Drive.\nFile Processing: Loops through each file, extracts metadata, and validates the file type.\nDuplicate Check: Ensures the file hasn’t been processed before.\nContent Extraction:\n   Text-based Files: Downloads the file, extracts text, splits it into chunks, generates embeddings, and stores the chunks in Supabase.\n   Tabular Files: Extracts data from spreadsheets and stores it as rows in Supabase.\nMetadata Storage: Stores file metadata and basic info in Supabase tables.\nError Handling: Logs errors for unsupported formats or duplicates.\n\nNodes Breakdown 🛠️\n\n1. Detect New File 🔔\nType**: Google Drive Trigger\nPurpose**: Triggers the workflow when a new file is created in Google Drive.\nConfiguration**:\n  Credential: Google Drive OAuth2\n  Event: File Created\nCustomization**:\n  Specify a folder to monitor specific directories.\n\n2. Detect Updated File 🔔\nType**: Google Drive Trigger\nPurpose**: Triggers the workflow when a file is updated in Google Drive.\nConfiguration**:\n  Credential: Google Drive OAuth2\n  Event: File Updated\nCustomization**:\n  Currently disconnected; reconnect if updates need to be processed.\n\n3. Process Each File 🔄\nType**: Loop Over Items\nPurpose**: Processes each file individually from the Google Drive trigger.\nConfiguration**:\n  Input: {{ $json.files }}\nCustomization**:\n  Adjust the batch size if processing multiple files at once.\n\n4. Extract File Metadata 🆔\nType**: Set\nPurpose**: Extracts metadata like file_id, file_name, mime_type, and web_view_link.\nConfiguration**:\n  Fields:\n    file_id: {{ $json.id }}\n    file_name: {{ $json.name }}\n    mime_type: {{ $json.mimeType }}\n    web_view_link: {{ $json.webViewLink }}\nCustomization**:\n  Add more metadata fields if needed (e.g., size, createdTime).\n\n5. Check File Type ✅\nType**: IF\nPurpose**: Validates the file type by checking the MIME type.\nConfiguration**:\n  Condition: mime_type contains supported types (e.g., application/pdf, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet).\nCustomization**:\n  Add more supported MIME types as needed.\n\n6. Find Duplicates 🔍\nType**: Supabase\nPurpose**: Checks if the file has already been processed by querying knowledge_base.\nConfiguration**:\n  Operation: Select\n  Table: knowledge_base\n  Filter: file_id = {{ $node['Extract File Metadata'].json.file_id }}\nCustomization**:\n  Add additional duplicate checks (e.g., by file name).\n\n7. Handle Duplicates 🔄\nType**: IF\nPurpose**: Routes the workflow based on whether a duplicate is found.\nConfiguration**:\n  Condition: {{ $node['Find Duplicates'].json.length &gt; 0 }}\nCustomization**:\n  Add notifications for duplicates if desired.\n\n8. Remove Old Text Data 🗑️\nType**: Supabase\nPurpose**: Deletes old text data from documents if the file is a duplicate.\nConfiguration**:\n  Operation: Delete\n  Table: documents\n  Filter: metadata-&gt;&gt;'file_id' = {{ $node['Extract File Metadata'].json.file_id }}\nCustomization**:\n  Add logging before deletion.\n\n9. Remove Old Data 🗑️\nType**: Supabase\nPurpose**: Deletes old tabular data from document_rows if the file is a duplicate.\nConfiguration**:\n  Operation: Delete\n  Table: document_rows\n  Filter: dataset_id = {{ $node['Extract File Metadata'].json.file_id }}\nCustomization**:\n  Add logging before deletion.\n\n10. Route by File Type 🔀\nType**: Switch\nPurpose**: Routes the workflow based on the file’s MIME type (text-based or tabular).\nConfiguration**:\n  Rules: Based on mime_type (e.g., application/pdf for text, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet for tabular).\nCustomization**:\n  Add more routes for additional file types.\n\n11. Download File Content 📥\nType**: Google Drive\nPurpose**: Downloads the file content for text-based files.\nConfiguration**:\n  Credential: Google Drive OAuth2\n  File ID: {{ $node['Extract File Metadata'].json.file_id }}\nCustomization**:\n  Add error handling for download failures.\n\n12. Extract PDF Text 📜\nType**: Extract from File (PDF)\nPurpose**: Extracts text from PDF files.\nConfiguration**:\n  File Content: {{ $node['Download File Content'].binary.data }}\nCustomization**:\n  Adjust extraction settings for better accuracy.\n\n13. Extract DOCX Text 📜\nType**: Extract from File (DOCX)\nPurpose**: Extracts text from DOCX files.\nConfiguration**:\n  File Content: {{ $node['Download File Content'].binary.data }}\nCustomization**:\n  Add support for other text formats (e.g., TXT, RTF).\n\n14. Extract XLSX Data 📊\nType**: Extract from File (XLSX)\nPurpose**: Extracts tabular data from XLSX files.\nConfiguration**:\n  File ID: {{ $node['Extract File Metadata'].json.file_id }}\nCustomization**:\n  Add support for CSV or Google Sheets.\n\n15. Split Text into Chunks ✂️\nType**: Text Splitter\nPurpose**: Splits extracted text into manageable chunks for embedding.\nConfiguration**:\n  Chunk Size: 1000\n  Chunk Overlap: 200\nCustomization**:\n  Adjust chunk size and overlap based on document length.\n\n16. Generate Text Embeddings 🌐\nType**: OpenAI\nPurpose**: Generates embeddings for text chunks using OpenAI.\nConfiguration**:\n  Credential: OpenAI API key\n  Operation: Embedding\n  Model: text-embedding-ada-002\nCustomization**:\n  Switch to a different embedding model if needed.\n\n17. Store Text in Supabase 💾\nType**: Supabase Vector Store\nPurpose**: Stores text chunks and embeddings in the documents table.\nConfiguration**:\n  Credential: Supabase credentials\n  Operation: Insert Documents\n  Table Name: documents\nCustomization**:\n  Add metadata fields to store additional context.\n\n18. Store Tabular Data 💾\nType**: Supabase\nPurpose**: Stores tabular data in the document_rows table.\nConfiguration**:\n  Operation: Insert\n  Table: document_rows\n  Columns: dataset_id, row_data\nCustomization**:\n  Add validation for tabular data structure.\n\n19. Store File Metadata 📋\nType**: Supabase\nPurpose**: Stores file metadata in the document_metadata table.\nConfiguration**:\n  Operation: Insert\n  Table: document_metadata\n  Columns: file_id, file_name, file_type, file_url\nCustomization**:\n  Add more metadata fields as needed.\n\n20. Record in Knowledge Base 📚\nType**: Supabase\nPurpose**: Stores basic file info in the knowledge_base table.\nConfiguration**:\n  Operation: Insert\n  Table: knowledge_base\n  Columns: file_id, file_name, file_type, file_url, upload_date\nCustomization**:\n  Add indexes for faster lookups.\n\n21. Log File Errors ⚠️\nType**: Supabase\nPurpose**: Logs errors for unsupported file types.\nConfiguration**:\n  Operation: Insert\n  Table: error_log\n  Columns: error_type, error_message\nCustomization**:\n  Add notifications for errors.\n\n22. Log Duplicate Errors ⚠️\nType**: Supabase\nPurpose**: Logs errors for duplicate files.\nConfiguration**:\n  Operation: Insert\n  Table: error_log\n  Columns: error_type, error_message\nCustomization**:\n  Add notifications for duplicates.\n\nInteractive Knowledge Base Chat with Supabase RAG using GPT-4o-mini 📚💬\n\nIntroduction 🌟\n\nThis n8n workflow creates an interactive chat interface that allows users to query a company knowledge base using Retrieval-Augmented Generation (RAG). It retrieves relevant information from text documents and tabular data stored in Supabase, then generates natural language responses using OpenAI’s GPT-4o-mini model. Designed for teams managing internal knowledge, this workflow enables users to ask questions like “What’s the remote work policy?” or “Show me the latest budget data” and receive accurate, context-aware responses in a conversational format. 🚀\n\nProblem Statement 🎯\n\nManaging a company knowledge base can be a daunting task—employees often struggle to find specific information buried in documents or spreadsheets, leading to wasted time and inefficiencies. Traditional search methods may not understand natural language queries or provide contextually relevant results. This workflow solves these issues by:\nOffering a chat-based interface for natural language queries, making it easy for users to ask questions in their own words.\nLeveraging RAG to retrieve relevant text and tabular data from Supabase, ensuring responses are accurate and context-aware.\nSupporting diverse file types, including text-based files (e.g., PDFs, DOCX) and tabular data (e.g., XLSX, CSV), for comprehensive knowledge access.\nMaintaining conversation history to provide context during interactions, improving the user experience.\n\nTarget Audience 👥\n\nThis workflow is ideal for:\nHR Teams**: Quickly access company policies, employee handbooks, or benefits documents.\nFinance Teams**: Retrieve budget data, expense reports, or financial summaries from spreadsheets.\nKnowledge Managers**: Build a centralized assistant for internal documentation, streamlining information access.\nDevelopers**: Extend the workflow with additional tools or integrations for custom use cases.\n\nWorkflow Description 🔍\n\nThis workflow consists of a chat interface powered by n8n’s Chat Trigger node, an AI Agent node for RAG, and several tools to retrieve data from Supabase. Here’s how it works step-by-step:\n\nUser Initiates a Chat: The user interacts with a chat interface, sending queries like “Summarize our remote work policy” or “Show budget data for Q1 2025.”\nQuery Processing with RAG: The AI Agent processes the query using RAG, retrieving relevant data from Supabase tables and generating a response with OpenAI’s GPT-4o-mini model.\nData Retrieval and Response Generation: The workflow uses multiple tools to fetch data:\n   Retrieves text chunks from the documents table using vector search.\n   Fetches tabular data from the document_rows table based on file IDs.\n   Extracts full document text or lists available files as needed.\n   Generates a natural language response combining the retrieved data.\nConversation History Management: Stores the conversation history in Supabase to maintain context for follow-up questions.\nResponse Delivery: Formats and sends the response back to the chat interface for the user to view.\n\nNodes Breakdown 🛠️\n\n1. Start Chat Interface 💬\nType**: Chat Trigger\nPurpose**: Provides the interactive chat interface for users to input queries and receive responses.\nConfiguration**:\n  Chat Title: Company Knowledge Base Assistant\n  Chat Subtitle: Ask me anything about company documents!\n  Welcome Message: Hello! I’m your Company Knowledge Base Assistant. How can I help you today?\n  Suggestions: What is the company policy on remote work?, Show me the latest budget data., List all policy documents.\n  Output Chat Session ID: true\n  Output User Message: true\nCustomization**:\n  Update the title and welcome message to align with your company branding (e.g., HR Knowledge Assistant).\n  Add more suggestions relevant to your use case (e.g., What are the company benefits?).\n\n2. Process Query with RAG 🧠\nType**: AI Agent\nPurpose**: Orchestrates the RAG process by retrieving relevant data using tools and generating responses with OpenAI’s GPT-4o-mini.\nConfiguration**:\n  Credential: OpenAI API key\n  Model: gpt-4o-mini\n  System Prompt: You are a helpful assistant for a company knowledge base. Use the provided tools to retrieve relevant information from documents and tabular data. If the query involves tabular data, format it clearly in your response. If no relevant data is found, respond with \"I couldn’t find any relevant information. Can you provide more details?\"\n  Input Field: {{ $node['Start Chat Interface'].json.message }}\nCustomization**:\n  Switch to a different model (e.g., gpt-3.5-turbo) to adjust cost or performance.\n  Modify the system prompt to change the tone (e.g., more formal for HR use cases).\n\n3. Retrieve Text Chunks 📄\nType**: Supabase Vector Store (Tool)\nPurpose**: Retrieves relevant text chunks from the documents table using vector search.\nConfiguration**:\n  Credential: Supabase credentials\n  Operation Mode: Retrieve Documents (As Tool for AI Agent)\n  Table Name: documents\n  Embedding Field: embedding\n  Content Field: content_text\n  Metadata Field: metadata\n  Embedding Model: OpenAI text-embedding-ada-002\n  Top K: 10\nCustomization**:\n  Adjust Top K to retrieve more or fewer results (e.g., 5 for faster responses).\n  Ensure the match_documents function (see prerequisites) is defined in Supabase.\n\n4. Fetch Tabular Data 📊\nType**: Supabase (Tool, Execute Query)\nPurpose**: Retrieves tabular data from the document_rows table based on a file ID.\nConfiguration**:\n  Credential: Supabase credentials\n  Operation: Execute Query\n  Query: SELECT row_data FROM document_rows WHERE dataset_id = $1 LIMIT 10\n  Tool Description: Run a SQL query - use this to query from the document_rows table once you know the file ID you are querying. dataset_id is the file_id and you are always using the row_data for filtering, which is a jsonb field that has all the keys from the file schema given in the document_metadata table.\nCustomization**:\n  Modify the query to filter specific columns or add conditions (e.g., WHERE dataset_id = $1 AND row_data-&gt;&gt;'year' = '2025').\n  Increase the LIMIT for larger datasets.\n\n5. Extract Full Document Text 📜\nType**: Supabase (Tool, Execute Query)\nPurpose**: Fetches the full text of a document by concatenating all text chunks for a given file_id.\nConfiguration**:\n  Credential: Supabase credentials\n  Operation: Execute Query\n  Query: SELECT string_agg(content_text, ' ') as document_text FROM documents WHERE metadata-&gt;&gt;'file_id' = $1 GROUP BY metadata-&gt;&gt;'file_id'\n  Tool Description: Given file id fetch the text from the documents\nCustomization**:\n  Add filters to the query if needed (e.g., limit to specific metadata fields).\n\n6. List Available Files 📋\nType**: Supabase (Tool, Select)\nPurpose**: Lists all files in the knowledge base from the document_metadata table.\nConfiguration**:\n  Credential: Supabase credentials\n  Operation: Select\n  Schema: public\n  Table: document_metadata\n  Tool Description: Use this tool to fetch all documents including the table schema if the file is csv, excel or xlsx\nCustomization**:\n  Add filters to list specific file types (e.g., WHERE file_type = 'application/pdf').\n  Modify the columns selected to include additional metadata (e.g., file_size).\n\n7. Manage Chat History 💾\nType**: Postgres Chat Memory (Tool)\nPurpose**: Stores and retrieves conversation history to maintain context.\nConfiguration**:\n  Credential: Supabase credentials (Postgres-compatible)\n  Table Name: n8n_chat_history\n  Session ID Field: session_id\n  Session ID Value: {{ $node['Start Chat Interface'].json.sessionId }}\n  Message Field: message\n  Sender Field: sender\n  Timestamp Field: timestamp\n  Context Window Length: 5\nCustomization**:\n  Increase the context window length for longer conversations (e.g., 10 messages).\n  Add indexes on session_id and timestamp in Supabase for better performance.\n\n8. Format and Send Response 📤\nType**: Set\nPurpose**: Formats the AI Agent’s response and sends it back to the chat interface.\nConfiguration**:\n  Fields:\n    response: {{ $node['Process Query with RAG'].json.output }}\nCustomization**:\n  Add additional formatting to the response if needed (e.g., prepend with a timestamp or apply markdown formatting).\n\nSetup Instructions 🛠️\n\nPrerequisites 📋\nn8n Setup:\n   Ensure you’re using n8n version 1.0 or higher.\n   Enable the AI features in n8n settings.\nSupabase:\n   Create a Supabase project and set up the following tables:\n     documents: id (uuid), content_text (text), embedding (vector(1536)), metadata (jsonb)\n     document_rows: id (uuid), dataset_id (varchar), row_data (jsonb)\n     document_metadata: file_id (varchar), file_name (varchar), file_type (varchar), file_url (text)\n     knowledge_base: id (serial), file_id (varchar), file_name (varchar), file_type (varchar), file_url (text), upload_date (timestamp)\n     n8n_chat_history: id (serial), session_id (varchar), message (text), sender (varchar), timestamp (timestamp)\n   Add the match_documents function to Supabase to enable vector search:\n          CREATE OR REPLACE FUNCTION match_documents (\n       query_embedding vector(1536),\n       match_count int DEFAULT 5,\n       filter jsonb DEFAULT '{}'\n     ) RETURNS TABLE (\n       id uuid,\n       content_text text,\n       metadata jsonb,\n       similarity float\n     ) LANGUAGE plpgsql AS $$  \n     BEGIN\n       RETURN QUERY\n       SELECT\n         documents.id,\n         documents.content_text,\n         documents.metadata,\n         1 - (documents.embedding &lt;=&gt; query_embedding) as similarity\n       FROM documents\n       WHERE documents.metadata @&gt; filter\n       ORDER BY similarity DESC\n       LIMIT match_count;\n     END;\n       $$;",
+  "_templateCreatedAt": "2025-04-30T09:12:57.114Z",
+  "_templateTotalViews": 4362,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-22T04:44:12.847Z",
+  "id": "6fZffoKqrzLAmbHc",
+  "meta": {
+    "instanceId": "3aaeb6eaba3494bbdbe57e25fa3d02783cfbc460b1e823f7b741cf26edc7ca3d"
+  },
+  "name": "Google Drive File Ingestion to Supabase for Knowledge Base",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "eff80cb0-26e5-4a19-a4d6-671a11fe26b6",
+      "name": "File Created",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        -80,
+        880
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "a78ad8a2-93a9-4c71-8916-e6247d408d82",
+      "name": "Update to File",
+      "type": "n8n-nodes-base.googleDriveTrigger",
+      "position": [
+        -80,
+        680
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "f8a528ba-9638-4a32-a2e2-596c4a63da0c",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        140,
+        780
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "bf8e763f-fff5-4fa4-a0ec-4b13bdeb498d",
+      "name": "Set File ID",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        360,
+        640
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "47bc2891-8f9f-416d-b2ce-8fd656796348",
+      "name": "Check for Duplicates",
+      "type": "n8n-nodes-base.postgres",
+      "position": [
+        800,
+        540
+      ],
+      "parameters": {},
+      "typeVersion": 2.6,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "71dd64ed-9c40-4ef0-bf24-5243b2cff499",
+      "name": "Insert Metadata",
+      "type": "n8n-nodes-base.postgres",
+      "position": [
+        1900,
+        740
+      ],
+      "parameters": {},
+      "typeVersion": 2.6
+    },
+    {
+      "id": "6a66a187-30c1-46b0-830f-484add803b1d",
+      "name": "Extract from File PDF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        3000,
+        180
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "ebc02b0a-0481-42e8-8043-e9bcd6c0f02e",
+      "name": "Extract from CSV",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        2560,
+        580
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "8bb13f35-03c3-413a-9dcc-1526f40325d3",
+      "name": "Extract from XLSX",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        2560,
+        980
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "a598e49c-d9bc-4305-b917-ccc64feb4c68",
+      "name": "Aggregate",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        2780,
+        740
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "e1c0c059-66f5-4a1b-b76a-8db1823c25e1",
+      "name": "Summarize",
+      "type": "n8n-nodes-base.summarize",
+      "position": [
+        3000,
+        740
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "cb46dfca-96ce-478a-98cb-5c94fd48e104",
+      "name": "Extract from RTF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        3000,
+        1160
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "9832240d-7cea-465e-b167-17fcf254f5f7",
+      "name": "Error Logger",
+      "type": "n8n-nodes-base.supabase",
+      "position": [
+        1240,
+        1380
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "01b5f966-e5b7-436e-9551-c31f6b9d4eac",
+      "name": "Validate File",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        580,
+        640
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "466e1cc8-25e7-462c-b19f-467c66eb1d77",
+      "name": "IF Duplicate Check",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1020,
+        540
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "0dd9891e-7dd3-4f2d-8a2e-094ab3cecec6",
+      "name": "Log Duplicate",
+      "type": "n8n-nodes-base.supabase",
+      "position": [
+        1240,
+        440
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "7d05de17-7909-4da3-bba3-c7f512af1708",
+      "name": "Supabase Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "position": [
+        3240,
+        440
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "a764be2e-110f-4320-8bae-f04a749a3ac5",
+      "name": "Embeddings OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        3220,
+        660
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "0ef91d4c-7d6b-4544-9ef5-09a0bdb6dd7c",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "position": [
+        3340,
+        660
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "86c648a9-4b9d-4afb-9e2e-f4fff12a1ce0",
+      "name": "Debug File ID",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1240,
+        740
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "392916f3-2265-4c57-abfd-37054da9e741",
+      "name": "Download File",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        2120,
+        740
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "a7367c0f-6f22-4099-ac6c-8511081b79f6",
+      "name": "Set Schema",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        3360,
+        1160
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "7051505f-4da8-44c0-90c4-c522d3a2f6d3",
+      "name": "Schema Document Metadata",
+      "type": "n8n-nodes-base.postgres",
+      "position": [
+        3600,
+        1160
+      ],
+      "parameters": {},
+      "typeVersion": 2.6
+    },
+    {
+      "id": "6f76fa9d-d1f9-4e05-80af-ec78fed5416c",
+      "name": "Switch",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        2340,
+        680
+      ],
+      "parameters": {},
+      "typeVersion": 3.2
+    },
+    {
+      "id": "f62efcf8-bb87-4e4e-9c73-0c86ec1c55fd",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -120,
+        -60
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "82015f8b-1456-4b04-bf38-2735e7f416f6",
+      "name": "Extract from DOC",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        3000,
+        1360
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "7af0771c-bed1-4cbb-8122-01ec2d8b4664",
+      "name": "Slack Duplicate Notification",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1460,
+        440
+      ],
+      "webhookId": "b530b409-ce3a-44eb-9efc-ab091105fa54",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "a5ef8a35-ea86-466a-bb6b-2f3ef72acab7",
+      "name": "Error Notification",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1460,
+        1400
+      ],
+      "webhookId": "b530b409-ce3a-44eb-9efc-ab091105fa54",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "6ca4d2d7-536c-4229-ac19-39dcb0853c4c",
+      "name": "Delete old Doc",
+      "type": "n8n-nodes-base.supabase",
+      "position": [
+        1460,
+        740
+      ],
+      "parameters": {},
+      "typeVersion": 1,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "98d0c000-5d9b-419b-aa7c-e98a9f0a90e2",
+      "name": "Extract from TXT",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        3000,
+        380
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "a53ca5ed-b9f0-4f9e-bb55-017dc5ed1451",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1880,
+        -40
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a1c76c00-0bed-48f0-ad8c-f686d5186222",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1620,
+        -40
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "71f8678a-ef8b-40ef-a3ef-3ee90afe65dc",
+      "name": "RAG AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -880,
+        700
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "7c7ebb71-1699-46a5-a756-cf2589815dc8",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -1460,
+        1180
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "510482ba-030b-4777-9740-bf8993dce021",
+      "name": "Postgres Chat Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryPostgresChat",
+      "position": [
+        -1280,
+        1180
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "223791e6-5148-47cd-aab6-ca9cb20b7017",
+      "name": "List Documents",
+      "type": "n8n-nodes-base.postgresTool",
+      "position": [
+        -1060,
+        1180
+      ],
+      "parameters": {},
+      "typeVersion": 2.6
+    },
+    {
+      "id": "25cc4ca1-4910-4ae7-a755-c5611946c325",
+      "name": "Query Document Rows",
+      "type": "n8n-nodes-base.postgresTool",
+      "position": [
+        -620,
+        1180
+      ],
+      "parameters": {},
+      "typeVersion": 2.6
+    },
+    {
+      "id": "194c1ee8-1c21-4a1d-b8d2-9991dc8133fd",
+      "name": "Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterCharacterTextSplitter",
+      "position": [
+        3440,
+        860
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "f311ab63-88fa-413a-8ba9-aa866e1fb5f0",
+      "name": "Insert Table Rows",
+      "type": "n8n-nodes-base.postgres",
+      "position": [
+        2780,
+        940
+      ],
+      "parameters": {},
+      "typeVersion": 2.6
+    },
+    {
+      "id": "529e05ca-0494-4eb3-b0f4-275ba252f646",
+      "name": "Delete Old Data Rows",
+      "type": "n8n-nodes-base.supabase",
+      "position": [
+        1680,
+        740
+      ],
+      "parameters": {},
+      "typeVersion": 1,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "d1702791-fe65-4068-982b-8b378f9c2e0a",
+      "name": "Set Error Type",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1020,
+        1200
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "23a05be3-2b40-400b-b8d4-21ee6db78ac4",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        -1440,
+        720
+      ],
+      "webhookId": "db7e7558-fd4c-4743-b42c-d3b3a38e4d19",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "89262c14-2910-4a9d-b86a-84c015e0daa5",
+      "name": "Edit Fields2",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -1180,
+        700
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "2325e26f-6237-4128-bead-17e0a9ccb50d",
+      "name": "Supabase Vector Store2",
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+      "position": [
+        -460,
+        840
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "1289b037-7bc9-4d13-9516-328f1f781c14",
+      "name": "Embeddings OpenAI2",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "position": [
+        -240,
+        1060
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "3d15f7db-e7b7-4bb7-a5f7-9962f3a81051",
+      "name": "Get Full Document Text - Get File Contents",
+      "type": "n8n-nodes-base.postgresTool",
+      "position": [
+        -820,
+        1180
+      ],
+      "parameters": {},
+      "typeVersion": 2.6
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0c6700ed-433f-46ca-8907-c2f4f94adfda",
+  "connections": {
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Extract from File PDF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from TXT",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from CSV",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from XLSX",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from RTF",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract from DOC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate": {
+      "main": [
+        [
+          {
+            "node": "Summarize",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set Schema",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Schema": {
+      "main": [
+        [
+          {
+            "node": "Schema Document Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set File ID": {
+      "main": [
+        [
+          {
+            "node": "Validate File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Error Logger": {
+      "main": [
+        [
+          {
+            "node": "Error Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "File Created": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Debug File ID": {
+      "main": [
+        [
+          {
+            "node": "Delete old Doc",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download File": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Duplicate": {
+      "main": [
+        [
+          {
+            "node": "Slack Duplicate Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate File": {
+      "main": [
+        [
+          {
+            "node": "Check for Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Set Error Type",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete old Doc": {
+      "main": [
+        [
+          {
+            "node": "Delete Old Data Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "List Documents": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Error Type": {
+      "main": [
+        [
+          {
+            "node": "Error Logger",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update to File": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Metadata": {
+      "main": [
+        [
+          {
+            "node": "Download File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Set File ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from CSV": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert Table Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from DOC": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from RTF": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from TXT": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from XLSX": {
+      "main": [
+        [
+          {
+            "node": "Aggregate",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Insert Table Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Supabase Vector Store2",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF Duplicate Check": {
+      "main": [
+        [
+          {
+            "node": "Log Duplicate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Debug File ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Query Document Rows": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for Duplicates": {
+      "main": [
+        [
+          {
+            "node": "IF Duplicate Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Old Data Rows": {
+      "main": [
+        [
+          {
+            "node": "Insert Metadata",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File PDF": {
+      "main": [
+        [
+          {
+            "node": "Supabase Vector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase Vector Store2": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Full Document Text - Get File Contents": {
+      "ai_tool": [
+        [
+          {
+            "node": "RAG AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
