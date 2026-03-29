@@ -1,0 +1,143 @@
+{
+  "_templateId": 3871,
+  "_templateName": "Convert HTML to PDF & Extract Text from PDFs with CustomJS API",
+  "_templateDescription": "\nThis n8n workflow illustrates how to convert PDF files into text with the PDF Toolkit from www.customjs.space.\n\n@custom-js/n8n-nodes-pdf-toolkit\n\nNotice\n\nCommunity nodes can only be installed on self-hosted instances of n8n.\n\nWhat this workflow does\n\nChange** the requested HTML to PDF..\nExtract** text from the PDF.\nUse** a Code node to handle URLs that point to PDF files.\nConvert** the PDF to text.\n\nRequirements\n\nSelf-hosted** n8n instance.\nCustomJS API key** for converting PDF to text.\nHTML** Data to convert PDF files.\nCode node** for handling URL that indicates PDF file.\n\nWorkflow Steps:\n\nManual Trigger:\n\n   Runs with user interaction.\n\nHTML to PDF:\n\n   Request HTML Data\n   Convert HTML to PDF\n\nConvert PDF to Text:\n   Convert the generated Text from PDF\n\nUsage\n\nGet API key from customJS\n\nSign up to customJS platform.\nNavigate to your profile page\nPress \"Show\" button to get API key\n\nSet Credentials for CustomJS API on n8n\n\nCopy and paste your API key generated from CustomJS here.\n\nDesign workflow\n\nA Manual Trigger for starting workflow.\nHTTP Request Nodes for downloading PDF files.\nCode node for handling URL that indicates PDF file.\nConvert PDF to Text.\n\nYou can replace logic for triggering and returning results.\nFor example, you can trigger this workflow by calling a webhook and get a result as a response from webhook. Simply replace Manual Trigger and Write to Disk nodes.\n",
+  "_templateCreatedAt": "2025-05-05T10:50:27.954Z",
+  "_templateTotalViews": 1153,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:01:55.539Z",
+  "id": "MIA4ozGH71fC3KCe",
+  "meta": {
+    "instanceId": "7599ed929ea25767a019b87ecbc83b90e16a268cb51892887b450656ac4518a2"
+  },
+  "name": "pdf to text",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "d92f690d-c84d-451d-9ab8-da6f9356e0ca",
+      "name": "Convert PDF into Text",
+      "type": "@custom-js/n8n-nodes-pdf-toolkit.PdfToText",
+      "position": [
+        -120,
+        100
+      ],
+      "parameters": {},
+      "credentials": {
+        "customJsApi": {
+          "id": "credential-id",
+          "name": "customJsApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "420cfac7-a621-4bf3-bd34-3fee569321e4",
+      "name": "HTML to PDF",
+      "type": "@custom-js/n8n-nodes-pdf-toolkit.html2Pdf",
+      "position": [
+        -340,
+        100
+      ],
+      "parameters": {
+        "htmlInput": "<h1>Hello World</h1>"
+      },
+      "credentials": {
+        "customJsApi": {
+          "id": "credential-id",
+          "name": "customJsApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "83c05ec3-1225-41d0-b5b4-f9f6be7619ea",
+      "name": "Convert PDF into Text1",
+      "type": "@custom-js/n8n-nodes-pdf-toolkit.PdfToText",
+      "position": [
+        -120,
+        300
+      ],
+      "parameters": {
+        "resource": "url",
+        "field_name": "={{ $json.path }}"
+      },
+      "credentials": {
+        "customJsApi": {
+          "id": "credential-id",
+          "name": "customJsApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "787e9369-abb5-483e-ba43-8837b5c586f9",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -340,
+        300
+      ],
+      "parameters": {
+        "jsCode": "return {\"json\": {\"path\": \"https://www.nlbk.niedersachsen.de/download/164891/Test-pdf_3.pdf.pdf\"}};"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "df553684-dfa8-4af4-a57b-ebbc9ef2a33f",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -560,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "97b60904-2b34-4a77-b171-d02f87c17134",
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Convert PDF into Text1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML to PDF": {
+      "main": [
+        [
+          {
+            "node": "Convert PDF into Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTML to PDF",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

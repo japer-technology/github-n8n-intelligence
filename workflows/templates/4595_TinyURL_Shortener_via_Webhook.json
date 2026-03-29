@@ -1,0 +1,135 @@
+{
+  "_templateId": 4595,
+  "_templateName": "TinyURL Shortener via Webhook",
+  "_templateDescription": "This n8n template allows you to automatically create shortened URLs using the TinyURL API by simply sending a webhook request. It's a quick and efficient way to integrate URL shortening into your automated workflows, ideal for sharing long links in social media, emails, or other applications.\n\n🔧 How it works\nReceive Link Webhook: This node acts as the entry point for the workflow. It listens for incoming POST requests and expects a JSON body containing the url to be shortened and your api_key for TinyURL.\nCreate TinyURL: This node sends a POST request to the TinyURL API, passing the long URL and your API key. It can also accept optional parameters like domain, alias, and description to customize the shortened link.\nRespond with Shortened URL: This node sends the response from the TinyURL API (which includes the new shortened URL) back to the service that initiated the webhook.\n\n👤 Who is it for?\nThis workflow is ideal for:\n\nContent Managers & Marketers: Quickly shorten links for campaigns, social media posts, or tracking.\nDevelopers: Automate the process of link shortening within applications or scripts.\nAutomation Enthusiasts: Integrate a URL shortener into various n8n workflows (e.g., after generating a report, before sending a notification).\nAnyone needing on-demand short links: A flexible solution for ad-hoc link shortening.\n\n📑 Data Structure\nWhen you trigger the webhook, send a POST request with a JSON body structured as follows:\n\n{\n  \"api_key\": \"YOUR_TINYURL_API_KEY\",\n  \"url\": \"https://www.verylongwebsite.com/path/to/specific/page?param1=value1&param2=value2\",\n  \"domain\": \"tinyurl.com\",      // Optional: defaults to tinyurl.com\n  \"alias\": \"myCustomAlias\",    // Optional: desired custom alias for the link\n  \"description\": \"My project link\" // Optional: description for the link\n}\n\nThe workflow will return the JSON response directly from the TinyURL API, which will include the short_url and other details about the newly created link.\n\n⚙️ Setup Instructions\nObtain TinyURL API Key: Before importing, make sure you have an API key from TinyURL. You can typically get this by signing up for an account on their website.\nImport Workflow: In your n8n editor, click \"Import from JSON\" and paste the provided workflow JSON.\nConfigure Webhook Path:\n  Double-click the Receive Link Webhook node.\n  In the 'Path' field, set a unique and descriptive path (e.g., /shorten-link).\nActivate Workflow: Save and activate the workflow.\n\n📝 Tips\nDynamic Inputs: The workflow is set up to dynamically use the url, api_key, alias, and description from the incoming webhook data. This makes it highly flexible.\nError Handling: You can add an Error Trigger node to catch any issues (e.g., invalid API key, malformed URL) during the TinyURL creation process. Configure it to send notifications or log errors for easy troubleshooting.\nPost-Shortening Actions: After generating the shortened URL, you can insert additional nodes before the Respond with Shortened URL node to perform other actions. For example, you could:\n  Save to a Database: Store the original and shortened URLs in a database like Airtable, Google Sheets, or a PostgreSQL database.\n  Send a Message: Automatically send the shortened URL via Slack, Discord, email, or SMS.\n  Update a Record: Update a CRM record or project management task with the new shortened link.\nCustom Domains: If you have a custom domain configured with your TinyURL account, you can change the domain parameter in the Create TinyURL node to use it.",
+  "_templateCreatedAt": "2025-06-02T14:25:59.525Z",
+  "_templateTotalViews": 185,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:05:41.571Z",
+  "id": "yb95HguPBwk8gDXZ",
+  "meta": {
+    "instanceId": "1777696fb9fddfee653e70940936c2b1e28ba1f1bde53b7182fbd6eb01988706"
+  },
+  "name": "TinyURL Shortener via Webhook",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "f62dff88-eb8d-4147-9935-ad599675c710",
+      "name": "Note for TinyURL API Request",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        80,
+        180
+      ],
+      "parameters": {
+        "width": 300,
+        "height": 280,
+        "content": "This node sends a POST request to the TinyURL API to create a shortened URL. It expects 'api_token' and 'url' from the incoming webhook body. The 'domain', 'alias', and 'description' are optional."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "47315623-8e56-4257-8543-22eda1999b27",
+      "name": "Note for Respond to Webhook",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        520,
+        140
+      ],
+      "parameters": {
+        "width": 320,
+        "height": 340,
+        "content": "This node sends the response from the TinyURL API (the shortened URL and any other relevant data) back to the original caller of the webhook. You can insert other nodes before this one to process the shortened URL (e.g., save to a database, send in a message) before responding."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0b43798d-91cd-4b8e-9e83-c6a7b3f8d5d9",
+      "name": "Create TinyURL",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        180,
+        300
+      ],
+      "parameters": {
+        "url": "=https://api.tinyurl.com/create",
+        "method": "=POST",
+        "options": {},
+        "jsonBody": "{\n  \"url\": \"={{ $json.body.url }}\",\n  \"domain\": \"tinyurl.com\",\n  \"alias\": \"={{ $json.body.alias || '' }}\",\n  \"description\": \"={{ $json.body.description || '' }}\"\n}",
+        "sendBody": true,
+        "sendQuery": true,
+        "specifyBody": "json",
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "api_token",
+              "value": "={{ $json.body.api_key }}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "f297249f-8f4d-4fc8-aced-d94d3521c0fe",
+      "name": "Receive Link Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -160,
+        300
+      ],
+      "webhookId": "286a3703-ed0c-4097-a686-b1177854c31c-unique-id",
+      "parameters": {
+        "path": "shorten-link",
+        "options": {},
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "5f1a017f-43ef-4b77-a549-78f57c05bcc7",
+      "name": "Respond with Shortened URL",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        640,
+        300
+      ],
+      "parameters": {
+        "options": {},
+        "respondWith": "allIncomingItems"
+      },
+      "typeVersion": 1.2
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "e476b1c7-977c-4c37-bb28-bea8441b1014",
+  "connections": {
+    "Create TinyURL": {
+      "main": [
+        [
+          {
+            "node": "Respond with Shortened URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive Link Webhook": {
+      "main": [
+        [
+          {
+            "node": "Create TinyURL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

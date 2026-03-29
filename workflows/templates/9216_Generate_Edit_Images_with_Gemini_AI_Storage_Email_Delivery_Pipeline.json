@@ -1,0 +1,415 @@
+{
+  "_templateId": 9216,
+  "_templateName": "Generate & Edit Images with Gemini AI: Storage & Email Delivery Pipeline",
+  "_templateDescription": "AI Image Generator with Nano Banana: Automated Creation and Delivery\n\nFor content creators, agencies, and SaaS developers who need automated AI image generation and editing with professional delivery workflows.\n\nOverview\n\nThis template demonstrates intelligent workflow routing based on user input type, leveraging Google's Gemini 2.5 Flash image model for both generative and editing tasks. The workflow includes complete file handling, cloud storage integration, and professional email notification with shareable download links.\n\nArchitecture & Key Features\n\nIntelligent Input Detection\nConditional logic automatically detects presence of uploaded image files\nRoutes requests to appropriate processing branch (text-only vs. image+text)\nSingle webhook endpoint serves both use cases without manual intervention\n\nDual Processing Modes\nText-to-Image Generation (Prompt Only):** User submits natural language description and the system generates new images from scratch using Gemini 2.5 Flash\nImage-to-Image Editing (Prompt + Image):** User uploads reference image with text instructions for AI-powered editing while maintaining image context\n\nComplete File Management Pipeline\nExtracts and validates uploaded image data\nConverts AI-generated base64 responses to binary files\nUploads to organized Google Drive folder structure\nGenerates public sharing links with reader permissions\nImplements proper file naming conventions with timestamps\n\nProfessional Email Delivery System\nResponsive HTML email template with gradient styling\nDynamic content injection (user names, download links)\n7-day expiration warnings for urgency\nBuilt-in social sharing CTAs (Twitter, LinkedIn, WhatsApp)\nReferral program messaging for viral growth\nMobile-optimized design\n\nProduction-Ready Features\nAPI key authentication on webhook endpoint\nProper error handling throughout pipeline\nStructured response format for webhook consumers\nSuccess confirmations before file operations\n\nTechnical Implementation\n\nNodes Used\nWebhook (with file upload support)\nIf (conditional routing)\nExtract from File (base64 conversion)\nCode (image formatting for AI)\nHTTP Request (OpenRouter API calls)\nEdit Fields (data transformation)\nConvert to File (binary operations)\nGoogle Drive (upload & share operations)\nEmail Send (HTML delivery)\nRespond to Webhook\n\nExternal Dependencies\nOpenRouter API (Gemini 2.5 Flash image model)\nGoogle Drive API credentials\nSMTP server or email service\n\nWorkflow Logic Flow\n\nInput Reception:** Webhook receives form data with optional image file\nRoute Detection:** Conditional checks for presence of binary image data\nProcessing Branch A (With Image):** Extract base64 from uploaded file, format as data URL for AI model, send prompt + image to Gemini\nProcessing Branch B (Text Only):** Send text prompt directly to Gemini and generate image from description\nUniversal Pipeline (Both Routes):** Parse AI response, extract base64 image, convert to binary file format, upload to Google Drive with dynamic naming, generate shareable public link, send formatted email with download link, return success response to webhook caller\n\nUse Cases\n\nSaaS Image Tools:** Backend API for image generation/editing services\nContent Automation:** Automated image creation for marketing campaigns\nClient Delivery Systems:** White-label image processing for agencies\nE-commerce:** Product image variations and mockups\nSocial Media Tools:** Automated visual content generation\nDesign Services:** Rapid prototyping and concept visualization\n\nCustomization Options\n\nAI Model Flexibility\nSwap Gemini for other vision-capable models\nAdjust model parameters for different output styles\nImplement multiple model options with user selection\n\nStorage Alternatives\nReplace Google Drive with S3, Dropbox, or other cloud storage\nImplement local storage for self-hosted deployments\nAdd CDN integration for faster delivery\n\nEmail Template\nFully customizable HTML design\nAdd brand colors and logos\nModify social sharing options\nCustomize referral program messaging\n\nBusiness Logic\nAdd usage tracking and analytics\nImplement credit/subscription systems\nAdd watermarking for free tier users\nQueue management for high-volume processing\n\nSecurity Considerations\n\nWebhook protected with API key authentication\nFile type validation on uploads\nProper permissions on Google Drive shares\nEmail validation before sending\n\nSetup Requirements\n\nOpenRouter account with Gemini 2.5 Flash access\nGoogle Cloud project with Drive API enabled\nEmail sending credentials (SMTP or service)\nn8n instance with webhook support\nPublic domain for webhook endpoint (production use)\n\nNeed Help?\n\nLinkedIn:** Gerald Akhidenor\nWork with me:** dominixai.com\nMy websites:** jobmonkey.dev and mediacraftai.com\nEmail:** denorgerald@gmail.com",
+  "_templateCreatedAt": "2025-10-03T04:55:44.670Z",
+  "_templateTotalViews": 1,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:00:32.263Z",
+  "id": "Rb4oT1epuHrZ6NtA",
+  "meta": {
+    "instanceId": "7a73e968af152b9877d4c64b00e93bdf2a57741f130f9226cd4d7217ba6e5e6c",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Image Gen with Nano Banana 🍌 (Text + Image Prompt )",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "b4f7bd54-4ea3-41d6-adf2-a19203079615",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "notes": "Data from user. This can be replaced with a form trigger",
+      "position": [
+        -80,
+        64
+      ],
+      "webhookId": "687a3978-3e37-4c96-a6e2-ca6e5a3ff4bb",
+      "parameters": {},
+      "notesInFlow": true,
+      "typeVersion": 2.1
+    },
+    {
+      "id": "494456b5-bdd8-49a2-8b7c-31c420edfad1",
+      "name": "Edit Fields2",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        960,
+        144
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "0195cf8c-0d09-4eab-83a4-bc34fb4b6b5b",
+      "name": "Nano 🍌: Prompt Only",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        624,
+        144
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "968e3e4e-468e-4574-af01-c877b9a4aaa7",
+      "name": "If Image File Was Uploaded",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        128,
+        64
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "925e67b1-3633-4da9-a265-cb6a1986a74f",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1856,
+        80
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "5b2be1b0-42ab-4f58-ae0d-08841c063582",
+      "name": "Share file",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1680,
+        80
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "176a0b71-de43-4c71-8a2b-3140de0aa1c3",
+      "name": "Upload file",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1520,
+        80
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "103e014c-2048-4d25-a726-9ba698a767b3",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        2320,
+        80
+      ],
+      "parameters": {},
+      "typeVersion": 1.4
+    },
+    {
+      "id": "8dcbda40-72d4-4e97-bd29-68fdafa1cdef",
+      "name": "Convert to File",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        1360,
+        80
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "c5403496-7c79-4757-b5a2-eaec1048a24f",
+      "name": "Edit Fields1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1136,
+        -32
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "57538a5b-a31e-41a9-929b-47300b7027a7",
+      "name": "Nano 🍌",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        944,
+        -32
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "62788d9f-5773-4940-aea1-e30c98f62e81",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "notes": "format mage for AI",
+      "position": [
+        576,
+        -32
+      ],
+      "parameters": {},
+      "notesInFlow": true,
+      "typeVersion": 2
+    },
+    {
+      "id": "53fe7484-ea47-47b4-a1d3-6cbd47ce8368",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        384,
+        -32
+      ],
+      "parameters": {},
+      "typeVersion": 1,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "ef1611d4-fc2a-4ef7-a34b-c29e55c0dfed",
+      "name": "Send email",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        2048,
+        80
+      ],
+      "webhookId": "3c54156d-6a4d-4d08-a98f-01c39aa5a011",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "bd1bf723-aa26-49db-a98e-c026540561b6",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        560,
+        -560
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "99b78adf-3746-4a90-9af1-25ed4edf252e",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1024,
+        -256
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e8ed6161-d443-42ac-b8fc-587b9c5f12d1",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -192,
+        -176
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4508e777-177c-4cb7-83e7-6791d7c231c1",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        352,
+        -176
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "3b1c3fb9-8a59-4459-959f-cfcae041f4ff",
+      "name": "Sticky Note10",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        912,
+        -176
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "36ef4719-dae7-4d9b-b8bd-adb23ad374e3",
+      "name": "Sticky Note11",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2016,
+        -176
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "10851cc7-321e-428c-8e41-b7d98432f643",
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Nano 🍌",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If Image File Was Uploaded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nano 🍌": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Share file": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload file": {
+      "main": [
+        [
+          {
+            "node": "Share file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Upload file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nano 🍌: Prompt Only": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Image File Was Uploaded": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Nano 🍌: Prompt Only",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

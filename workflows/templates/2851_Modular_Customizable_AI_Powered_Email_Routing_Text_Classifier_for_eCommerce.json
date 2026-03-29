@@ -1,0 +1,905 @@
+{
+  "_templateId": 2851,
+  "_templateName": "Modular & Customizable AI-Powered Email Routing: Text Classifier for eCommerce",
+  "_templateDescription": "How It Works\nForm Submission:\n   The workflow starts with the On form submission node, which triggers when a user submits a contact form. The form collects the user's name, email, and message.\n\nText Classification:\n   The Text Classifier node uses an AI model (GPT-4) to classify the submitted message into one of the predefined categories:\n     Request Quote: For quote requests.\n     Product info: For general product inquiries.\n     General problem: For issues or problems related to products.\n     Order: For questions about placed orders.\n     Other: For any messages that don’t fit the above categories.\n\nEmail Routing:\n   Based on the classification, the workflow routes the message to the appropriate department via email:\n     Prod. Dep.: For product-related inquiries.\n     Quote Dep.: For quote requests.\n     Gen. Dep.: For general problems.\n     Order Dep.: For order-related questions.\n     Other Dep.: For all other inquiries.\n   Each email includes the user's name, email, message, and the classified category.\n\nData Logging:\n   The workflow logs the form submission and classification results into a Google Sheets document. Each department has its own sheet where the data is appended, including:\n     User’s name, email, and message.\n     Submission date and time.\n     Assigned category.\n     Email recipient details.\n\nAI Model Integration:\n   The OpenAI node provides the AI model (GPT-4) used by the Text Classifier to classify the messages. The model is instructed to classify the text into one of the predefined categories without additional explanations.\n\nSet Up Steps\nConfigure the Form Trigger:\n   Set up the On form submission node to collect user inputs (name, email, and message) and trigger the workflow.\n\nSet Up the Text Classifier:\n   Configure the Text Classifier node to use the OpenAI model (GPT-4) for text classification.\n   Define the categories and their descriptions (e.g., \"Request Quote\", \"Product info\", etc.).\n   Set the fallback category to \"Other\" for unclassifiable messages.\n\nConfigure Email Sending:\n   Set up the Email Send nodes for each department (Prod. Dep., Quote Dep., Gen. Dep., Order Dep., Other Dep.).\n   Configure the email subject, body, and reply-to address using the form data and classification results.\n   Ensure SMTP credentials are correctly configured for sending emails.\n\nSet Up Google Sheets Integration:\n   Configure the Google Sheets nodes to append data to the appropriate sheets for each department.\n   Map the form data (name, email, message, date, category, and recipient) to the corresponding columns in the Google Sheets document.\n\nTest the Workflow:\n   Submit a test form to ensure the workflow correctly classifies the message, sends the email to the right department, and logs the data in Google Sheets.\n   Verify that the OpenAI model is classifying messages accurately.\n\nActivate the Workflow:\n   Once tested, activate the workflow to automate the process of handling contact form submissions.\n\nKey Features\nAutomated Classification**: Uses AI to classify messages into relevant categories, reducing manual effort.\nEmail Routing**: Sends emails to the appropriate department based on the classification.\nData Logging**: Logs all form submissions and classification results in Google Sheets for tracking and analysis.\nScalability**: Easily adaptable to additional categories or departments by modifying the workflow.\n\nThis workflow is ideal for eCommerce businesses or customer support teams looking to automate and streamline the handling of contact form submissions.\n\nNeed help customizing?  \nContact me for consulting and support or add me on Linkedin. \n\n",
+  "_templateCreatedAt": "2025-02-05T10:23:35.794Z",
+  "_templateTotalViews": 4052,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:02:40.589Z",
+  "id": "LGpVLWPpNZSt9ISM",
+  "meta": {
+    "instanceId": "a4bfc93e975ca233ac45ed7c9227d84cf5a2329310525917adaf3312e10d5462",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Contact Form Text Classifier for eCommerce",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "13175d48-c3a6-4ca6-afed-b70f40289f38",
+      "name": "On form submission",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -480,
+        -320
+      ],
+      "webhookId": "8e10c8ca-895c-4274-ba95-0d646b8bda4e",
+      "parameters": {
+        "options": {},
+        "formTitle": "Contacts",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name",
+              "placeholder": "Name",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email",
+              "placeholder": "Email",
+              "requiredField": true
+            },
+            {
+              "fieldType": "textarea",
+              "fieldLabel": "Message",
+              "placeholder": "Message",
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "formDescription": "Basic Contact Form"
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "7b352c9f-5d2e-46ca-9499-594063167e9a",
+      "name": "Text Classifier",
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "position": [
+        -160,
+        -320
+      ],
+      "parameters": {
+        "options": {
+          "fallback": "other",
+          "systemPromptTemplate": "=Please classify the text provided by the user into one of the following categories: {categories}, and use the provided formatting instructions below. Don't explain, and only output the json with the selected {categories}."
+        },
+        "inputText": "={{ $json.Message }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "Request Quote",
+              "description": "Request for quote"
+            },
+            {
+              "category": "Product info",
+              "description": "General information about a product"
+            },
+            {
+              "category": "General problem",
+              "description": "General problems about a product"
+            },
+            {
+              "category": "Order",
+              "description": "Information about an order placed"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "efef4c71-5f56-44b0-a613-9fa888e495b8",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -220,
+        -100
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "83f0d528-884c-4701-8fdd-dc07c05fafb5",
+      "name": "Prod. Dep.",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        320,
+        -540
+      ],
+      "parameters": {
+        "html": "=Name: {{ $json.Name }}\nEmail: {{ $json.Email }}\n\nMessage:\n{{ $json.Message }}\n\nTipo prodotto: {{ $json[\"tipo prodotto\"] }}",
+        "options": {
+          "replyTo": "={{ $json.Email }}"
+        },
+        "subject": "=[n8n Contacts] Product info",
+        "toEmail": "user@example.com",
+        "fromEmail": "user@example.com"
+      },
+      "credentials": {
+        "smtp": {
+          "id": "credential-id",
+          "name": "smtp Credential"
+        }
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "88486500-dcea-4db9-9ffd-f55193eaa83d",
+      "name": "Quote Dep.",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        320,
+        -780
+      ],
+      "parameters": {
+        "html": "=Name: {{ $json.Name }}\nEmail: {{ $json.Email }}\n\nMessage:\n{{ $json.Message }}\n\nTipo prodotto: {{ $json[\"tipo prodotto\"] }}",
+        "options": {
+          "replyTo": "={{ $json.Email }}"
+        },
+        "subject": "=[n8n Contacts] Quote",
+        "toEmail": "user@example.com",
+        "fromEmail": "user@example.com"
+      },
+      "credentials": {
+        "smtp": {
+          "id": "credential-id",
+          "name": "smtp Credential"
+        }
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "f6a63c4f-ee2e-42f1-a12c-b1fc6cf48f94",
+      "name": "Gen. Dep.",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        320,
+        -320
+      ],
+      "parameters": {
+        "html": "=Name: {{ $json.Name }}\nEmail: {{ $json.Email }}\n\nMessage:\n{{ $json.Message }}\n\nTipo prodotto: {{ $json[\"tipo prodotto\"] }}",
+        "options": {
+          "replyTo": "={{ $json.Email }}"
+        },
+        "subject": "=[n8n Contacts] General",
+        "toEmail": "user@example.com",
+        "fromEmail": "user@example.com"
+      },
+      "credentials": {
+        "smtp": {
+          "id": "credential-id",
+          "name": "smtp Credential"
+        }
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "04a3e144-af75-4a95-819f-d5f1d4591b67",
+      "name": "Order Dep.",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        320,
+        -80
+      ],
+      "parameters": {
+        "html": "=Name: {{ $json.Name }}\nEmail: {{ $json.Email }}\n\nMessage:\n{{ $json.Message }}\n\nTipo prodotto: {{ $json[\"tipo prodotto\"] }}",
+        "options": {
+          "replyTo": "={{ $json.Email }}"
+        },
+        "subject": "=[n8n Contacts] Order info",
+        "toEmail": "user@example.com",
+        "fromEmail": "user@example.com"
+      },
+      "credentials": {
+        "smtp": {
+          "id": "credential-id",
+          "name": "smtp Credential"
+        }
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "3767e3c7-b792-4b0d-a1f2-fc068310cb11",
+      "name": "Other Dep.",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        320,
+        140
+      ],
+      "parameters": {
+        "html": "=Name: {{ $json.Name }}\nEmail: {{ $json.Email }}\n\nMessage:\n{{ $json.Message }}\n\nTipo prodotto: {{ $json[\"tipo prodotto\"] }}",
+        "options": {
+          "replyTo": "={{ $json.Email }}"
+        },
+        "subject": "=[n8n Contacts] Other",
+        "toEmail": "user@example.com",
+        "fromEmail": "user@example.com"
+      },
+      "credentials": {
+        "smtp": {
+          "id": "credential-id",
+          "name": "smtp Credential"
+        }
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "c411a82d-0b86-49da-a11f-47ec79f9f7ff",
+      "name": "Quote DB",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        520,
+        -780
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "TO": "={{ (JSON.stringify($json.envelope.to)) }}",
+            "DATA": "={{ $('Text Classifier').item.json.submittedAt }}",
+            "NOME": "={{ $('Text Classifier').item.json.Name }}",
+            "EMAIL": "={{ $('Text Classifier').item.json.Email }}",
+            "CATEGORIA": "info prodotti",
+            "RICHIESTA": "={{ $('Text Classifier').item.json.Message }}"
+          },
+          "schema": [
+            {
+              "id": "DATA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "DATA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NOME",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "NOME",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EMAIL",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "EMAIL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "RICHIESTA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "RICHIESTA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CATEGORIA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "CATEGORIA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TO",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "TO",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw/edit#gid=0",
+          "cachedResultName": "Foglio1"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw/edit?usp=drivesdk",
+          "cachedResultName": "Classified Contact Form"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.5
+    },
+    {
+      "id": "c14008fb-8932-44ad-88ef-42f6d4029fb1",
+      "name": "Prod DB",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        520,
+        -540
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "TO": "={{ (JSON.stringify($json.envelope.to)) }}",
+            "DATA": "={{ $('Text Classifier').item.json.submittedAt }}",
+            "NOME": "={{ $('Text Classifier').item.json.Name }}",
+            "EMAIL": "={{ $('Text Classifier').item.json.Email }}",
+            "CATEGORIA": "info prodotti",
+            "RICHIESTA": "={{ $('Text Classifier').item.json.Message }}"
+          },
+          "schema": [
+            {
+              "id": "DATA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "DATA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NOME",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "NOME",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EMAIL",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "EMAIL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "RICHIESTA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "RICHIESTA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CATEGORIA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "CATEGORIA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TO",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "TO",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw/edit#gid=0",
+          "cachedResultName": "Foglio1"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw/edit?usp=drivesdk",
+          "cachedResultName": "Classified Contact Form"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.5
+    },
+    {
+      "id": "f2e02c07-7218-4d08-a816-1ce2de289312",
+      "name": "General DB",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        520,
+        -320
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "TO": "={{ (JSON.stringify($json.envelope.to)) }}",
+            "DATA": "={{ $('Text Classifier').item.json.submittedAt }}",
+            "NOME": "={{ $('Text Classifier').item.json.Name }}",
+            "EMAIL": "={{ $('Text Classifier').item.json.Email }}",
+            "CATEGORIA": "info prodotti",
+            "RICHIESTA": "={{ $('Text Classifier').item.json.Message }}"
+          },
+          "schema": [
+            {
+              "id": "DATA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "DATA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NOME",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "NOME",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EMAIL",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "EMAIL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "RICHIESTA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "RICHIESTA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CATEGORIA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "CATEGORIA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TO",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "TO",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw/edit#gid=0",
+          "cachedResultName": "Foglio1"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw/edit?usp=drivesdk",
+          "cachedResultName": "Classified Contact Form"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.5
+    },
+    {
+      "id": "d6ee5c05-d966-47c1-a7ec-df721f77c5d0",
+      "name": "Order DB",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        520,
+        -80
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "TO": "={{ (JSON.stringify($json.envelope.to)) }}",
+            "DATA": "={{ $('Text Classifier').item.json.submittedAt }}",
+            "NOME": "={{ $('Text Classifier').item.json.Name }}",
+            "EMAIL": "={{ $('Text Classifier').item.json.Email }}",
+            "CATEGORIA": "info prodotti",
+            "RICHIESTA": "={{ $('Text Classifier').item.json.Message }}"
+          },
+          "schema": [
+            {
+              "id": "DATA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "DATA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NOME",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "NOME",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EMAIL",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "EMAIL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "RICHIESTA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "RICHIESTA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CATEGORIA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "CATEGORIA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TO",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "TO",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw/edit#gid=0",
+          "cachedResultName": "Foglio1"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw/edit?usp=drivesdk",
+          "cachedResultName": "Classified Contact Form"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.5
+    },
+    {
+      "id": "b4f344bd-a5c4-4977-af96-edbab85b49d0",
+      "name": "Other DB",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        520,
+        140
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "TO": "={{ (JSON.stringify($json.envelope.to)) }}",
+            "DATA": "={{ $('Text Classifier').item.json.submittedAt }}",
+            "NOME": "={{ $('Text Classifier').item.json.Name }}",
+            "EMAIL": "={{ $('Text Classifier').item.json.Email }}",
+            "CATEGORIA": "info prodotti",
+            "RICHIESTA": "={{ $('Text Classifier').item.json.Message }}"
+          },
+          "schema": [
+            {
+              "id": "DATA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "DATA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "NOME",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "NOME",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "EMAIL",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "EMAIL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "RICHIESTA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "RICHIESTA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "CATEGORIA",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "CATEGORIA",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "TO",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "TO",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "append",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw/edit#gid=0",
+          "cachedResultName": "Foglio1"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1D6tfsAK81ZE6VA0-sd_syuyI_rloNYjgWOhwgszPIZw/edit?usp=drivesdk",
+          "cachedResultName": "Classified Contact Form"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4.5
+    },
+    {
+      "id": "99872f49-85c3-47a0-b0ea-10ebbdbb67f5",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -480,
+        -680
+      ],
+      "parameters": {
+        "width": 580,
+        "height": 280,
+        "content": "## Important notes\n\nThis very simple workflow is ideal for eCommerce businesses or customer support teams looking to automate and streamline the handling of contact form submissions.\n\n- It is possible to hook any external form such as CF7 for Wordpress through a webhook\n- It is possible to send the email through other providers by replacing them with the relative nodes (Gmail, Outlook....)\n- It is possible to change the collection database with other tools"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "649d6a6a-a2a1-49f6-b63a-6def1a8831f1",
+  "connections": {
+    "OpenAI": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gen. Dep.": {
+      "main": [
+        [
+          {
+            "node": "General DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Order Dep.": {
+      "main": [
+        [
+          {
+            "node": "Order DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Other Dep.": {
+      "main": [
+        [
+          {
+            "node": "Other DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prod. Dep.": {
+      "main": [
+        [
+          {
+            "node": "Prod DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Quote Dep.": {
+      "main": [
+        [
+          {
+            "node": "Quote DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Quote Dep.",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Prod. Dep.",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [],
+        [
+          {
+            "node": "Gen. Dep.",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Order Dep.",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Other Dep.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

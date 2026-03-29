@@ -1,0 +1,338 @@
+{
+  "_templateId": 4100,
+  "_templateName": "Bulk Delete HubSpot Contacts from Uploaded Excel/CSV File",
+  "_templateDescription": "Bulk Contact Deletion from HubSpot via Uploaded Excel / CSV File\n\nThis workflow allows you to automate the deletion of HubSpot contacts based on email addresses provided in an uploaded Excel (.xlsx) file. It's ideal for bulk-cleaning outdated or invalid contact data.\n\n✅ Prerequisites\n\nBefore using this workflow, ensure you have the following:\n\nA valid HubSpot App Token with permissions to search and delete contacts.\nAn Excel (.xlsx) file with a column labeled emails containing the contact emails to be deleted.\nn8n self-hosted or cloud environment with:\n  Webhook node enabled and accessible.\n  HubSpot node credentials configured.\nBasic familiarity with n8n node configuration for custom adjustments (optional).\n\n📃Sample Document\n\n\n\n\nDownload\n🧠 n8n Workflow: Delete HubSpot Contacts from an Uploaded Excel File\n\nThis n8n workflow allows you to upload an Excel file containing contact email addresses. It will check each one in HubSpot and delete the contact if it exists.\n\n🔗 Workflow Overview\n\n📥 1. Trigger via Webhook (POST)\nThe workflow starts when a .xlsx file is uploaded via an HTTP POST request to the webhook. This Excel file should contain a column with contact email addresses.\n\n📄 2. Extract Data from Excel\nThe uploaded file is parsed, and its rows are converted into structured JSON items, making each email address available for further processing.\n\n🧹 3. Normalize Data\nThe data is cleaned and normalized — for example, mapping column headers (e.g., emails) into a standard email field, ensuring consistent downstream logic.\n\n🔁 4. Loop Through Contacts\nEach row (contact) is processed individually using batch looping. This allows for fine-grained error handling and sequential processing.\n\n🔎 5. Search for Contact in HubSpot\nFor each contact, a search query is made in HubSpot based on the email address. The workflow only fetches the first result (if any).\n\n🧪 6. Check if Contact Exists\nAn IF condition checks whether the contact was found (i.e., if a HubSpot contact ID exists):\n✅ Yes → proceed to delete the contact.\n❌ No → skip deletion and continue to the next.\n\n🗑️ 7. Delete Contact\nIf a contact exists, it is deleted from HubSpot using its internal contact ID.\n\n🛠️ 8. Optional Placeholder for Post-Processing\nA placeholder node named “Replace Me” is included for any custom logic you may want to add after the deletion step, such as:\nLogging\nNotifications\nWriting to external storage\n\n✅ Use Cases\n\nBulk delete old or bounced email addresses from HubSpot.\nClean up contacts based on external suppression lists.\nAutomate regular CRM hygiene processes.\n\n💡 Suggested Enhancements\n\n✍️ Log results to Google Sheets or a database\n📬 Send completion report via email or Slack\n🔁 Add retry logic for temporary API failures\n🔍 Validate email format before making requests\n\n📎 Requirements\n\nn8n (self-hosted or cloud)\nHubSpot App Token (set up in n8n credentials)\nExcel file (.xlsx) with a column for email\n\n📦 Files\n\nNo external files are required. All logic is contained within the n8n workflow.\n\n🚀 Getting Started\n\nDeploy the workflow in n8n.\nCopy the webhook URL and use it in your app or API client (like Postman).\nUpload an Excel file containing contact emails via POST request.\nWatch as it searches and deletes matches in HubSpot.\n",
+  "_templateCreatedAt": "2025-05-16T10:12:10.320Z",
+  "_templateTotalViews": 170,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:06:07.894Z",
+  "meta": {
+    "instanceId": "7d8066d2f56a07000fe7d753d3eeabf0ecdf68413466f30d10afe0906f058427",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "4ea0189c-83eb-4c95-92f8-db9b3dd9b521",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        20,
+        150
+      ],
+      "webhookId": "abf99fbe-fa03-4f55-b978-db7cba42a565",
+      "parameters": {
+        "path": "abf99fbe-fa03-4f55-b978-db7cba42a565",
+        "options": {},
+        "httpMethod": "POST"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "0f8a3ab7-8fae-4d94-8721-05239e402a34",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "onError": "continueErrorOutput",
+      "position": [
+        680,
+        150
+      ],
+      "parameters": {
+        "options": {
+          "reset": "={{ false }}"
+        }
+      },
+      "typeVersion": 3
+    },
+    {
+      "id": "7027161a-72ee-47b7-b393-a71a0e9d37f9",
+      "name": "Replace Me",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        1560,
+        150
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "a376ab8e-d925-4c06-a019-1da903a4a5c4",
+      "name": "Delete Contact",
+      "type": "n8n-nodes-base.hubspot",
+      "position": [
+        1340,
+        0
+      ],
+      "parameters": {
+        "contactId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "={{ $json.id }}"
+        },
+        "operation": "delete",
+        "authentication": "appToken"
+      },
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "credential-id",
+          "name": "hubspotAppToken Credential"
+        }
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "id": "b7fb3731-255b-4a06-8bb0-51a896721bd5",
+      "name": "Search Contact",
+      "type": "n8n-nodes-base.hubspot",
+      "onError": "continueRegularOutput",
+      "position": [
+        900,
+        75
+      ],
+      "parameters": {
+        "limit": 1,
+        "operation": "search",
+        "authentication": "appToken",
+        "filterGroupsUi": {
+          "filterGroupsValues": [
+            {
+              "filtersUi": {
+                "filterValues": [
+                  {
+                    "value": "={{ $json.email }}",
+                    "propertyName": "email|string"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "credentials": {
+        "hubspotAppToken": {
+          "id": "credential-id",
+          "name": "hubspotAppToken Credential"
+        }
+      },
+      "typeVersion": 2.1,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "7f7059cc-cd26-43d5-9006-cd56cf020bce",
+      "name": "If contact exists",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1120,
+        75
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "dbb5bafc-0939-492f-811f-4bbbfcbbf09d",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.id }}",
+              "rightValue": ""
+            }
+          ]
+        }
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "b1e62cd8-5745-4912-9303-2982fa0a26f5",
+      "name": "Parse Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        460,
+        150
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "40719114-6df6-47b5-ba76-ff7f5dbf16db",
+              "name": "email",
+              "type": "string",
+              "value": "={{ $json.emails }}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "59ef516b-9237-4085-9e88-a76608c0e70b",
+      "name": "Extract File Data",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        240,
+        150
+      ],
+      "parameters": {
+        "options": {},
+        "operation": "xlsx"
+      },
+      "notesInFlow": false,
+      "typeVersion": 1
+    },
+    {
+      "id": "bfef804a-d87d-4f49-90c3-844ba010bf2d",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -40,
+        20
+      ],
+      "parameters": {
+        "height": 120,
+        "content": "## Start Workflow\nCopy the webhook URL and use it in your app or API client (like Postman)."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ff6f02b4-0495-43d3-b6b6-a11cf0dd4ceb",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        140,
+        320
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 320,
+        "height": 100,
+        "content": "## Change Input File Format\nChange file format if needed in Extract File Data Node."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4e23de5c-85a4-40cb-94a1-6216a820bdad",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        360,
+        0
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 320,
+        "height": 140,
+        "content": "## Change Field Name\nChange Data Header name if needed in Parse Data Node.\n\ncurrent -> emails"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract File Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Data": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Delete Contact": {
+      "main": [
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search Contact": {
+      "main": [
+        [
+          {
+            "node": "If contact exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Search Contact",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract File Data": {
+      "main": [
+        [
+          {
+            "node": "Parse Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If contact exists": {
+      "main": [
+        [
+          {
+            "node": "Delete Contact",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

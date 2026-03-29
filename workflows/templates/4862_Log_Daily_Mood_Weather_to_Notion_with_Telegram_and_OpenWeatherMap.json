@@ -1,0 +1,352 @@
+{
+  "_templateId": 4862,
+  "_templateName": "Log Daily Mood & Weather to Notion with Telegram and OpenWeatherMap",
+  "_templateDescription": "The Daily Mood & Weather Logger 🚀 is more than just a utility; it's a hands-on n8n workflow designed to teach you core automation concepts. By setting up and exploring this template, you'll gain practical experience with triggers, API calls, data manipulation using the Code node, and integrating with external services like Notion. It automates tracking your daily mood alongside local weather, logging it all into a Notion database.\n\n🎯 Learning Objectives: What You'll Master\n\nThis workflow template is specifically structured to help you understand and practice:\n\nWorkflow Triggers:**\n\n  Scheduled Triggers: Learn how the Cron node initiates actions at specific times (e.g., daily).\n  Webhook/Event-Based Triggers: Understand how the Telegram Trigger node listens for and reacts to external events (like a new message).\n\nMaking API Calls:**\n\n  See the HTTP Request node in action, querying the external OpenWeatherMap API to fetch real-time data.\n  Understand how to configure API endpoints, query parameters, and handle API keys (using environment variables).\n\nData Manipulation with Code:**\n\n  Explore the Code node to write simple JavaScript for combining data from different sources (Telegram input and API response).\n  Learn basic data structuring and transformation within n8n.\n\nDatabase Integration (Notion):**\n\n  Discover how to use the Notion node to interact with a Notion database.\n  Practice retrieving database information and, more importantly, creating new pages (entries/rows) with dynamic data.\n\nEnvironment Variables:** Learn the importance of using environment variables for managing sensitive information (like API keys) and configurable parameters (like city/location).\n\nWorkflow Logic & Data Flow:** Observe how data passes between nodes and how different components work together to achieve a complete automation.\n\nWhy This Workflow? (Beyond Learning) 🤔\n\nWhile the primary goal is educational, the workflow itself is useful for:\n\nAutomated Data Collection:** It prompts for mood via Telegram and fetches weather automatically.\nConsistent Logging:** Ensures daily entries into your Notion journal.\nCentralized Information:** Stores mood and weather data in a structured Notion database.\n\nCore Features & How They Teach You 🧩\n\nLet’s break down how each part of the workflow demonstrates key n8n concepts:\n\n📅 Daily Automation Cycle & Triggers:\n\nDaily Trigger (Cron node):* ⏰ Initiates the workflow daily. *Learning: This is your introduction to time-based automation. Observe its simple configuration for scheduling.\nTelegram Mood Prompt (Telegram node):* 📩 Sends a message. *Learning: Shows a basic \"action\" node interacting with an external service.\nTelegram Mood Capture (Telegram Trigger node):* 🎣 Listens for your reply. *Learning: A prime example of an event-driven trigger. See how it waits for user input to continue the workflow.\n\n🌍 Fetching External Data (APIs):\n\nWeather Data Fetch (HTTP Request node for OpenWeatherMap):* 🌦️ Retrieves current weather. *Learning: The core of API interaction. Examine how the URL, query parameters (appid, q or lat/lon), and environment variables are used. Try changing the parameters!\n\n⚙️ Processing Data (Code Node):\n\nData Consolidation (Code node):* 🛠️ Combines mood and weather data. *Learning: A practical use of the Code node. Look at the JavaScript to understand how it accesses data from previous nodes ($input, $('Node Name')) and structures the output.\n\n📝 Storing Data (Notion Integration):\n\nNotion Database Interaction (Notion nodes):** ✍️\n\n  \"Retrieve Database\": Gets database info. Learning: Demonstrates reading from Notion.\n  \"Add row into Notion\": Logs the data. Learning: Shows how to write data to Notion, mapping your workflow data to specific Notion properties. This is a common pattern for many database integrations.\n\nNote: The template includes two paths for weather fetching (city name vs. lat/lon). This allows you to explore different ways to configure the HTTP Request node and manage input data.\n\nGetting Started: Your Learning Lab Setup 🛠️\n\nSet up your learning environment:\n\nImport the Workflow: Add the .json to n8n. This is your starting blueprint!\nSet Up Environment Variables in n8n:\n\n   OPEN_WEATHER_API_KEY: Your OpenWeatherMap API key.\n   City: (e.g., \"Paris\") For city-based weather.\n   latitude: (e.g., \"18.834366\") For coordinate-based weather.\n   longitude: (e.g., \"35.352342\") For coordinate-based weather.\nConfigure Node Credentials:\n\n   Telegram: Link your Telegram API credentials in the \"Send Mood Prompt\" and \"Wait for Mood Response\" nodes.\n   Notion: Connect your Notion API credentials in the \"Retrieve Database\" and \"Add row into Notion\" nodes.\nPersonalize Node Settings (Experiment Here!):\n\n   Daily Trigger (Cron Node): Change the \"Trigger Times\". How does this affect when the workflow runs?\n   Send Mood Prompt (Telegram Node):\n\n     Update the Chat ID (e.g., from =83495863) to your own.\n     Modify the Text of the prompt.\n   Notion Nodes:\n\n     Set your target Database ID (e.g., replace 20e9c592...).\n     Ensure your Notion database has properties like city, description, temperature, mood, etc., as defined in the \"Add row into Notion\" node. Try adding or removing properties to see what happens!\n   Weather Fetching Path:\n\n     Experiment with enabling one path (city name or lat/lon) and disabling the other. Observe how the HTTP Request node parameters differ. Ensure relevant environment variables are set.\nActivate and Test: Turn the workflow ON. Trigger it manually or wait for the Cron. Check each node’s output to understand the data flow.\n\nHow The Automation Works (A Learning Recap) ⚙️\n\nFollow the data and actions:\n\nTRIGGER: Cron node (scheduled) or Telegram Trigger (event-based after prompt).\nACTION (Prompt): Telegram node sends a message.\nINPUT (User): You reply to the Telegram message.\nAPI CALL: HTTP Request node fetches weather using your API key and location.\nCODE PROCESSING: Code node merges your mood and the weather data.\nDATABASE WRITE: Notion node creates a new entry with the combined data.\n\nUse the n8n execution log to inspect the input and output of each node. This is invaluable for learning and debugging!\n\nNext Steps in Your Learning Journey 🚀\n\nOnce you're comfortable, try these to deepen your understanding:\n\nModify the Code Node:** Add new data transformations. Can you format the date or extract more specific weather details?\nChange API Parameters:** Explore the OpenWeatherMap API docs. Can you fetch forecast data instead of current weather?\nAdd Error Handling:** What happens if the API call fails? Explore the \"Error Trigger\" or \"Continue on Fail\" settings.\nIntegrate a New Service:** Try sending a summary to email or another messaging app.\nExplore Different Trigger Types:** What other ways could this workflow be initiated?\n\nRequirements (Your Learning Kit) 📋\n\nAn active n8n instance.\nTelegram Bot API credentials.\nAn OpenWeatherMap API Key.\nNotion API credentials & a configured Notion Database.\nCuriosity and a willingness to experiment!\n\nMay your mood tracking be seamless and your weather always logged!\n",
+  "_templateCreatedAt": "2025-06-10T23:19:17.739Z",
+  "_templateTotalViews": 117,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:05:21.961Z",
+  "id": "Ory496P9KwrXYadC",
+  "meta": {
+    "instanceId": "bfd420b2507202b96311097daac596f40dd0b52b490356dbc5c97e783dc18513",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Automate Personal Insights: Mood & Weather Logged to Notion 💡✍️",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "39c431e2-2e40-4d75-8392-cc5c5336c045",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0e927881-7fb4-4213-a76c-1b2a9219d5c3",
+      "name": "Retrieve City Weather",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        200,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "3bce046c-ca18-45b2-9c64-776fd63466df",
+      "name": "Get Weather using city name",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -100,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "02d0b0f6-800b-4b20-871b-bbbfdcef83c9",
+      "name": "Get Weather using lat/lon",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -100,
+        440
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "4ba432fa-e9e5-4c20-bb71-14ff3a5e9120",
+      "name": "Wait for Mood Response1",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "disabled": true,
+      "position": [
+        -400,
+        440
+      ],
+      "webhookId": "726154cc-2a8f-4afa-bdd7-d1b1018c0495",
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "a6d8b136-1a62-47fe-b54c-739e0763ea06",
+      "name": "Wait for Mood Response",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -400,
+        200
+      ],
+      "webhookId": "726154cc-2a8f-4afa-bdd7-d1b1018c0495",
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "0604a32e-e8f3-499d-a883-4bc23cb26544",
+      "name": "Send Mood Prompt",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        -700,
+        340
+      ],
+      "webhookId": "38c33b70-b460-4794-a3e2-19abb8206fc9",
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "59c60735-3d0a-4abe-bf96-46dd52312af5",
+      "name": "Daily Trigger",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        -1000,
+        340
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "1bc8610f-8a9c-416b-bff9-a9fb7f6a295a",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -760,
+        220
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "1c5256c9-e3b1-47a2-81e4-ff072135a8d0",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1060,
+        220
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f902bfaa-4585-4b58-b20a-0c5413789f6e",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        140,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "dee685fd-e5a8-4a7c-b64b-dc2168d40075",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -460,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "c92b74b3-d4bd-4e9d-9fe3-008af4e13f60",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        720,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "b98b75eb-3d7d-4bf7-86ee-0209b0ff6eda",
+      "name": "Add row into Notion",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        780,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "42739f1a-f6ee-4e59-8700-a8b5e24255bd",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        440,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "c2c30f90-7538-42b4-b137-5a4ee58da071",
+      "name": "Retrieve Database",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        500,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "b80abbd5-7f0f-4744-8d86-ab1bcdc50589",
+      "name": "Add row into Notion1",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        780,
+        440
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "f64148ba-f530-4e8b-bdb4-b286fca327bb",
+      "name": "Retrieve Database1",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        500,
+        440
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "73fc3f9b-8440-442e-beb7-2376ac755d01",
+      "name": "Retrieve City Weather1",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        200,
+        440
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "16dcec05-5d2a-4f1d-b59c-c2f89dc0ee13",
+  "connections": {
+    "Daily Trigger": {
+      "main": [
+        [
+          {
+            "node": "Send Mood Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Database": {
+      "main": [
+        [
+          {
+            "node": "Add row into Notion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve Database1": {
+      "main": [
+        [
+          {
+            "node": "Add row into Notion1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve City Weather": {
+      "main": [
+        [
+          {
+            "node": "Retrieve Database",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Retrieve City Weather1": {
+      "main": [
+        [
+          {
+            "node": "Retrieve Database1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Mood Response": {
+      "main": [
+        [
+          {
+            "node": "Get Weather using city name",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait for Mood Response1": {
+      "main": [
+        [
+          {
+            "node": "Get Weather using lat/lon",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Weather using lat/lon": {
+      "main": [
+        [
+          {
+            "node": "Retrieve City Weather1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Weather using city name": {
+      "main": [
+        [
+          {
+            "node": "Retrieve City Weather",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

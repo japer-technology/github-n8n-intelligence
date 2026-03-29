@@ -1,0 +1,170 @@
+{
+  "_templateId": 3301,
+  "_templateName": "Forward Filtered Gmail Notifications to Telegram Chat",
+  "_templateDescription": "This workflow automatically forwards incoming Gmail emails to a Telegram chat only if the email subject contains specific keywords (like \"Urgent\" or \"Server Down\").\n\nThe workflow extracts key details such as the sender, subject, and message body, and sends them as a formatted message to a specified Telegram chat.\n\nThis is useful for real-time notifications, security alerts, or monitoring important emails directly from Telegram — filtering out unnecessary emails.\n\nPrerequisites: \n\nBefore setting up the workflow, ensure the following:\n\nThe Gmail API should be enabled.\nCreate a bot using @BotFather and obtain the API key.\nRetrieve the telegram Chat ID (for personal messages or group messages).\nSet up OAuth2 for Gmail and use the Bot Token for Telegram.\n\nCustomisation Options :\n\nModify the subject keywords in the IF Node to change the filtering criteria.\nCustomize how the email details appear in Telegram (bold subject, italic body, etc.).\nExtend the workflow to include email attachments in Telegram.\n\nSteps :\n\nStep 1: Gmail Trigger Node (On Message Received)\n\nSelect \"Gmail Trigger\" and add it to the workflow.\nAuthenticate with your Google Account.\nSet Trigger Event to \"Message Received\".\n(Optional) Add filters for specific senders, labels, or subjects.\nClick \"Execute Node\" to test the connection.\nClick \"Save\".\n\nStep 2: IF Node (Conditional Filtering)\n\nAdd an \"IF\" Node after the Gmail Trigger.\nConfigure the condition to check if the email subject contains specific keywords (e.g., \"Urgent\", \"Server Down\", \"Alert\").\nIf the condition is true, proceed to the next step.\nIf false, you can stop or route it elsewhere (optional).\n\nStep 3: Telegram Node (Send Message Action)\n\nClick \"Add Node\" and search for Telegram.\nSelect \"Send Message\" as the action.\nAuthenticate using your Telegram Bot Token.\nSet the Chat ID (personal or group chat).\nFormat the message using email details received from the email trigger node and set the message in text.\n\nSteps 4. Connect & Test the Workflow\n\nLink Gmail Trigger → if node → Telegram Send Message.\nSave and execute the workflow manually.\nSend a test email to your Gmail account.\nVerify if the email details appear in your Telegram chat.\n\nAbout the Creator, WeblineIndia\n\nThis workflow is created by the Agentic business process automation developers at WeblineIndia. We build automation and AI-driven tools that make life easier for your team. If you’re looking to hire dedicated developers who can customize workflows around your business, we’re just a click away.",
+  "_templateCreatedAt": "2025-03-24T06:25:35.050Z",
+  "_templateTotalViews": 1875,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:02:21.480Z",
+  "id": "AvXlqUiuc1qJSwxf",
+  "meta": {
+    "instanceId": "14e4c77104722ab186539dfea5182e419aecc83d85963fe13f6de862c875ebfa"
+  },
+  "name": "Forward Filtered Gmail Notifications to Telegram Chat",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "99441348-1d5d-459f-961f-48bd593144f2",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -60,
+        0
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 1000,
+        "height": 300,
+        "content": "# Forward Filtered Gmail Notifications to Telegram Chat\n"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "eadf565c-e753-4682-a8c2-6bc630a30a27",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -60,
+        320
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 1000,
+        "height": 200,
+        "content": "## Description :\n### This n8n workflow automatically forwards incoming Gmail emails to a Telegram chat only if the email subject contains specific keywords (like \"Urgent\" or \"Server Down\"). The workflow extracts key details such as the sender, subject, and message body, and sends them as a formatted message to a specified Telegram chat. This is useful for real-time notifications, security alerts, or monitoring important emails directly from Telegram — filtering out unnecessary emails."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "bb2a78d7-91ba-4e8c-a9f1-af270a50bd8f",
+      "name": "Incoming Email Monitor",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "position": [
+        20,
+        100
+      ],
+      "parameters": {
+        "filters": {},
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "credential-id",
+          "name": "gmailOAuth2 Credential"
+        }
+      },
+      "notesInFlow": false,
+      "typeVersion": 1.2
+    },
+    {
+      "id": "addffc7b-ef58-4fb5-9275-3db6fd84f4c0",
+      "name": "Email Validation Check",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        340,
+        100
+      ],
+      "parameters": {
+        "options": {
+          "ignoreCase": false
+        },
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "loose"
+          },
+          "combinator": "or",
+          "conditions": [
+            {
+              "id": "2496d01f-dbd5-4e23-84c3-f78decb87697",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "Urgent"
+            },
+            {
+              "id": "274e9e05-5c74-487e-851d-0ca62210cb99",
+              "operator": {
+                "name": "filter.operator.equals",
+                "type": "string",
+                "operation": "equals"
+              },
+              "leftValue": "={{ $json.Subject }}",
+              "rightValue": "Server Down"
+            }
+          ]
+        },
+        "looseTypeValidation": true
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "e87d46b6-efc6-466f-a708-bfbf34bf001b",
+      "name": "Send Telegram Message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        700,
+        80
+      ],
+      "webhookId": "c8f1d16f-b698-4af9-a795-9aaa277c2bf6",
+      "parameters": {
+        "text": "=From : {{ $json.From }}\nSubject :{{ $json.Subject }}\nMessage : {{ $json.snippet }}\n",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "notesInFlow": false,
+      "typeVersion": 1.2
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "caf5eedb-4c6b-4bfa-9a0a-2d868291a83c",
+  "connections": {
+    "Email Validation Check": {
+      "main": [
+        [
+          {
+            "node": "Send Telegram Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Incoming Email Monitor": {
+      "main": [
+        [
+          {
+            "node": "Email Validation Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "_templateId": 6165,
+  "_templateName": "Automate Google Business Profile Posts with GPT-4 & Google Sheets",
+  "_templateDescription": "This powerful n8n workflow automatically generates and publishes Google Business Profile (GMB) posts using topics listed in a Google Sheet.  \nIt uses OpenAI to write SEO-optimized post descriptions and generate AI images based on the topic — then posts them directly to your GMB profile and marks them as published in the sheet.\n\n🎯 Use Case  \nPerfect for:\n\nDigital marketers managing local SEO  \nAgencies automating content for clients  \nBusinesses regularly posting to GMB  \nTeams managing editorial calendars via Google Sheets\n\n⚙️ Workflow Overview  \n\n| 🧩 Node                        | 🔧 Purpose |\n|-------------------------------|------------|\n| 🕘 Schedule Trigger        | Runs daily at 9AM (configurable) |\n| 📄 Get Unpublished Row     | Reads a row from Google Sheet where Status is not marked \"Published\" |\n| ✍️ Generate Post Text      | Uses OpenAI (GPT-4) to write a compelling, local-business optimized post |\n| 🖼 Generate Post Image     | Uses DALL·E or similar to create an image matching the topic |\n| 📬 Post to GMB             | Publishes the generated content to your Google Business Profile |\n| ✅ Update Sheet            | Marks the status as \"Published\" in the Google Sheet |\n\n📄 Google Sheet Format\n\n| Column Name | Description |\n|-------------|-------------|\n| Topic       | The subject or idea for the GMB post |\n| Status      | Should be blank or \"Unpublished\" to trigger the flow |\n| Date        | (Optional) Posting schedule or note |\n| Notes       | (Optional) Internal info — not used in the automation |\n\n🔐 Google My Business API Setup\n\n1. Google Cloud Configuration  \nGo to Google Cloud Console  \nEnable the Google My Business API  \nCreate OAuth2 Client ID and Client Secret  \nAdd this required scope:  \n2. Request for GMB Quota  \n\nYou need to request for GMB (Google Business Profile) API Quota from here, beacuse by deafult it  sets to zero:  https://support.google.com/business/contact/api_default\n3. n8n Credential Setup  \nIn n8n, go to Credentials &gt; Google OAuth2  \nUse your Client ID and Client Secret  \nUse this credential in GMB-related nodes  \n\n🧠 OpenAI Prompt Customization\n\nModify the prompt in the OpenAI node to match your brand’s voice:\n\nExample Prompt  \nWrite a short, engaging Google Business Post about: \"{{ $json.topic }}\".  \nMake it suitable for a local audience and include a subtle call to action.\n\n🧪 Optional Enhancements\n\nAdd If node to delay publishing on certain days  \nUse Slack or Email notifications to alert before/after posting  \nUse Multiple Businesses by adding a Router or Switch node per GMB account  \n\n✅ Benefits\n\n🔁 Fully automated GMB posting  \n✍️ SEO-optimized, AI-written content  \n🖼 Matching images for visual engagement  \n📊 Maintains a content log via Google Sheets  \n🧠 Easily customizable prompt logic and schedule  ",
+  "_templateCreatedAt": "2025-07-19T08:11:14.468Z",
+  "_templateTotalViews": 33,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:00:54.253Z",
+  "meta": {
+    "instanceId": "943a9f2c52a7fa3b53ec2e68036916593dce3f148756337b942617eaae3bd73a"
+  },
+  "nodes": [
+    {
+      "id": "7644d705-cec5-430b-a56f-fbb48741ba4f",
+      "name": "Get Unpublished Row",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -592,
+        288
+      ],
+      "parameters": {},
+      "typeVersion": 4.6
+    },
+    {
+      "id": "eb1dd6f8-84b5-458f-b5b1-2274944ac36a",
+      "name": "Post to GMB",
+      "type": "n8n-nodes-base.googleBusinessProfile",
+      "position": [
+        528,
+        288
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "5e625f49-fe4f-4f90-8955-4194868eb733",
+      "name": "Mark as Published",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        752,
+        288
+      ],
+      "parameters": {},
+      "typeVersion": 4.6
+    },
+    {
+      "id": "02390dd6-0eaa-4852-b489-dc2f18cc462d",
+      "name": "Schedule Trigger1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "notes": "Set Trigger (Day or Hour). ",
+      "position": [
+        -944,
+        288
+      ],
+      "parameters": {},
+      "notesInFlow": true,
+      "typeVersion": 1.2
+    },
+    {
+      "id": "e80a9c4b-c375-40cb-b819-99e4900dadf3",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -176,
+        16
+      ],
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "24cf1fb1-5e13-4d41-ab5a-8adea8be6fd7",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -176,
+        176
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Post to GMB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Post to GMB": {
+      "main": [
+        [
+          {
+            "node": "Mark as Published",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Get Unpublished Row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Unpublished Row": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

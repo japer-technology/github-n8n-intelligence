@@ -1,0 +1,526 @@
+{
+  "_templateId": 6089,
+  "_templateName": "Automate cold outreach with email personalization using Gemini and Google Sheets",
+  "_templateDescription": "\nThis n8n template from Intuz provides a complete and automated solution for powerful cold outreach campaigns.\n\nIt connects a Google Sheet of prospect data with Google Gemini to automatically generate highly personalized emails. By analyzing specific keywords and data points like company name, industry, or job title from your sheet, this automated workflow crafts unique, relevant messages that feel one-to-one, creating a complete system to dramatically improve your engagement and response rates.\n\nHow it Works\nManually writing personalized emails for a long list of leads is a significant bottleneck. This workflow eliminates that friction by creating an automated system that reads your lead list, understands the context, and writes compelling drafts for you.\n\nScheduled Lead Processing:** On a schedule you define (e.g., daily), the workflow automatically activates to process your lead list.\n\nFetches Your Lead List:** It connects to your designated Google Sheet and reads all the lead data you've prepared, such as names, companies, roles, and any custom notes or pain points.\n\nIntelligent Filtering:** The workflow is smart enough to know which leads have already been processed. Using an \"If\" node, it filters out any rows that already contain a generated email, ensuring it only works on new, untouched leads.\n\nAI-Driven Personalization (Google Gemini):** This is the core of the engine. For each new lead, it sends the relevant data to the Google Gemini Chat Model. The AI follows a custom prompt you define to draft a completely unique email, including a compelling subject line and a personalized body.\n\nStructured Data Output:** The workflow uses a Structured Output Parser to ensure the AI's response is always in a clean, predictable JSON format (e.g., {\"subject\": \"...\", \"body\": \"...\"}), making the data easy to handle in the next steps.\n\nSeamlessly Updates Your Spreadsheet:** Finally, the generated subject line and email body are written back into the correct row for that lead in your Google Sheet, ready for your team to copy, paste, and send.\n\nHow to Use: Quick Start Guide\n\n1. Import Workflow Template:\nDownload the template’s JSON file and import it into your n8n instance via “File” &gt; “Import from JSON.”\n\n2. Configure Credentials:\nGoogle Gemini: Create and apply your API key credentials to the “Google Gemini Chat Model” node.\nGoogle Sheets: Set up and apply OAuth credentials for the Google account that owns your lead spreadsheet. Apply this credential to both the \"Read Leads from Sheet\" and \"Update Sheet with Email\" nodes.\n\n3. Customize Nodes & Spreadsheet:\nPrepare Your Google Sheet:** Ensure your sheet has columns for lead data (e.g., FirstName, Company, Role) and empty columns to receive the output (e.g., GeneratedSubject, GeneratedEmail).\nRead Leads from Sheet:** Double-click this node and select your spreadsheet and sheet name from the list.\nIf Node:** Update the condition to check your specific output column. For example, if your output column is named GeneratedEmail, the condition should check if {{$json.GeneratedEmail }} is empty.\nBasic LLM Chain Node:** This is the most important step.\n\nEdit the Template prompt to match your product, service, and desired tone.\nIn the Template Variables section, make sure the values (e.g., {{ $('Read Leads from Sheet').item.json.FirstName }}) match the exact column names from your Google Sheet.\n\nUpdate Sheet with Email Node:** Select your spreadsheet and sheet name. Set the Lookup Column to a unique identifier for each lead (like their Email address). Then, map the output from the Prepare Data for Sheet node to the correct destination columns in your sheet.\n\n4. Test & Activate:\nTest Run:** Click “Execute Workflow” to perform a test run. Check your Google Sheet to see if the first unprocessed lead was updated correctly with a new subject and body.\n\nActivate:** Once satisfied, toggle the workflow “Active” switch to enable it to run on your defined schedule.\n\nRequirements\n\nTo use this workflow template, you will need:\n\n1. n8n Instance: A running n8n instance (cloud or self-hosted).\n2. Google Gemini Account: For generating the email content (requires a Google Gemini API Key from Google AI Studio).\n3. Google Sheets Account: With a prepared spreadsheet containing your lead list and columns for the generated output.\n\nConnect with us\n\nWebsite: https://www.intuz.com/n8n-workflow-automation-templates\nEmail: getstarted@intuz.com\nLinkedIn: https://www.linkedin.com/company/intuz\nGet Started: https://n8n.partnerlinks.io/intuz\n\nFor Custom Worflow Automation\nClick here- Get Started\n",
+  "_templateCreatedAt": "2025-07-17T11:29:30.596Z",
+  "_templateTotalViews": 3462,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:04:48.337Z",
+  "name": "Personalised Mail",
+  "nodes": [
+    {
+      "id": "c3a221a2-d3e3-47f3-a897-6781a29857a4",
+      "name": "Read Leads from Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -400,
+        0
+      ],
+      "parameters": {
+        "options": {},
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Your_Sheet_GID",
+          "cachedResultUrl": "Your_Sheet_URL",
+          "cachedResultName": "Your_Sheet_Name"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "YOUR_SPREADSHEET_ID_HERE",
+          "cachedResultUrl": "Your_Spreadsheet_URL",
+          "cachedResultName": "Your_Spreadsheet_Name"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4
+    },
+    {
+      "id": "23b2b8e8-e26c-4586-9ec1-dba83ab0069c",
+      "name": "Prepare Data for Sheet",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        400,
+        0
+      ],
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "updated_email",
+              "value": "={{ $input.item.json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "7e937d3d-3483-442e-b89c-57ce699609ed",
+      "name": "Update Sheet with Email",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        620,
+        0
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "Email": "={{ $('Read Leads from Sheet').item.json.Email }}",
+            "subject": "= {{ $json.output.subject }}",
+            "email_body": "={{ $json.output.email_body }}"
+          },
+          "schema": [
+            {
+              "id": "Name",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Name",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Title",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Title",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Company",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Location",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Education",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Education",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn_Connections",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "LinkedIn_Connections",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Industry_Focus",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Industry_Focus",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Key_Expertise",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Key_Expertise",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn_URL",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "LinkedIn_URL",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "Email",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company_Type",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Company_Type",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Focus_Areas",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Focus_Areas",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Growth_Stage",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Growth_Stage",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Pain_Points",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Pain_Points",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Location_Opportunities",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Location_Opportunities",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Email_Template",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Email_Template",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn_DM_Template",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "LinkedIn_DM_Template",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Company_Website",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "required": false,
+              "displayName": "Company_Website",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "email_body",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "email_body",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "subject",
+              "type": "string",
+              "display": true,
+              "removed": false,
+              "required": false,
+              "displayName": "subject",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "type": "string",
+              "display": true,
+              "removed": true,
+              "readOnly": true,
+              "required": false,
+              "displayName": "row_number",
+              "defaultMatch": false,
+              "canBeUsedToMatch": true
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "Email"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "update",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Your_Sheet_GID",
+          "cachedResultUrl": "Your_Sheet_URL",
+          "cachedResultName": "Your_Sheet_Name"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "=1p6vuSjRfTiSUrPa3CR4wQA8c9NyuS18K2UMhP_bWx08"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "credential-id",
+          "name": "googleSheetsOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 4
+    },
+    {
+      "id": "9120c44a-92a4-4f06-83a5-045bd7e17a07",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        40,
+        0
+      ],
+      "parameters": {
+        "text": "=You are an expert email copywriter for Intuz, a company offering AI Engineering and AI Service solutions.\n\nYour task is to generate the components for a single, concise, professional, and conversational email outreach (100-120 words).\n\n---\n**CONTEXT & DATA**\n*   Prospect Name: {{ $('Read Leads from Sheet').item.json.Name }}\n*   Company Name: {{ $('Read Leads from Sheet').item.json.Company }}\n*   Persona / Title: {{ $('Read Leads from Sheet').item.json.Title }}\n*   CTA Link: [https://calendly.com/YOUR_LINK]\n\n---\n**INSTRUCTIONS**\n*   **Pain Point:** Focus on one of these: slow AI feature rollouts, difficulty integrating AI, scaling challenges, or security concerns.\n*   **Value Proposition:** Highlight how Intuz's AI Engineering services solve that specific pain point (e.g., rapid development, seamless integration, scalable workflows).\n*   **Structure:** The email body must start with a question addressing the pain point, briefly explain the solution, and end with a CTA for a 15-minute call using the provided link.\n*   **Tone:** Conversational, empathetic, and professional.\n*   **Subject Line:** Generate a catchy, question-based subject line (under 8 words) tied to the pain point.\n*   **Personalization:** Use the prospect's data to tailor the message.\n*   **CRITICAL FORMATTING:** Structure the `email_body` into 3 distinct paragraphs. Use the markdown newline character `\\n\\n` to separate each paragraph for clean spacing and readability.\n*   **Constraints:** Keep the body 100-120 words. No salutation (e.g., \"Hi Tobias,\") or sign-off (e.g., \"Best,\") should be included in the email body.\n\n---\n**REQUIRED OUTPUT**\nYou MUST format your response as a valid JSON object containing two keys: \"subject\" and \"email_body\".",
+        "batching": {},
+        "promptType": "define",
+        "hasOutputParser": true
+      },
+      "typeVersion": 1.7
+    },
+    {
+      "id": "3434b60b-85ea-4221-94c4-3abf64f8ff17",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        60,
+        220
+      ],
+      "parameters": {
+        "options": {},
+        "modelName": "models/gemini-2.5-flash"
+      },
+      "credentials": {
+        "googlePalmApi": {
+          "id": "credential-id",
+          "name": "googlePalmApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e62f603b-d063-4f90-9d13-ce599b536bed",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        180,
+        220
+      ],
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"subject\": \"A short, catchy, question-based subject line\",\n  \"email_body\": \"The full email body, 100-120 words, without any salutation or sign-off.\"\n}"
+      },
+      "typeVersion": 1.3
+    },
+    {
+      "id": "323a2628-a30a-4b20-8a56-2d0677c6c5af",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -620,
+        0
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 30
+            }
+          ]
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "cbca8f8d-959d-45b9-a801-20386034a844",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -180,
+        0
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "0640b75d-662e-4625-a038-92c099b79f25",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.email_body }}",
+              "rightValue": ""
+            },
+            {
+              "id": "6d30f170-03fd-4e89-9a56-ab87e8c7c01a",
+              "operator": {
+                "type": "string",
+                "operation": "empty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.subject }}",
+              "rightValue": ""
+            }
+          ]
+        }
+      },
+      "typeVersion": 2.2
+    }
+  ],
+  "active": true,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Prepare Data for Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Leads from Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Leads from Sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Data for Sheet": {
+      "main": [
+        [
+          {
+            "node": "Update Sheet with Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Sheet with Email": {
+      "main": [
+        []
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

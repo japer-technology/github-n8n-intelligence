@@ -1,0 +1,226 @@
+{
+  "_templateId": 4265,
+  "_templateName": "Send AI-Generated Emails via Telegram Using GPT-4o-mini and Gmail",
+  "_templateDescription": "✉️ Telegram Email Agent with GPT + Gmail\nCategory: Messaging / AI Agent\nLevel: Beginner-Friendly\nTags: Telegram, Email Automation, AI Agent, Gmail, GPT Model\n\nWatch Step-by-step video guide here:\nhttps://www.youtube.com/watch?v=nyI40s9QOuw&t=420s&pp=0gcJCb4JAYcqIYzv\n\n🤖 What This Workflow Does\nThis workflow turns your Telegram bot into a personal email assistant powered by AI.\n\nWith just a message on Telegram, users can:\n\nSend an email via Gmail\n\nAutomatically generate the email content using OpenAI Models.\n\nGet confirmation or responses directly in Telegram\n\nIt's like ChatGPT meets Gmail, inside your Telegram chat.\n\n🔧 How It Works\nTelegram Trigger – Listens for incoming messages from your bot.\n\nAI Agent – Processes the input using OpenAI Model and converts it into structured email content (To, Subject, Body).\n\nMemory Node – Stores short-term context per user (via chat ID), so the agent can hold simple conversations.\n\nGmail Node – Sends the generated email using your Gmail account.\n\nTelegram Node – Replies to the user confirming the output or status.\n\n🧠 Why This is Useful\nEver wanted to send an email while on the go, without typing the whole thing out in Gmail?\n\nThis is a fast, intuitive, and AI-powered way to:\n\nDictate or draft emails from anywhere\n\nCreate an AI-powered virtual assistant via Telegram\n\nIntegrate n8n's Langchain Agent with real-world productivity use cases\n\n🪜 Setup Instructions\nConnect your Telegram bot via BotFather and add the credentials in n8n.\n\nSet up your OpenAI API key (GPT-4o-mini recommended).\n\nAdd your Gmail OAuth credentials.\n\nActivate the workflow and start messaging your bot!",
+  "_templateCreatedAt": "2025-05-21T02:38:56.750Z",
+  "_templateTotalViews": 440,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:05:58.671Z",
+  "name": "Telegram Email Agent Workflow",
+  "tags": [],
+  "nodes": [
+    {
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "position": [
+        -80,
+        0
+      ],
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "text": "={{ $json.message.text }}",
+        "options": {},
+        "promptType": "define"
+      },
+      "typeVersion": 1.9
+    },
+    {
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        180,
+        160
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        320,
+        160
+      ],
+      "parameters": {
+        "sessionKey": "={{ $json.message.chat.id }}",
+        "sessionIdType": "customKey"
+      },
+      "typeVersion": 1.3
+    },
+    {
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmailTool",
+      "position": [
+        460,
+        160
+      ],
+      "parameters": {
+        "sendTo": "={{  $fromAI('To', ``, 'string') }}",
+        "message": "={{  $fromAI('Message', ``, 'string') }}",
+        "options": {},
+        "subject": "={{  $fromAI('Subject', ``, 'string') }}",
+        "emailType": "text"
+      },
+      "typeVersion": 2.1
+    },
+    {
+      "name": "Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        680,
+        0
+      ],
+      "parameters": {
+        "text": "={{ $json.output }}",
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -160,
+        -80
+      ],
+      "parameters": {
+        "color": 3,
+        "width": 260,
+        "height": 380,
+        "content": "Telegram Message Received Trigger Node"
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        120,
+        -80
+      ],
+      "parameters": {
+        "width": 460,
+        "height": 380,
+        "content": "AI Agent with Email Tool"
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        600,
+        -80
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 300,
+        "height": 380,
+        "content": "Telegram Send Message Action Node"
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -480,
+        -180
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 300,
+        "height": 480,
+        "content": "This is a simple workflow for an Email Agent connected to Telegram on message trigger.\n\n- Gmail is connected as an Email Sendng Tool\n- Telegram send message output is enabled to allow AI Agent to interact with user\n\n\n"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "connections": {
+    "Gmail": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

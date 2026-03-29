@@ -1,0 +1,95 @@
+{
+  "_templateId": 3985,
+  "_templateName": "Auto-Update Notion CRM and Send Email from Google Form Submissions",
+  "_templateDescription": "\nWho is this for?\n\nThis is for marketers, educators, HR teams, startups, and freelancers who use Google Forms to collect information and want to automatically send it to Notion while emailing the respondent.\n\nWhat problem does it solve?\n\nManual data entry from Google Forms into CRMs is time-consuming. This template eliminates that, ensuring leads are captured in your Notion database in real time and respondents are notified instantly — improving speed and accuracy.\n\nWhat this workflow does?\n\nNode 1 – Google Sheets Trigger**:\n  Listens for new rows in the spreadsheet connected to your Google Form.\nNode 2 – Notion**:\n  Creates a new entry in your CRM-style Notion database.\nNode 3 – Gmail**:\n  Sends a confirmation email to the person who filled the form.\n\n🛠 Setup Guide\n\n1. Prepare Google Form and Sheets\n\nCreate your Google Form.\nConnect it to a Google Sheet (Responses tab &gt; \"Link to Sheets\").\n\n2. n8n - Google Sheets Trigger Setup\n\nAdd Google Sheets Trigger node.\nAuthentication: Use OAuth2 (preferred).\nSelect your spreadsheet and worksheet.\nTrigger type: On new row (not \"updated\").\n\n3. n8n - Notion Node\n\nAdd Notion node (action: \"Create Page\").\nConnect your Notion integration:\n\n  In Notion, create a new integration and copy the token.\n  Share your CRM database with that integration.\nIn the node, map form responses to your database properties:\n\n  e.g., Name → Title, Email → Email, etc.\n  Use {{$json[\"Full Name\"]}} for mapped fields.\nCommon error: Check Notion property types (email must be set to type: email).\n\n4. n8n - Gmail Node (Optional Auto Reply)\n\nAdd Gmail node (action: \"Send Email\").\nAuth: OAuth2 with your Gmail account.\nTo: {{$json[\"Email Address\"]}}\nSubject: \"Thanks for contacting us!\"\nBody:\n\n    Hi {{$json[\"Full Name\"]}},\n  Thanks for reaching out via the form. We’ve received your info and will follow up soon!\n🧩 How to Customize\n\nReplace Gmail with Outlook or SendGrid if needed.\nMap more fields into Notion like phone, tags, etc.\nAdd Slack or Discord notifications for internal alerts.\n\n🧾 SEO Optimized Title Suggestions\n\nAuto-sync Google Forms with Notion CRM and send a confirmation email\nAdd Google Form leads to Notion and auto-send thank-you email via Gmail\n\n📎 Required Permissions / Dependencies\n\nGoogle Sheets and Gmail authenticated in n8n\nNotion integration shared with your CRM database\nEnable “Impersonate User” if using Google Service Account\n\n",
+  "_templateCreatedAt": "2025-05-11T17:46:53.147Z",
+  "_templateTotalViews": 376,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:06:17.352Z",
+  "id": "BKV3JyIVr2ece3Zv",
+  "meta": {
+    "instanceId": "755f12789d38520b83548329fe8b730a11321d8f5d207c32dbab5de494fba50f",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Google Forms to NotionCRM",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "874bbb57-4176-4510-a93e-56ae2e62385c",
+      "name": "Google Sheets Trigger",
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "0a758a17-4a1f-4471-bc29-fe40c0c8ef65",
+      "name": "Notion",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "41f680b1-0ec1-4f01-a0d5-158c4a3c886f",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        440,
+        0
+      ],
+      "webhookId": "b41de181-0026-4cc0-a4b5-05b331cb8e61",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "a2bfe145-6174-4566-880a-a925363b368f",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -120,
+        -280
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": true,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4b1ea74e-8d6f-42ba-818e-1ebc2581243f",
+  "connections": {
+    "Notion": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Notion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "_templateId": 4603,
+  "_templateName": "Content Summarizer via Webhook (ApyHub)",
+  "_templateDescription": "This n8n template empowers you to instantly summarize long pieces of text by sending a simple webhook request. By integrating with ApyHub's summarization API, you can distil complex articles, reports, or messages into concise summaries, significantly boosting efficiency across various domains.\n\n🔧 How it works\nReceive Content Webhook:** This node acts as the entry point, listening for incoming POST \nrequests. It expects a JSON body containing:\n  content: The long text you want to summarize.\n  summary_length (optional): The desired length of the summary (e.g., 'short', 'medium', 'long'). Defaults to 'medium'. And a header containing your apy-token for the ApyHub API.\nStart Summarization Job:** This node sends a POST request to ApyHub's summarization endpoint (api.apyhub.com/sharpapi/api/v1/content/summarize). It passes the content and summary_length from the webhook body, along with your apy-token from the headers. ApyHub processes the text asynchronously, and this node immediately returns a job_id.\nGet Summarization Result:** Since ApyHub's summarization is an asynchronous process, this node is crucial. It polls ApyHub's job status endpoint (api.apyhub.com/sharpapi/api/v1/content/summarize/job/status/{{job_id}}) using the job_id obtained from the previous step. It continues to check the status until the summarization is finished, at which point it retrieves the final summarized text.\nRespond with Summarized Content:** This node sends the final, distilled summarized text back to the service that initiated the webhook.\n\n👤 Who is it for?\nThis workflow is extremely useful for:\n\nContent Creators & Marketers:** Quickly summarize articles for social media snippets, email newsletters, or blog post intros.\nResearchers & Students:** Efficiently get the gist of academic papers, reports, or long documents without reading every word.\nCustomer Support & Sales Teams:** Summarize customer inquiries, long email chains, or call transcripts to quickly understand key issues or discussion points.\nNews Aggregators & Media Monitoring:** Automatically generate summaries of news articles from various sources for quick consumption.\nBusiness Professionals:** Condense lengthy reports, meeting minutes, or project updates into digestible summaries for busy stakeholders.\nLegal & Compliance:** Summarize legal documents or regulatory texts to highlight critical clauses or changes.\nAnyone Dealing with Information Overload:** Use it to save time and extract key information from overwhelming amounts of text.\n\n📑Data Structure\nWhen you trigger the webhook, send a POST ** request with a **JSON body and an apy-token in the headers:\n\n{\n  \"content\": \"Your very long text goes here. This could be an article, a report, a transcript, or any other textual content you want to summarize. The longer the text, the more valuable summarization becomes!\",\n  \"summary_length\": \"medium\" // Optional: \"short\", \"medium\", or \"long\"\n}\n\nHeaders:\napy-token: YOUR_APYHUB_API_KEY\nNote: You'll need to obtain an API Key from ApyHub to use their API services. They typically offer a free tier for testing.\n\nThe workflow will return a JSON response similar to this (the summary content will vary based on input):\n\n{\n  \"summary\": \"Max Verstappen believes the Las Vegas Grand Prix is '99% show and 1% sporting event', not looking forward to the razzmatazz. Other drivers, like Fernando Alonso, were more equivocal about the hype, acknowledging the investment and spectacle. Lewis Hamilton praised the city's energy but emphasized it's 'a business, ultimately', believing there will still be good racing.\",\n  \"status\": \"finished\",\n  \"result_file_id\": \"...\" // ApyHub might provide a file ID for larger results\n}\n\n⚙️ Setup Instructions\nGet an ApyHub API Key:**\n  Go to https://apyhub.com/ and sign up to get your API key.\nImport Workflow:** In your n8n editor, click \"Import from JSON\" and paste the provided workflow JSON.\nConfigure Webhook Path:**\n  Double-click the Receive Content Webhook node.\n  In the 'Path' field, set a unique and descriptive path (e.g., /summarize-content).\nActivate Workflow:** Save and activate the workflow.\n\n📝 Tips\nThis content summarizer is a powerful component. Here's how to supercharge it and make it an indispensable part of your automation arsenal:\n\nIntegrate with Document/File Storage:**\nGoogle Drive/Dropbox/OneDrive:* Automatically summarize documents uploaded to these services. Add a Watch New Files trigger (if available for your service) or a Cron node to regularly check for new files. Then, read the file content, pass it to this summarizer, and save the summary back to a designated folder or as a comment on the original file.\nCRM/CMS Systems:* Pull long notes, customer interactions, or article drafts from your CRM/CMS, summarize them, and update the records with the concise version.\nEmail Processing & Triage:**\n  Email Trigger: Use an Email node to trigger the workflow when new emails arrive. Extract the email body, summarize it, and then:\n    Send a shortened summary as a notification to your Slack or Telegram.\n    Add a summary to a task management tool (e.g., Trello, Asana) for quicker triaging.\n    Create a summary for an email digest.\nSlack/Discord Bot Integration:**\n  Create a Slack/Discord command (using a custom webhook or a dedicated Slack/Discord node) where users can paste long text. The bot then sends the summarized version back to the channel.\nDynamic Summary Length & Options:**\n  Allow the user to specify summary_length (short, medium, long) in the webhook body, as already implemented.\n  Explore ApyHub's documentation for more parameters (if any) and dynamically pass them.\nError Handling & User Feedback:**\n  Add an IF node after Get Summarization Result to check for status: 'failed' or error messages. If an error occurs, send a helpful message back to the webhook caller or an internal alert.\n  For very long texts that might exceed API limits, add a Function node to truncate the input content if it's too long, and notify the user.\nMulti-language Support (if ApyHub offers it):**\n  If ApyHub supports summarization in multiple languages, extend the webhook to accept a language parameter and pass it to the API.\nWeb Scraping & Article Summaries:**\n  Combine this with a HTTP Request node to scrape content from a web page (e.g., a news article). Then, pass the extracted article text to this summarizer to get quick insights.\nData Storage & Archiving:**\n  Store the original content alongside its summary in a database (e.g., PostgreSQL, MongoDB) or a simple spreadsheet (Google Sheets, Airtable). This creates a searchable, summarized archive of your content.\nAutomated Report Generation:**\n  If you receive daily/weekly reports, use this workflow to summarize key sections, then compile these summaries into a concise digest or dashboard using a Merge node and send it out automatically.",
+  "_templateCreatedAt": "2025-06-02T16:53:59.893Z",
+  "_templateTotalViews": 318,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:01:23.229Z",
+  "id": "OxmCguByCxCKPcQm",
+  "meta": {
+    "instanceId": "1777696fb9fddfee653e70940936c2b1e28ba1f1bde53b7182fbd6eb01988706"
+  },
+  "name": "Content Summarizer via Webhook (ApyHub)",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "ee098e2b-3cfa-4c0c-9ad7-caf1fd4abe74",
+      "name": "Note for Webhook Trigger",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -100,
+        240
+      ],
+      "parameters": {
+        "width": 280,
+        "height": 340,
+        "content": "This node listens for incoming POST requests. It expects a JSON body with a 'content' property (the text to summarize) and a 'summary_length' (optional, e.g., 'short', 'medium', 'long'). Your 'apy-token' must be provided in the request headers."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "dca324db-c26d-400a-bab9-e3200f78407c",
+      "name": "Note for Start Summarization Job",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        220,
+        240
+      ],
+      "parameters": {
+        "color": 2,
+        "width": 260,
+        "height": 340,
+        "content": "This node sends a POST request to ApyHub's summarization API. It passes the 'content' from the webhook body and your 'apy-token' from the headers. It initiates the summarization job and returns a 'job_id'."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "325504c9-8c6e-4b6a-9479-88bd85ca92a9",
+      "name": "Note for Get Summarization Result",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        520,
+        240
+      ],
+      "parameters": {
+        "color": 3,
+        "width": 260,
+        "height": 340,
+        "content": "This node polls ApyHub's API using the 'job_id' to check the status of the summarization. Once the status is 'finished', it retrieves the summarized content. This ensures you get the result only when processing is complete."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "fd5bf412-b7b4-4b36-b1d4-71f2bc2012ce",
+      "name": "Note for Webhook Response",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        820,
+        240
+      ],
+      "parameters": {
+        "color": 4,
+        "height": 340,
+        "content": "This node sends the final summarized text back to the original caller of the webhook. You can insert other nodes before this to store, share, or further process the summarized content."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "cbf7a742-47c7-4a9e-8803-36a428097750",
+      "name": "Start Summarization Job",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        300,
+        420
+      ],
+      "parameters": {
+        "url": "=https://api.apyhub.com/sharpapi/api/v1/content/summarize",
+        "method": "POST",
+        "options": {},
+        "jsonBody": "={\n  \"content\": \"{{ $json.body.content }}\",\n  \"summary_length\": \"{{ $json.body.summary_length || 'medium' }}\"\n}",
+        "sendBody": true,
+        "jsonHeaders": "={\n  \"Content-Type\": \"application/json\",\n  \"apy-token\": \"{{ $json.headers['apy-token'] }}\"\n}",
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "specifyHeaders": "json"
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "d1fb7874-f72c-4298-a95f-04ea3c75bcc2",
+      "name": "Receive Content Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -20,
+        420
+      ],
+      "webhookId": "6f7b6d29-ed7c-4251-9810-d127d5c36ad0-unique-id",
+      "parameters": {
+        "path": "summarize-content",
+        "options": {},
+        "httpMethod": "POST",
+        "responseMode": "responseNode"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "5d70b7ab-ff27-4a21-a976-718466b5dd17",
+      "name": "Respond with Summarized Content",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        900,
+        420
+      ],
+      "parameters": {
+        "options": {},
+        "respondWith": "allIncomingItems"
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "2faf0d84-3195-479c-9843-fbdcedf3d419",
+      "name": "Get Summarization Result",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        600,
+        420
+      ],
+      "parameters": {
+        "url": "=https://api.apyhub.com/sharpapi/api/v1/content/summarize/job/status/{{ $json.job_id }}",
+        "options": {},
+        "jsonHeaders": "={\n  \"Content-Type\": \"application/json\",\n  \"apy-token\": \"{{ $('Receive Content Webhook').item.json.headers['apy-token'] }}\"\n}",
+        "sendHeaders": true,
+        "specifyHeaders": "json"
+      },
+      "typeVersion": 4.2
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1fd30d32-1f0c-46fc-9af7-ace9d9190fb2",
+  "connections": {
+    "Receive Content Webhook": {
+      "main": [
+        [
+          {
+            "node": "Start Summarization Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Summarization Job": {
+      "main": [
+        [
+          {
+            "node": "Get Summarization Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Summarization Result": {
+      "main": [
+        [
+          {
+            "node": "Respond with Summarized Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

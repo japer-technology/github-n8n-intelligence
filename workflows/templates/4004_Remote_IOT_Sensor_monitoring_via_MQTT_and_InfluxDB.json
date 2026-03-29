@@ -1,0 +1,153 @@
+{
+  "_templateId": 4004,
+  "_templateName": "Remote IOT Sensor monitoring via MQTT and InfluxDB",
+  "_templateDescription": ". \n\nRead and store IOT sensor data with the MQTT Trigger and InfluxDB\n\ntonyduffy@protonmail.com\n\n\nThis workflow is for users wanting a practical example of how to obtain data from remote IOT systems using the MQTT protocol in an n8n environment.\n\nThe template provides typical n8n node implementation and configuration settings necessary to read and store IOT data.\n\nThe workflow reads the temperature and humidity data from a remote IOT system in this case a DHT22 sensor connected to a ESP32 micro controller. The data is parsed into the correct JSON format and then ingested in an InfluxDB data bucket. From there the stored temperature and humidity values can be displayed in real time.\n\nThe workflow can be easily modified to read any MQTT driven device data.\n\nRemote IOT Sensor Setup\n\nThe ESP32 controller with the DHT22 sensor are running on a Wokwi simulator.  The simulator uses micro python to publish a MQTT \"wokwi-weather\" topic with the temperature and humidity payloads to an online Mosquitto MQTT broker. The n8n MQTT trigger node subscribes to the topic on the broker and reads the payload values when any changes are published. The code node then prepares the payload for JSON format. The HTTP request node ingests the data in a InfluxDB bucket \n\nHow to customise this workflow to your needs\n\nWokwi IOT ESP32 simulator\n\nYou will need to setup a free account at Wokwi.com\nOnce created search for a project \"Micro-Python MQTT Weather Logger (ESP32)\"\nThen when the MQTT weather logger project is open change lines 28 and 29 to the following\n    28 MQTT_CLIENT_ID = \"\"\n    29 MQTT_BROKER    = \"test.mosquitto.org\"\nYou then can start the simulation by clicking on the green arrow and it will connect the mosquitto broker and the \"wokwi-weather\" topic will be published.\nBy clicking on the DHT22 sensor the temperature and humidity bar will appear and you can change the values to send updated payload values to the broker.\n\nInfluxDB\n\n You will require access to functioning InfluxDB database to utilise this workflow\n\nNote : You will have to provide the following for the HTTP request node to connect to InfluxDB.\n\nThe URL and port of the desired InfluxDB (In this case the InfluxDB is running locally on port 8086 ie. http://localhost:8086.)\nInfluxDB bucket for the data. ( In this case the created bucket name is \"wokwi-data\")\nThe Organization ID of the InfluxDB. This can be obtained for the InfluxDB admin page\nA generated API token to read and write to the InfluxDB bucket. Created from the InfluxDB admin\n\nn8n workflow.\n\n The MQTT trigger node is configured to subscribe to the \"wokwi-weather\" topic on the test Mosquitto MQTT broker. It reads the temperature and humidity data sent by ESP32.\n The code node uses Javascript to move the temperature and humidity payloads to JSON format. This is flexible and can easily modified.\n The HTTP request node posts the JSON payloads to the InfluxDB bucket.\n\n\n When the above is configured the workflow should function correctly.\n\nThanks to the many who have downloaded this template. Let me know on what you would like to build.  Contact me at tonyduffy@protonmail.com",
+  "_templateCreatedAt": "2025-05-12T21:47:36.071Z",
+  "_templateTotalViews": 759,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:01:49.358Z",
+  "id": "6pOGYw5O3iOY1Gc6",
+  "meta": {
+    "instanceId": "7221598654c32899e94731aab144bdcd338735c2ac218dc0873131caa0be0ef8",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Remote IOT Sensor monitoring via MQTT and InfluxDB",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "4997f226-f236-4d27-bea4-904744d9ff07",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -700,
+        -360
+      ],
+      "parameters": {
+        "width": 340,
+        "height": 120,
+        "content": "MQTT trigger subscribed to a topic called wokwi-weather via a Mosquitto MQTT broker. The trigger receives the temperature and humidity payloads from a DHT22 sensor connected to a remote ESP32 microcontroller "
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "9d4f1da6-fda3-4312-a6b1-bd0ac499dde7",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -360
+      ],
+      "parameters": {
+        "height": 100,
+        "content": "Javascript code to extract the temperature and humidity values to ensure correct JSON format for the database"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "d8f01dba-5019-457e-8c1a-99c802282fdf",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        140,
+        -360
+      ],
+      "parameters": {
+        "width": 260,
+        "height": 120,
+        "content": "HTTP request node posts temperature and humidity data from the DHT22 sensor to the InfluxDB data bucket running on a local host http://localhost:8086"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "020858a6-7771-4322-8eb6-b83e99b3563d",
+      "name": "Remote Sensor MQTT Trigger",
+      "type": "n8n-nodes-base.mqttTrigger",
+      "position": [
+        -580,
+        -220
+      ],
+      "parameters": {
+        "topics": "wokwi-weather",
+        "options": {}
+      },
+      "credentials": {
+        "mqtt": {
+          "id": "credential-id",
+          "name": "mqtt Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "51e6f59f-9b93-4121-8db4-7f47b929fdf5",
+      "name": "Data ingest to InfluxDB bucket",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        200,
+        -220
+      ],
+      "parameters": {
+        "url": "http://localhost:8086/api/v2/write?orgID=<Organization ID>&bucket=<InfluxDB bucket name>&precision=s",
+        "body": "={{ $json.payload }}",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "contentType": "raw",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Token  <API Token value generated in InfluxDB>"
+            }
+          ]
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 4.2
+    },
+    {
+      "id": "6abe1212-b128-492f-b485-401a4315fcbc",
+      "name": "Payload data preparation node",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -180,
+        -220
+      ],
+      "parameters": {
+        "jsCode": "// Try to parse the incoming message as JSON\nlet data;\ntry {\n  data = JSON.parse($json.message); // $json.message is expected to be a JSON string\n} catch (e) {\n  // If parsing fails, throw an error\n  throw new Error(\"Invalid JSON in MQTT message\");\n}\n\n// Get the topic from the input, or use a default value\nconst topic = $json.topic || \"unknown-topic\";\n\n// Make sure humidity and temp are numbers\nif (typeof data.humidity !== \"number\" || typeof data.temp !== \"number\") {\n  throw new Error(\"Missing or invalid humidity/temp in MQTT message\");\n}\n\n// Create a formatted string like: \"topic_name humidity=45,temp=22\"\nconst line = `${topic} humidity=${data.humidity},temp=${data.temp}`;\n\n// Return the result in the expected format\nreturn [\n  {\n    json: {\n      payload: line\n    }\n  }\n];"
+      },
+      "typeVersion": 2
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d1311dca-5edf-4f14-86b9-629937cd3416",
+  "connections": {
+    "Remote Sensor MQTT Trigger": {
+      "main": [
+        [
+          {
+            "node": "Payload data preparation node",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Payload data preparation node": {
+      "main": [
+        [
+          {
+            "node": "Data ingest to InfluxDB bucket",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

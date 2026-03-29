@@ -1,0 +1,315 @@
+{
+  "_templateId": 7792,
+  "_templateName": "7-Day Pinterest Content Planner with Notion Integration and Email Delivery",
+  "_templateDescription": "🗓️ 7-Day Pinterest Content Planner  \nPlan a full week of scroll-stopping pins in under two minutes! 🚀  \n\n🧩 What you get  \n📌 7 ready-to-post pins (title, description, keywords, UTM-tagged link)  \n🗂️ Notion Ideas DB integration (optional) or use the built-in sample list  \n🔁 Smart rotation of boards & keywords so no two pins feel the same  \n💌 One clean email with everything you need—just copy & paste into your scheduler  \n🛟 Built-in error alerts so you never miss a post  \n\n🔄 How it flows  \nManual Trigger → Set User Config →  \n(Notion enabled?) Pull Ideas / Else use sample list →  \nBuild 7-Day Plan → Build Email → Send Email →  \n(On failure) Error Trigger → Email Owner\n\n🛠️ Prerequisites  \nEmail credentials (SMTP or Gmail)  \n(Optional) Notion database Ideas with:  \n  Title (title)  \n  URL (url)  \n  Board (select)  \n  Keywords (rich text)\n\n⚙️ Quick setup  \nUpdate these in Set: User Config  \nFROM_EMAIL, EMAIL_TO_SELF, ENABLE_NOTION, NOTION_DB_ID, BRAND_SITE_URL, UTM_SOURCE, UTM_MEDIUM, UTM_CAMPAIGN, BOARD_NAMES, KEYWORDS\n\n⏰ Schedule  \nDefault: Every Monday 08:00 (Asia/Ho_Chi_Minh)  \nTweak the cron whenever you like.\n\n✅ Test in 60 seconds  \nFill in BRAND_SITE_URL + UTM fields → hit Manual Trigger  \n(Optional) Enable Notion, add DB ID → run again  \nFlip on the weekly cron → relax!\n\n📋 Compliance  \n✅ Stickies  \n✅ Manual path  \n✅ No secrets in JSON  \n✅ Timezone-aware Cron",
+  "_templateCreatedAt": "2025-08-24T15:49:39.257Z",
+  "_templateTotalViews": 3,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:04:20.134Z",
+  "meta": {
+    "templateCredsWarning": "Attach Email (and Notion if enabled) credentials after import. No secrets in JSON."
+  },
+  "name": "Blush Pin Week — 7-Day Pinterest Planner (n8n + Notion)",
+  "nodes": [
+    {
+      "name": "Sticky: README",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        40,
+        -120
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Sticky: Prereqs + Schema",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        40,
+        0
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Sticky: Setup Checklist",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        40,
+        120
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Sticky: Testing & Behavior",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        40,
+        240
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Sticky: Compliance + Troubleshooting",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        40,
+        360
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "Weekly Cron",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        -160,
+        40
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "name": "Manual Trigger",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -160,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "name": "Set: User Config",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        80,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "If: Notion Enabled?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        360,
+        220
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "Notion: Get Ideas",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        540,
+        220
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "Function: Extract Ideas",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        720,
+        220
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "Function: Sample Ideas",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        360,
+        60
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "Function: Build 7-Day Plan",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        900,
+        120
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "Function: Build Email",
+      "type": "n8n-nodes-base.function",
+      "position": [
+        960,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "Email: Send Plan",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        1140,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "name": "On Error",
+      "type": "n8n-nodes-base.errorTrigger",
+      "position": [
+        -160,
+        360
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "name": "On Error → Email Owner",
+      "type": "n8n-nodes-base.emailSend",
+      "position": [
+        1140,
+        300
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On Error": {
+      "main": [
+        [
+          {
+            "node": "On Error → Email Owner",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Weekly Cron": {
+      "main": [
+        [
+          {
+            "node": "Set: User Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Manual Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set: User Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set: User Config": {
+      "main": [
+        [
+          {
+            "node": "If: Notion Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Notion: Get Ideas": {
+      "main": [
+        [
+          {
+            "node": "Function: Extract Ideas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If: Notion Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Notion: Get Ideas",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Function: Sample Ideas",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function: Build Email": {
+      "main": [
+        [
+          {
+            "node": "Email: Send Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function: Sample Ideas": {
+      "main": [
+        [
+          {
+            "node": "Function: Build 7-Day Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function: Extract Ideas": {
+      "main": [
+        [
+          {
+            "node": "Function: Build 7-Day Plan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Function: Build 7-Day Plan": {
+      "main": [
+        [
+          {
+            "node": "Function: Build Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

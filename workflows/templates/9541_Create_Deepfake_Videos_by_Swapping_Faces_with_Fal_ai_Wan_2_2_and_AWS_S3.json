@@ -1,0 +1,328 @@
+{
+  "_templateId": 9541,
+  "_templateName": "Create Deepfake Videos by Swapping Faces with Fal.ai Wan 2.2 and AWS S3",
+  "_templateDescription": "\nAnimate Any Face into a Video with Fal.ai\nCreate stunning deepfake-style videos automatically by swapping a face from an image onto a source video.\n\nThis workflow provides a powerful, automated pipeline to perform video face-swapping using the Fal.ai API. It's designed to handle the entire asynchronous process: accepting a source video and a target face image, uploading them to cloud storage, initiating the AI job, polling for completion, and retrieving the final, rendered video.\n\n| Services Used | Features |\n| :--- | :--- |\n| 🤖 Fal.ai | Leverages the powerful Wan 2.2 model for high-quality face animation. |\n| ☁️ AWS S3 | Uses enterprise-grade cloud storage for reliable public file hosting. |\n| 🔄 Polling Loop | Intelligently waits for the asynchronous AI job to complete before proceeding. |\n| 📥 n8n Form Trigger | Provides a simple UI to upload your source image and video. |\n\nHow It Works ⚙️\n\n📥 Get User Input: The workflow starts when you upload a source video and a face image via the n8n Form Trigger.\n☁️ Upload to Cloud: Both files are automatically uploaded to a specified AWS S3 bucket to generate the publicly accessible URLs required by the AI model.\n🚀 Start AI Job: The public URLs for the video and image are sent in an HTTP Request to the Fal.ai API, which starts the asynchronous face animation process and returns a request_id.\n⏳ Wait & Check: The workflow enters a polling loop. It Waits for one minute, then makes another HTTP Request to the Fal.ai status endpoint using the request_id.\n✅ Check for Completion: An IF node checks if the job status is COMPLETED. If not, the workflow loops back to the Wait node.\n🎬 Retrieve Final Video: Once the job is complete, the workflow makes a final HTTP Request to fetch the finished animated video.\n\n🛠️ How to Set Up\n\n🔑 Set Up Fal.ai Credentials: Get your API Key from Fal.ai. In n8n, go to Credentials, add a new Header Auth credential, and save your key. Connect this credential to all three HTTP Request nodes in the workflow.\n☁️ Configure AWS S3: Add your AWS credentials in n8n. In the two AWS S3 nodes (Upload Video1 and Upload Image1), update the Bucket Name parameter to your own S3 bucket. Ensure your bucket permissions allow for public reads.\n▶️ Activate and Run: Activate the workflow. Open the Form Trigger URL from the n8n editor, upload your files, and submit. The final video will be available in the execution log of the Get Final Video node.\n\nRequirements\n\nAn active Fal.ai account and API key.\nAn AWS account with an S3 bucket configured for public access.\nAlternative Storage:* For a personal setup, you can replace the AWS S3 nodes with *Cloudinary** nodes. Just ensure the output is a public URL.\n\n💬 Need Help or Want to Learn More?\n\nJoin my Skool community for n8n + AI automation tutorials, live Q&A sessions, and exclusive workflows:\n    👉 https://www.skool.com/n8n-ai-automation-champions\n\nTemplate Author: Sandeep Patharkar  \nCategory: Content Generation / Content Marketing\nDifficulty: Intermediate  \nEstimated Setup Time: ⏱️ 20 minutes",
+  "_templateCreatedAt": "2025-10-12T21:55:55.239Z",
+  "_templateTotalViews": 214,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:03:53.164Z",
+  "meta": {
+    "instanceId": "95b5cfe1f2ffa7210a71181a6323e6e62761b9dc8adde0fe359164f3b68c0daf",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "073ccc86-cbe3-486a-bd65-e86766334ac5",
+      "name": "Fal.ai Animate Request1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        336,
+        640
+      ],
+      "parameters": {},
+      "typeVersion": 4.1
+    },
+    {
+      "id": "02e67b2b-32a6-4cb9-95b5-bf4c003e6fd6",
+      "name": "Edit Fields2",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -112,
+        544
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "0e24c0e3-5441-4984-82d2-6e868c0ea96c",
+      "name": "Edit Fields3",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -112,
+        736
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "adc6f12a-1819-49e2-b8b4-71796ce17194",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        112,
+        640
+      ],
+      "parameters": {},
+      "typeVersion": 3.2
+    },
+    {
+      "id": "8dbec768-8afc-4454-8101-92e50522e3e4",
+      "name": "Get Video Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        784,
+        576
+      ],
+      "parameters": {},
+      "typeVersion": 4.1
+    },
+    {
+      "id": "c7211176-fcce-48f9-a815-f4e1925ce89d",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1008,
+        640
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "25275875-e329-42b0-b949-d98a8780193e",
+      "name": "Get Final Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1232,
+        640
+      ],
+      "parameters": {},
+      "typeVersion": 4.1
+    },
+    {
+      "id": "9bf0f066-7457-4c0c-9e97-7f975383296c",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        560,
+        640
+      ],
+      "webhookId": "16e0e8fa-477f-40f5-8d56-4bbe5ad3dd7c",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "9a8c2e31-54b5-44c8-ab4c-c31b64857948",
+      "name": "Upload Video1",
+      "type": "n8n-nodes-base.awsS3",
+      "position": [
+        -336,
+        544
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "3ffe6642-89bb-428a-af58-d41b034ed109",
+      "name": "Upload Image1",
+      "type": "n8n-nodes-base.awsS3",
+      "position": [
+        -336,
+        736
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "7cbaae7f-5b31-4c0f-9950-b4fdf36bc794",
+      "name": "On form for S3",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -832,
+        624
+      ],
+      "webhookId": "69576610-16a8-4058-80be-ac3c0db7598e",
+      "parameters": {},
+      "typeVersion": 2.3
+    },
+    {
+      "id": "cd5fb29d-aab9-41de-a90c-3d570a316afe",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -960,
+        400
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "883b98db-8517-4990-b6e7-ea5a1e889ad7",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -448,
+        400
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a6ae45f1-9a31-4bbd-adf5-86b4f8083c57",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        272,
+        384
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "fd5f1cd9-10f8-4abb-8f48-742ae23fee53",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1312,
+        528
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e2603964-af07-4f43-b3b3-7693f4a68715",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -2048,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get Final Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get Video Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Fal.ai Animate Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields3": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Upload Image1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Video1": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form for S3": {
+      "main": [
+        [
+          {
+            "node": "Upload Video1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Upload Image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Video Status": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fal.ai Animate Request1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

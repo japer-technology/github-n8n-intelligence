@@ -1,0 +1,111 @@
+{
+  "_templateId": 3105,
+  "_templateName": "Automate Audio/Video Transcription in Any Language with the New ElevenLabs Model",
+  "_templateDescription": "How it works  🗣️&gt; 📖\n\nI set up this workflow to convert any audio or video file into structured text using the new ElevenLabs Scribe model, one of the best Speech-to-Text AIs, available in 99+ languages. This workflow integrates seamlessly with n8n and leverages the ElevenLabs Scribe API to:\n\nThis workflow seamlessly integrates with n8n to:\n✅ Upload audio/video files automatically\n✅ Transcribe them with industry-leading accuracy in any language\n✅ Export the text for further processing (summaries, subtitles, SEO content, etc.)\n\n👉 Try the new ElevenLabs Scribe model now: Convert speech to text instantly\n\nBusiness Cases\n\n🔹 Podcast Transcriptions – Convert podcast episodes into blog posts for SEO and accessibility\n🔹 YouTube Subtitles – Generate captions automatically for increased engagement\n🔹 Legal & Compliance – Accurately transcribe meetings, interviews, or customer calls\n🔹 E-learning – Turn lectures and webinars into structured course notes\n🔹 SEO & Content Marketing – Repurpose videos into articles, quotes, and social media content\n\n💡 Boost your productivity with the new Scribe model → Start with ElevenLabs Scribe\n\nSet up steps\n\n🚀 Quick & simple setup in n8n – Upload your file, select the model (scribe_v1), and let the AI handle the rest via the ElevenLabs API.\n\n⸻\n\n📢 Why I Chose the New ElevenLabs Scribe Model?\nI wanted the most accurate and reliable transcription tool for my workflow. After testing different options, Scribe outperformed Google Gemini & OpenAI Whisper in independent benchmarks. It delivers high-quality transcriptions, even in underserved languages like Serbian, Mongolian, and many more.\n\n✅ Transcribes in 99+ languages\n✅ Fast, accurate, and easy to integrate\n✅ Suitable for content creators, businesses, and professionals\n\n\n🔗 Get started now and revolutionize your workflow with the new Scribe model →  Try Scribe AI today 🚀\n\nPhil | Inforeole | Linkedin\n\n🇫🇷 Contactez nous pour automatiser vos processus",
+  "_templateCreatedAt": "2025-03-07T16:52:54.770Z",
+  "_templateTotalViews": 6931,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:02:28.246Z",
+  "meta": {
+    "instanceId": "c911aed9995230b93fd0d9bc41c258d697c2fe97a3bab8c02baf85963eeda618"
+  },
+  "nodes": [
+    {
+      "id": "fe599878-c955-4354-bbd0-a24fc1e3e933",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -340,
+        -40
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "e03c7cef-4897-4234-b285-7be69e3c970d",
+      "name": "Create Transcript1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        100,
+        -40
+      ],
+      "parameters": {
+        "url": "https://api.elevenlabs.io/v1/speech-to-text",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "sendHeaders": true,
+        "authentication": "genericCredentialType",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "file",
+              "parameterType": "formBinaryData",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "model_id",
+              "value": "scribe_v1"
+            }
+          ]
+        },
+        "genericAuthType": "httpCustomAuth",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "multipart/form-data"
+            }
+          ]
+        }
+      },
+      "credentials": {
+        "httpCustomAuth": {
+          "id": "credential-id",
+          "name": "httpCustomAuth Credential"
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "ea48aabf-1d93-41b4-84a0-53115aba53b4",
+      "name": "Read/Write Files from Disk",
+      "type": "n8n-nodes-base.readWriteFile",
+      "position": [
+        -120,
+        -40
+      ],
+      "parameters": {
+        "options": {},
+        "fileSelector": "/files/tmp/tst1.mp4"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Create Transcript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

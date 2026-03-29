@@ -1,0 +1,159 @@
+{
+  "_templateId": 8061,
+  "_templateName": "Generate Daily Business Digest with Notion, Gmail, Stripe, Calendar, and GPT-4o",
+  "_templateDescription": "💬 \"I used to start my day reacting to emails… now I start with purpose.\"\n\nWhat if you could wake up and know exactly what to focus on — without checking 5 different apps?\n\nThis soft-tech workflow delivers a personalized morning digest every day that shows you\n\n✅ Today’s top 3 priorities (from Notion or Google Tasks)\n✅ Yesterday’s income (from Stripe, PayPal, or invoices)\n✅ Upcoming client meetings (from Google Calendar)\n✅ One motivational note (AI-generated, based on your mood)\n✅ One household reminder (optional: groceries, chores, family)\n\nAll sent to your email or Telegram — before you even open your laptop\n\n🎯 Perfect for:\n\nTax preparers during busy season\nConsultants, coaches, and freelancers\nSalon owners, shopify store operators, daycare providers\n\nAnyone running a solo business who wants to start strong\n\n🔧 Tools Used:\n\nNotion • Google Calendar • Gmail • Stripe/PayPal • GPT-4o • Cron\n\n📦 What You Get:\n\nReady-to-import n8n JSON workflow\nStep-by-step setup guide (PDF)\nNotion Daily Dashboard template\nCustomizable AI prompt library\n5-minute video walkthrough (optional)\n\n💡 Why You’ll Love It:\n\nNo more “Where do I even start?\n\nBuild momentum with a clear, calm morning ritual\nStay aware of income without being obsessive\nBlend business + personal in a healthy way\nFeel like a CEO — even if you’re a team of one\n\n🚀 Set it up once. Get clarity every morning. Forever\n\n👉 Start your day with focus — not frenzy. ",
+  "_templateCreatedAt": "2025-08-30T11:43:16.451Z",
+  "_templateTotalViews": 4,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:00:48.206Z",
+  "id": "daily-pulse-002",
+  "name": "Daily Business Pulse",
+  "tags": [
+    "daily routine",
+    "morning ritual",
+    "solopreneur",
+    "small business",
+    "automation",
+    "no-code",
+    "Notion",
+    "Gmail",
+    "Stripe",
+    "Google Calendar",
+    "GPT-4o",
+    "productivity",
+    "peace of mind",
+    "soft tech",
+    "tax preparer",
+    "consultant",
+    "service-based business"
+  ],
+  "nodes": [
+    {
+      "id": "cron-morning",
+      "name": "Cron Trigger - 7 AM Daily",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        100,
+        400
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "notion-tasks",
+      "name": "Get Top 3 Tasks from Notion",
+      "type": "n8n-nodes-base.notion",
+      "position": [
+        300,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "stripe-income",
+      "name": "Get Yesterday's Income (Stripe)",
+      "type": "n8n-nodes-base.stripe",
+      "position": [
+        300,
+        400
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "google-calendar",
+      "name": "Get Today's Calendar Events",
+      "type": "n8n-nodes-base.googleCalendar",
+      "position": [
+        300,
+        600
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "openai-motivation",
+      "name": "Generate Motivational Message with GPT-4o",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        500,
+        400
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "gmail-digest",
+      "name": "Send Daily Digest Email",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        700,
+        400
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {},
+  "versionId": "v1.0",
+  "connections": {
+    "Cron Trigger - 7 AM Daily": {
+      "main": [
+        [
+          "Get Top 3 Tasks from Notion",
+          "main",
+          0
+        ],
+        [
+          "Get Yesterday's Income (Stripe)",
+          "main",
+          0
+        ],
+        [
+          "Get Today's Calendar Events",
+          "main",
+          0
+        ]
+      ]
+    },
+    "Get Today's Calendar Events": {
+      "main": [
+        [
+          "Generate Motivational Message with GPT-4o",
+          "main",
+          0
+        ]
+      ]
+    },
+    "Get Top 3 Tasks from Notion": {
+      "main": [
+        [
+          "Send Daily Digest Email",
+          "main",
+          0
+        ]
+      ]
+    },
+    "Get Yesterday's Income (Stripe)": {
+      "main": [
+        [
+          "Send Daily Digest Email",
+          "main",
+          0
+        ]
+      ]
+    },
+    "Generate Motivational Message with GPT-4o": {
+      "main": [
+        [
+          "Send Daily Digest Email",
+          "main",
+          0
+        ]
+      ]
+    }
+  }
+}

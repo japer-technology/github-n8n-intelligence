@@ -1,0 +1,383 @@
+{
+  "_templateId": 6016,
+  "_templateName": "Enrich Calendar Events with AI Analysis using OpenAI, Perplexity & Weather Data",
+  "_templateDescription": "This template helps you manage your calendars by enriching each calendar event with data from Perplexity, OpenWeatherMap, & Open AI, and sending notifications on your Telegram.\n\n🤖 Smart Calendar Agent: Enrich Calendar Events with AI Analysis using OpenAI, Perplexity & Weather Data\n\nProblem\n😤 Calendar management is a NIGHTMARE.\n\nI waste hours manually checking weather, researching restaurants, remembering flight details, and missing important prep work for events—scattered, reactive, exhausting.\n\nI wish calendars were actually SMART and would automatically prepare me for every event!\n\nIf only I could just add:\n\"Flight DL123 tomorrow at 9 AM from SFO to JFK\"\nand instantly get terminal info, check-in reminders, weather updates, and travel tips delivered right to my phone.\n\nIntroducing Smart Calendar Agent, an automated agentic workflow powered by n8n that turns your calendar into a proactive AI assistant.\n\nPrerequisites\n\nRequired accounts/API keys for Google Calendar, OpenAI, OpenWeatherMap, Perplexity, and Telegram.\n\nThis would be helpful for:\n🎯 Busy Professionals: Never miss important event prep again\n🎯 Frequent Travelers: Get flight details, weather updates, and travel tips automatically  \n🎯 Event Planners: Stay ahead of weather changes and venue details\n🎯 Anyone: Transform reactive calendar checking into proactive event intelligence\n\nStep-by-step workflow:\nTakes 10-15 minutes to setup.\n\nSchedule Trigger runs daily at 8 AM to scan your calendar\nSmart Calendar Agent analyzes each event and classifies type (flight, meeting, outdoor activity, etc.)\nContextual Intelligence automatically executes relevant actions:\n   Flights: Fetches terminal info, boarding gates, check-in procedures\n   Weather-sensitive events: Gets weather forecasts and clothing suggestions  \n   Restaurant reservations: Gathers reviews and insights via Perplexity\n   Back-to-back meetings: Detects scheduling conflicts and suggests fixes\n   Travel bookings: Provides packing suggestions based on destination weather\nGoogle Calendar integration reads your events and context\nOpenWeatherMap provides weather forecasts for location-based events\nPerplexity AI researches venues, reviews, and travel requirements\nTelegram notifications deliver perfectly timed, actionable insights to your phone\n\nSample Query\nInput: Calendar Event - \"Flight DL123 tomorrow at 9 AM from SFO to JFK\"\n\nOutput: Telegram notification - \"✈️ Make sure to carry your REAL ID and boarding pass. The flight will depart from Terminal 2, Boarding Gate 1. Traffic to SFO: 45 mins from your location.\"\n\nThe system automatically sends contextual reminders 24 hours before flights, weather updates the night before outdoor events, and conflict alerts 30 minutes before back-to-back meetings.\n\nNever be caught unprepared again—your calendar just got a brain! 🧠\n\nCustomizations\n\nThe Smart Calendar Agent is modular — you can mix and match services to fit your tech stack, region, and preferences. Here’s how you can customize each part of the workflow:\n\n🔄 Replace Perplexity AI with Your Preferred AI Search Tool\nIf you don’t have access to Perplexity’s API or prefer another tool, swap it out easily:\n\nClaude AI (Anthropic)\n\nUse Claude for deeper, context-aware responses.\n\nReplace the Perplexity HTTP Request node with an Anthropic-compatible OpenAI node using claude-3-opus or similar via https://api.anthropic.com.\n\nGemini (Google)\n\nUse Vertex AI or Gemini API to generate summaries or travel tips.\n\nCustom Web Scraper + GPT-4\n\nScrape restaurant/event URLs and feed scraped data to GPT for summarization.\n\nExample:\nInstead of Perplexity suggesting restaurant reviews, use Claude to analyze Google Maps reviews and suggest the top 3 things to try.\n\n📆 Replace Google Calendar with Another Calendar Provider\nUse a different calendar tool by adjusting your data source:\n\nMicrosoft Outlook Calendar\n\nUse n8n’s Microsoft Graph integration.\n\nRequires Azure App registration and Calendars.Read scope.\n\n\nNotion Calendar (via Notion API)\n\nPull event data from a Notion table that acts like a calendar.\n\nCSV or Google Sheets Input\n\nParse a CSV or Sheet that stores event information and act on that.\n\nExample:\nUse Outlook Calendar to pull events for the day, fetch weather via OpenWeatherMap, and message you on Slack.\n\n📲 Replace Telegram with Other Notification Platforms\nYou can notify yourself through your preferred messaging app:\n\n✅ WhatsApp (via Twilio or Ultramsg)\nUse n8n’s HTTP Request node to call Twilio API for WhatsApp.\n\nSend templated messages including time, location, and action items.\n\n✅ Slack\nUse Slack’s Webhook URL or Slack Node in n8n.\n\nGreat for team-wide prep messages or workspace reminders.\n\n✅ Discord\nUse a Discord Webhook to post prep summaries into a private server or DM.\n\n✅ Email\nUse the Email node in n8n to send daily summaries to your inbox.\n\nExample:\nInstead of sending alerts on Telegram, send a beautifully formatted Slack message 30 minutes before a flight.\n\n🌐 Enhance with Other External Data Sources\nGo beyond weather and flights:\n\nFlightAware API: For accurate flight status updates, delays, and gate changes\n\nGoogle Maps API: Estimate travel time to event location + suggest departure time\n\nEventbrite or Ticketmaster API: Fetch event entry rules, artist lineup, or parking info\n\nChatGPT Plugins (via Browser automation or 3rd-party wrappers): Fetch contextual insights from anywhere online\n\nExample:\nIf your event is an outdoor concert, fetch artist bios via Ticketmaster, weather updates from OpenWeather, and Uber travel estimates from Google Maps API.\n\n🧠 Personalize the AI Prompts for Your Needs\nCustomize the way OpenAI responds:\n\nAdd your name, preferences, or tone of voice in the system prompt\n\nTell it your travel habits, favorite cuisines, or packing preferences\n\nPrompt Example:\n“I’m a vegan traveler with asthma — summarize how I should prepare for this flight from NYC to Delhi and what the AQI is expected to be.”.\n\nSetup Instructions\nHere are step-by-step setup instructions for integrating each of the requested services in n8n:\n\n1. Google Calendar Integration\nA. Set up Google Calendar Credentials\n\nGo to n8n, open the Credentials section.\n\nAdd new credentials for Google (OAuth2).\n\nFollow the instructions to create a Google Cloud project and OAuth2 credentials:\n\nGo to the Google Cloud Console.\n\nCreate a new project.\n\nEnable the Google Calendar API.\n\nGo to \"APIs & Services\" -&gt;  \"Credentials\"\n -&gt;  \"Create Credentials\" -&gt; \"OAuth client ID\".\n\nSet the redirect URI to your n8n instance \n\nCopy the Client ID and Client Secret into n8n.\n\nAuthenticate and save.\n\nB. Add Google Calendar Node\n\nIn your workflow, click \"Add node\" and search for \"Google Calendar\".\n\nSelect the operation you need (e.g., Create Event, Get Events, Update Event).\n\nSelect your Google Calendar credentials.\n\nFill in the required fields (e.g., calendar ID, event details).\n\nExecute the node to test.\n\n2. OpenAI Integration\nA. Set up OpenAI Credentials\n\nGo to n8n, open the Credentials section.\nAdd new credentials for OpenAI.\nEnter your OpenAI API key (get it from your OpenAI account).\nSave the credentials.\nB. Add OpenAI Node\n\nIn your workflow, click \"Add node\" and search for \"OpenAI\".\n\nChoose the operation (e.g., Message a Model, Message an Assistant).\n\nSelect your OpenAI credentials.\n\nEnter the prompt or parameters as needed.(already in the JSON)\n\nExecute the node to test.\n\n3. OpenWeatherMap Integration\nA. Set up OpenWeatherMap Credentials\n\nSign up at OpenWeatherMap and verify your email.\n\nGet your API key from your account dashboard (API Keys page).\n\nIn n8n, go to Credentials and add new OpenWeatherMap credentials.\n\nPaste your API key and save.\n\nB. Add OpenWeatherMap Node\n\nIn your workflow, click \"Add node\" and search for \"OpenWeatherMap\".\n\nSelect the operation (e.g., Get Current Weather, Get 5 Day Forecast).\n\nSelect your OpenWeatherMap credentials.\n\nEnter the required parameters (e.g., city name, coordinates).\n\nExecute the node to test.\n\n4. Perplexity Integration\nA. Set up Perplexity Credentials\n\nCreate a Perplexity account.\n\nGenerate an API key following the Perplexity API getting started guide.\n\nIn n8n, go to Credentials and add new Perplexity credentials.\n\nPaste your API key and save.\n\nB. Add Perplexity Node\n\nIn your workflow, click \"Add node\" and search for \"Perplexity\".\n\nSelect the operation (e.g., Message a Model).\n\nSelect your Perplexity credentials.\n\nEnter the prompt or parameters as needed. (present in the JSON)\n\nExecute the node to test.\n\n5. Telegram Integration\nA. Set up Telegram Credentials\n\nCreate a Telegram bot using BotFather in the Telegram app.\n\nCopy the name token provided by BotFather (search for it on the Telegram app).\n\nCreate credentials on the Telegram Website.\n\nIn n8n, go to Credentials and add new Telegram credentials.\n\nPaste your bot token and save.\n\nB. Add Telegram Node\n\nIn your workflow, click \"Add node\" and search for \"Telegram\".\n\nSelect the operation (e.g., Send Message, Get Updates).\n\nSelect your Telegram credentials.\n\nEnter the required parameters (e.g., chat ID, message text).\n\nExecute the node to test.\n",
+  "_templateCreatedAt": "2025-07-15T06:23:03.881Z",
+  "_templateTotalViews": 5,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:04:43.763Z",
+  "id": "xuZmr1WNtVfomjVW",
+  "meta": {
+    "instanceId": "7b22476bf9699de09fe66fed92056e8ae798418cc9901fa9bd85bb46439116b8",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Smart Calendar Agent",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "dba02c10-9709-45d1-80ec-fa458fa5dc14",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        -400,
+        220
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "f0dd608c-c7d9-47fb-9ff3-950a5cd8987a",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -520,
+        220
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "c2942bca-2587-4883-ba64-db154324683e",
+      "name": "Smart Calendar Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        -468,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "d39da108-f18e-4dc0-90de-6d7bf8c2700e",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -940,
+        100
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "c557fd15-0512-4331-b4dd-f43f7206e702",
+      "name": "Get All Events",
+      "type": "n8n-nodes-base.googleCalendar",
+      "position": [
+        -720,
+        100
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "b1a2c639-c057-4ee8-a352-715d65cee600",
+      "name": "Telegram1",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        160,
+        100
+      ],
+      "webhookId": "62da34fa-287b-48c3-9be3-33323fca04a1",
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "0b99a649-67d6-4f23-95ef-97a0db4c6510",
+      "name": "create Tasklist",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -60,
+        100
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "50b80079-a98d-46e4-b899-4c09870613e5",
+      "name": "Create Event",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        -980,
+        780
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "70bfb38f-eda2-4790-b7eb-84fe54925da6",
+      "name": "Get Events",
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "position": [
+        -820,
+        780
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "46dfc235-0546-439f-b239-4b81d45163de",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -460,
+        -160
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "33977f40-7c5b-410b-82a6-4e6c5f9bfc9f",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -120,
+        0
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "932c2fb5-63ec-447a-b564-17268860b5e7",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -420,
+        740
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8626950e-4ee4-43d4-ad1f-ccafa5b3486e",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -740,
+        920
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8a815fb2-3b7a-4e59-8df7-4ebf20b1bcc7",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -780,
+        -20
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "c9b22282-f379-4018-aa65-e522125e568a",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1000,
+        940
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "1237393e-9329-48b9-a505-a7307b466d64",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        100,
+        240
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2067c399-9369-4059-a932-ac23daf5c6a1",
+      "name": "Enrich Tools [MCP Client]",
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "position": [
+        -260,
+        220
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "b5dbad1d-a3a4-4cfc-863b-71015d154149",
+      "name": "Weather and Research Tools [MCP Server]",
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "position": [
+        -840,
+        560
+      ],
+      "webhookId": "0eb3842b-50da-4f3c-ad9d-292c25360e54",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "68e7b187-5a20-477f-a925-211d585a5680",
+      "name": "Enrich Event with Perplexity",
+      "type": "n8n-nodes-base.perplexityTool",
+      "position": [
+        -520,
+        780
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "e7ccc46b-ab8a-416c-85c2-bcbd6c1cc2a1",
+      "name": "Fetch Weather Data",
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "position": [
+        -680,
+        780
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "07e619c1-3af5-47a4-9ac2-410d093d658a",
+  "connections": {
+    "Get Events": {
+      "ai_tool": [
+        [
+          {
+            "node": "Weather and Research Tools [MCP Server]",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Event": {
+      "ai_tool": [
+        [
+          {
+            "node": "Weather and Research Tools [MCP Server]",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Smart Calendar Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Events": {
+      "main": [
+        [
+          {
+            "node": "Smart Calendar Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "create Tasklist": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get All Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Smart Calendar Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Weather Data": {
+      "ai_tool": [
+        [
+          {
+            "node": "Weather and Research Tools [MCP Server]",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Smart Calendar Agent": {
+      "main": [
+        [
+          {
+            "node": "create Tasklist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich Tools [MCP Client]": {
+      "ai_tool": [
+        [
+          {
+            "node": "Smart Calendar Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich Event with Perplexity": {
+      "ai_tool": [
+        [
+          {
+            "node": "Weather and Research Tools [MCP Server]",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

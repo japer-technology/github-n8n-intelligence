@@ -1,0 +1,121 @@
+{
+  "_templateId": 4156,
+  "_templateName": "Bulk Delete All YouTube Playlists From Your Channel",
+  "_templateDescription": "🧑‍💼 Who is this for?\n\nThis workflow is for any YouTube user who wants to bulk delete all playlists from their own channel — whether to start fresh, clean up old content, or prepare the account for a new purpose.\n\nIt’s useful for:\n\nCreators reorganizing their channel\nPeople transferring content to another account\nAnyone who wants to avoid deleting playlists manually one by one\n\n🧠 What problem is this workflow solving?\n\nYouTube does not offer a built-in way to delete multiple playlists at once. If you have dozens or hundreds of playlists, removing them manually is extremely time-consuming.\n\nThis workflow automates the entire deletion process in seconds, saving you hours of repetitive effort.\n\n⚙️ What this workflow does\n\nConnects to your YouTube account\nFetches all playlists you’ve created (excluding system playlists)\nDeletes them one by one** automatically\n\n&gt; ⚠️ This action is irreversible. Once a playlist is deleted, it cannot be recovered. Use with caution.\n\n🛠️ Setup\n\n🔐 Create a YouTube OAuth2 credential in n8n for your channel.\n🧭 Assign the credential to both YouTube nodes.\n✅ Click “Test workflow” to execute.\n\n&gt; 🟨 By default, this workflow deletes everything. If you want to be more selective, see the customization tips below.\n\n🧩 How to customize this workflow to your needs\n\n✅ Add a confirmation flag\n  Insert a Set node with a custom field like confirm_delete = true, and follow it with an IF node to prevent accidental execution.\n\n✂️ Delete only some playlists\n  Add a Filter node after fetching playlists — you can match by title, ID, or keyword (e.g. only delete playlists containing “old”).\n\n🛑 Add a pause before deletion\n  Insert a Wait or NoOp node to give you a moment to cancel before it runs.\n\n🔁 Adapt to scheduled cleanups\n  Use a Cron trigger if you want to periodically clear temporary playlists.",
+  "_templateCreatedAt": "2025-05-17T17:22:02.281Z",
+  "_templateTotalViews": 345,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:06:06.124Z",
+  "id": "J25SBmxAuoN5dvuY",
+  "meta": {
+    "instanceId": "a059b3dfdab56aa587cc6a2c8635f6f2700cf0c7064dbfb5981c26f7ad9eab88"
+  },
+  "name": "🧹 Delete all playlists from a YouTube channel",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "7184ab87-e3e5-4097-a882-32174d931561",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -620,
+        -180
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "87b7d04c-351e-437c-9acd-ad342772cc13",
+      "name": "Get all playlists",
+      "type": "n8n-nodes-base.youTube",
+      "position": [
+        -400,
+        -180
+      ],
+      "parameters": {
+        "part": [
+          "id"
+        ],
+        "filters": {},
+        "options": {},
+        "resource": "playlist",
+        "returnAll": true
+      },
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "credential-id",
+          "name": "youTubeOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "3d16c7cb-d9d5-4980-ae77-a16f9849197f",
+      "name": "Remove playlist",
+      "type": "n8n-nodes-base.youTube",
+      "position": [
+        -180,
+        -180
+      ],
+      "parameters": {
+        "options": {},
+        "resource": "playlist",
+        "operation": "delete",
+        "playlistId": "={{ $json.id }}"
+      },
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "credential-id",
+          "name": "youTubeOAuth2Api Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "47c602f3-820a-4960-9b3c-217cf1defed3",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        -540
+      ],
+      "parameters": {
+        "color": 3,
+        "width": 1000,
+        "height": 320,
+        "content": "## 🧹 Delete all playlists from a YouTube channel\n\n### ℹ️ ABOUT THIS WORKFLOW\nThis workflow will **delete all the playlists from a YouTube channel**.\n\n### 🛠️ SETUP\n1. Create a YouTube credential.\n2. Add the credential to the YouTube nodes.\n3. Click \"Test workflow\" to run it.\n\n\n**🚨 BE CAREFUL: EXECUTING THIS WORKFLOW CAUSES IRREVERSIBLE ACTIONS: YOU CANNOT RECOVER THE DELETED PLAYLISTS**"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a8b4e109-dd64-42bc-a533-e93006e596a2",
+  "connections": {
+    "Get all playlists": {
+      "main": [
+        [
+          {
+            "node": "Remove playlist",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get all playlists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,488 @@
+{
+  "_templateId": 3543,
+  "_templateName": "Automated LinkedIn Job Hunter: Get Your Best Daily Job Matches by Email ",
+  "_templateDescription": "Overview\n\nThis n8n template automates the tedious process of searching for jobs on LinkedIn. By integrating with tools for web scraping and leveraging AI (Google Gemini) for intelligent matching, this workflow delivers a curated list of the top 5 most relevant job opportunities published within past 24h directly to your inbox daily, based on your unique resume and preferences.The cost is only 0.1 USD per day and there is no subscription needed.\n\nWho is this for?\n\nThis template is ideal for:\n\nActive job seekers wanting to save time and effort.\nProfessionals looking to discreetly monitor relevant new opportunities.\nIndividuals seeking a highly personalized job feed tailored to their resume and preferences.\nAnyone overwhelmed by manual job searching on LinkedIn.\n\nWhat is Included:\n\nn8n Workflow Template:** The complete workflow file (.json) ready to import into your n8n instance.\nVideo Guidance:** A step-by-step video walkthrough showing you exactly how to set up and configure the workflow.\n\nWhat problem is this workflow solving?\n\nFinding the right job on LinkedIn can be overwhelming and time-consuming. Sifting through hundreds of listings, tailoring searches, and checking daily takes significant effort. This workflow solves the problem of manual, repetitive job searching by automating the discovery and filtering process, ensuring you see the most relevant opportunities without the daily grind and reducing the risk of missing out on your ideal role.\n\nWhat this workflow does:\n\nThis workflow automates the following steps:\n\nScheduled Job Fetching: Runs automatically (default: daily at 8 AM) to find the latest jobs.\nResume Processing: Downloads your resume (PDF) from Google Drive and extracts the text content.\nTargeted LinkedIn Scraping: Uses Apify to scrape recent job listings from LinkedIn based on your custom search URL.\nAI-Powered Matching: Employs an AI agent (Google Gemini) to analyze scraped jobs against your resume text and specified preferences.\nTop 5 Ranking & Selection: Identifies and ranks the opportunities, selecting the 5 best matches for you.\nPersonalized Email Reporting: Generates and sends a detailed HTML email containing the top 5 jobs, including company name, job title, industry, a personalized reason for the match, and a direct application link.\n\nSetup:\n\nFollow these steps to configure the workflow:\n\nCore Connections:\n    Connect your Google Drive and Gmail accounts to n8n via the Credentials section.\n    Ensure your n8n environment has access/credentials configured for the AI model used by the AI Agent node (e.g., Google Gemini).\nApify Integration:\n    Sign up for an Apify account (apify.com) and obtain your API key.\n    Action: In the Input node, paste your Apify API Key into the Value field for the ApifyAPIKey assignment.\nResume Setup:\n    Upload your current resume in PDF format to your Google Drive.\n    Action: Find the File ID of the uploaded resume in Google Drive (part of the shareable link). Paste this File ID into the File ID parameter within the DownloadResume (Google Drive) node.\nLinkedIn Search Definition:\n    Go to LinkedIn Jobs (www.linkedin.com/jobs/search/) using an incognito/private browser window to ensure you get a public URL.\n    Apply all your desired filters (keywords, location, date posted, job type, industry, etc.).\n    Copy the complete URL from your browser's address bar.\n    Action: In the ScrapeLinkedin (HTTP Request) node, navigate to the Body &gt; JSON parameter. Replace the example URL within the urls array [ \"YOUR_LINKEDIN_SEARCH_URL_HERE\" ] with the URL you just copied. Make sure the URL is enclosed in double quotes.\nPersonalization Inputs:\n    Action: Go to the Input node:\n        In the Preference assignment, replace the example text in the Value field with your detailed job preferences (e.g., \"Seeking remote Data Scientist roles in SaaS companies with less than 1000 employees, strong preference for Python/ML focus\").\n        In the EmailAddressToReceiveJobRecommendations assignment, enter the email address where you want to receive the daily job list in the Value field.\nEmail Sender Configuration:\n    Action: In the Email the top job recommendations (Gmail) node, ensure the correct Gmail credential (the account you want to send emails from) is selected.\n\nHow to customize this workflow:\n\nRun Schedule:** Modify the settings in the Schedule Trigger node to change the time or frequency (e.g., twice daily, weekly).\nJob Search Criteria:** Update the LinkedIn search URL in the ScrapeLinkedin node whenever you want to target different roles, industries, or locations.\nMatching Preferences:** Refine the text in the Preference field within the Input node to guide the AI's matching process more accurately.\nAI Behavior:** Advanced users can adjust the system prompt within the AI Agent: Find Best-matched jobs node to change how the AI analyzes or presents information (ensure the output structure still matches the Structured Output Parser and email node expectations).\nNumber of Jobs Scraped:** Change the count value (e.g., from 100) in the JSON Body of the ScrapeLinkedin node. Note that higher numbers may increase Apify costs/usage.\nNumber of Jobs Emailed:** To change the number of recommendations (e.g., top 3 or top 10), you'll need to:\n    Modify the AI prompt in the AI Agent: Find Best-matched jobs node to request the desired number.\n    Adjust the Structured Output Parser node's example/schema if needed.\n    Update the HTML code in the Email the top job recommendations node to correctly loop through and display the new number of jobs.\nEmail Appearance:** Edit the HTML within the Message field of the Email the top job recommendations node to customize the email's style, colours, or layout.\n\nCategory:\n\nJob Search, Automation, AI, Productivity, Career Management",
+  "_templateCreatedAt": "2025-04-13T16:34:43.497Z",
+  "_templateTotalViews": 2043,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:02:06.905Z",
+  "id": "zbVcv0SXPc4fA0FI",
+  "meta": {
+    "instanceId": "f638a47e4e563f91fde8b98ed9f5fa6a9faa41a207143e9ce05d85200c905524",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Automated LinkedIn Job Hunter_READY",
+  "tags": [
+    {
+      "id": "eCN4xVqsbzoJ8LSK",
+      "name": "Linkedin",
+      "createdAt": "2025-04-13T06:21:01.552Z",
+      "updatedAt": "2025-04-13T06:21:01.552Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "552c3242-41c5-4c10-b47c-8ae9056aa5c8",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1120,
+        -240
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "1598d426-c2b0-4234-88e9-1e7d4a4ca1d6",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -1040,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "b76e5f4c-4580-4610-ab17-a2fd5c491480",
+      "name": "SetResumeField",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        160,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "38b207b4-d050-47fe-8474-474aa8785627",
+      "name": "Input",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -740,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "ee42cded-74c0-491b-8204-560ff3e2afe9",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        1780,
+        380
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "338c3855-364f-4e82-b72c-102d3064a0d3",
+      "name": "Auto-fixing Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserAutofixing",
+      "position": [
+        1560,
+        160
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "4b9fc6a8-8bd7-47b4-9959-172a4861f943",
+      "name": "DownloadResume",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        -440,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "aa36c256-4773-40a2-9cc2-a72890523799",
+      "name": "Extract Information from Resume PDF",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        -140,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "c1816082-faea-4939-8e87-f856095a11f5",
+      "name": "ScrapeLinkedin",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        460,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "d858bfc1-5dd6-496d-b98e-ddafe37790a1",
+      "name": "AI Agent: Find Best-matched jobs",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1440,
+        -80
+      ],
+      "parameters": {},
+      "retryOnFail": true,
+      "typeVersion": 1.8
+    },
+    {
+      "id": "7fe3f538-e328-4744-a293-b587e629bf2b",
+      "name": "Email the top job recommendations",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        2020,
+        -80
+      ],
+      "webhookId": "03a0f1de-696a-4a97-b58a-1b2b8376af1b",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "09752314-56ee-4acd-8c27-fe29d8f95b7b",
+      "name": "Combine all job information into a single text string",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1100,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "7927ff54-6f36-4a6c-a0ba-978f334fedd2",
+      "name": "Aggregate all returned items",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        800,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "67f6a40f-57f5-4ae1-8739-95f6d11084fe",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1100,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8ce3b47c-003d-40bc-b959-13a3c12ee4fd",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -800,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "d85cf606-661c-4572-a5af-c847a7cce987",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -500,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "368a4335-9d20-41e6-bb9d-e9a2c08b6f64",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -220,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0e2c74f5-46a7-443a-aa46-1168daba23cb",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        80,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "9d08a88e-1a3e-4859-a2ab-4f1c7fd99cc0",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        360,
+        20
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "79f36fc2-0855-42f0-aef6-6ceb65b9c673",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        740,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "144ee189-e09d-4fdb-93a9-9d09b7f5f3a3",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1020,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "fa0a3270-269a-4039-8926-0784f514d301",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1320,
+        -400
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e897ca2d-d9cd-4fde-a904-89a33a39dfed",
+      "name": "Sticky Note10",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1960,
+        -180
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "95516d59-c66e-4a7f-9345-17ca12d486de",
+      "name": "Sticky Note11",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1120,
+        460
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0fc3508d-2cae-4ac8-af55-751316d3e815",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        1420,
+        120
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "2ea765b2-8d2e-4093-bd54-5a48609d88a4",
+      "name": "Google Gemini Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        1520,
+        360
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "fd5d31b5-6e67-456d-b7b2-cbeded17a213",
+  "connections": {
+    "Input": {
+      "main": [
+        [
+          {
+            "node": "DownloadResume",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DownloadResume": {
+      "main": [
+        [
+          {
+            "node": "Extract Information from Resume PDF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ScrapeLinkedin": {
+      "main": [
+        [
+          {
+            "node": "Aggregate all returned items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SetResumeField": {
+      "main": [
+        [
+          {
+            "node": "ScrapeLinkedin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent: Find Best-matched jobs",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Auto-fixing Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent: Find Best-matched jobs",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Auto-fixing Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Aggregate all returned items": {
+      "main": [
+        [
+          {
+            "node": "Combine all job information into a single text string",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent: Find Best-matched jobs": {
+      "main": [
+        [
+          {
+            "node": "Email the top job recommendations",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Information from Resume PDF": {
+      "main": [
+        [
+          {
+            "node": "SetResumeField",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine all job information into a single text string": {
+      "main": [
+        [
+          {
+            "node": "AI Agent: Find Best-matched jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

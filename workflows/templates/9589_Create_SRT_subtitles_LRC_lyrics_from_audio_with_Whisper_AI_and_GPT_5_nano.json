@@ -1,0 +1,372 @@
+{
+  "_templateId": 9589,
+  "_templateName": "Create .SRT subtitles & .LRC lyrics from audio with Whisper AI and GPT-5-nano",
+  "_templateDescription": "Overview\n\nThis workflow automates the entire process of creating professional subtitle (.SRT) and synced lyrics (.LRC) files from audio recordings. Upload your vocal track, let Whisper AI transcribe it with precise timestamps, and GPT-5-nano segments it into natural, singable lyric lines. With an optional quality control step, you can manually refine the output while maintaining perfect timestamp alignment.\n\nKey Features\n\nWhisper AI Transcription**: Word-level timestamps with multi-language support via ISO codes\nIntelligent Segmentation**: GPT-5-nano formats transcriptions into natural lyric lines (2-8 words per line)\nQuality Control Option**: Download, edit, and re-upload corrections with smart timestamp matching\nAdvanced Alignment**: Levenshtein distance algorithm preserves timestamps during manual edits\nDual Format Export**: Generate both .SRT (video subtitles) and .LRC (synced lyrics) files\nNo Storage Needed**: Files generated in-memory for instant download\nMulti-Language**: Supports various languages through Whisper API\n\nUse Cases\nGenerate synced lyrics for music video releases on YouTube\nCreate .LRC files for Musixmatch, Apple Music, and Spotify\nPrepare professional subtitles for social media content\nBatch process subtitle files for catalog releases\nMaintain consistent lyric formatting across artists\nStreamline content delivery for streaming platforms\nSpeed up video editing workflow\n\nPerfect For\nFor Musicians & Artists\nFor Record Labels\nFor Content Creators\n\nWhat You'll Need\n\nRequired Setup\nOpenAI API Key** for Whisper transcription and GPT-5-nano segmentation\n\nRecommended Input\nFormat**: MP3 audio files (max 25MB)\nContent**: Clean vocal tracks work best (isolated vocals recommended, but whole tracks works still good)\nLanguages**: Any language supported by Whisper (specify via ISO code)\n\nHow It Works\n\nAutomatic Mode (No Quality Check)\nUpload your MP3 vocal track to the workflow\nTranscription: Whisper AI processes audio with word-level timestamps\nSegmentation: GPT-5-nano formats text into natural lyric lines\nGeneration: Workflow creates .SRT and .LRC files\nDownload your ready-to-use subtitle files\n\nManual Quality Control Mode\nUpload your MP3 vocal track and enable quality check\nTranscription: Whisper AI processes audio with timestamps\nInitial Segmentation: GPT-5-nano creates first draft\nDownload the .TXT file for review\nEdit lyrics in any text editor (keep line structure intact)\nRe-upload corrected .TXT file\nSmart Matching: Advanced diff algorithm aligns changes with original timestamps\nDownload final .SRT and .LRC files with perfect timing\n\nTechnical Details\n\nTranscription API**: OpenAI Whisper (/v1/audio/transcriptions)\nSegmentation Model**: GPT-5-nano with custom lyric-focused prompt\nSystem Prompt*: *\"You are helping with preparing song lyrics for musicians. Take the following transcription and split it into lyric-like lines. Keep lines short (2–8 words), natural for singing/rap phrasing, and do not change the wording.\"\nTimestamp Matching**: Levenshtein distance + alignment algorithm\nFile Size Limit**: 25MB (n8n platform default)\nProcessing**: All in-memory, no disk storage\nCost**: Based on Whisper API usage (varies with audio length)\n\nOutput Formats\n\n.SRT (SubRip Subtitle)\nStandard format for:\nYouTube video subtitles\nVideo editing software (Premiere, DaVinci Resolve, etc.)\nMedia players (VLC, etc.)\n\n.LRC (Lyric File)\nSynced lyrics format for:\nMusixmatch\nApple Music\nSpotify\nMusic streaming services\nAudio players with lyrics display\n\nPro Tips\n\n💡 For Best Results:\nUse isolated vocal tracks when possible (remove instrumentals)\nEnsure clear recordings with minimal background noise\nFor quality check edits, only modify text content—don't change line breaks\nTest with shorter tracks first to optimize your workflow\n\n⚙️ Customization Options:\nAdjust GPT segmentation style by modifying the system prompt\nAdd language detection or force specific languages in Whisper settings\nCustomize output file naming conventions in final nodes\nExtend workflow with additional format exports if needed\n\nWorkflow Components\n\nAudio Input: Upload interface for MP3 files\nWhisper Transcribe: OpenAI API call with timestamp extraction\nPost-Processing: GPT-5-nano segmentation into lyric format\nRouting Quality Check: Decision point for manual review\nTimestamp Matching: Diff and alignment for corrected text\nSubtitles Preparation: JSON formatting for both output types\nFile Generation: Convert to .SRT and .LRC formats\nDownload Nodes: Export final files\n\nTemplate Author:\nQuestions or need help with setup?\n📧 Email:xciklv@gmail.com\n💼 LinkedIn:https://www.linkedin.com/in/vaclavcikl/",
+  "_templateCreatedAt": "2025-10-13T20:54:01.218Z",
+  "_templateTotalViews": 383,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:03:53.501Z",
+  "id": "ym5RZpXRcp7ZnW8X",
+  "meta": {
+    "instanceId": "b1699e1d8ef82aaaaf2eed0ed67f215d7574a625e2d012a1bcd013054b0defdf",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "LyricsTranscribe_TEMPLATE",
+  "tags": [
+    {
+      "id": "5WzUYUnG7iVDJG7q",
+      "name": "TEMPLATE",
+      "createdAt": "2025-10-13T19:43:42.665Z",
+      "updatedAt": "2025-10-13T19:43:42.665Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "d3f1c98a-1ff5-47ae-a68c-432355827779",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        -544,
+        176
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "805bc1ef-55d7-4f4c-b82f-8921d7645f4e",
+      "name": "WhisperTranscribe",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -704,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "a4760f60-c22e-4325-abf1-4e34665b4154",
+      "name": "AudioInput",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -864,
+        0
+      ],
+      "webhookId": "9ad0442a-b661-487c-8d8a-09a54400de62",
+      "parameters": {},
+      "typeVersion": 2.3
+    },
+    {
+      "id": "3b4b5409-5cbf-41ec-9be0-bdf4eee690d0",
+      "name": "TimestampMatching",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -64,
+        176
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "3bdb855d-0dbb-496c-8d44-9050981a344a",
+      "name": "SubtitlesPreparation",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        272,
+        176
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "5c72a572-a67b-423c-92f4-fedbb0c0dbd6",
+      "name": "QualityCheck",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        80,
+        -16
+      ],
+      "webhookId": "779090da-886d-406d-8a0e-daa0d91bc74b",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "b1ac8f7e-bcb1-4732-b549-b910ec605784",
+      "name": "RoutingQualityCheck",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -240,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "404c19e5-9351-4abb-aef3-900dbb7a4587",
+      "name": "DiffMatch + SrcPrep",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        272,
+        -16
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "fcb24b3f-17c1-43a9-9966-bf0e542d1c4c",
+      "name": "SRT",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        464,
+        -16
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "aa743fae-91a0-4275-a940-874399341e98",
+      "name": "LRC",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        464,
+        176
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "6dad3945-e25a-40b9-bac0-fd2d17a1dba7",
+      "name": "TranscribedLyrics",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        -64,
+        -16
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "201a2931-ae46-43bb-85d2-0abc47ca2c98",
+      "name": "PostProcessing",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        -544,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1.7
+    },
+    {
+      "id": "6a1a5512-f2c3-4b98-b89f-4f328e42422c",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -256
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a7725722-9e75-439e-b4c8-bb0bb16520bb",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -544,
+        -256
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "81fb4fa3-41fe-4750-bdaf-b8518e16acdf",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -848,
+        -256
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "16538472-625d-425a-b374-2ad750a0ac3e",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        512,
+        -272
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0169bbce-6ab2-4ff6-9799-9204a3ba0400",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        208,
+        -256
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "1bb72b32-f5f0-4a98-801c-ba751f3db0c3",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1328,
+        -368
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "25d9495b-ed66-4b9d-b118-4192b37e8f79",
+  "connections": {
+    "AudioInput": {
+      "main": [
+        [
+          {
+            "node": "WhisperTranscribe",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "QualityCheck": {
+      "main": [
+        [
+          {
+            "node": "DiffMatch + SrcPrep",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "PostProcessing": {
+      "main": [
+        [
+          {
+            "node": "RoutingQualityCheck",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "PostProcessing",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TimestampMatching": {
+      "main": [
+        [
+          {
+            "node": "SubtitlesPreparation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TranscribedLyrics": {
+      "main": [
+        [
+          {
+            "node": "QualityCheck",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "WhisperTranscribe": {
+      "main": [
+        [
+          {
+            "node": "PostProcessing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DiffMatch + SrcPrep": {
+      "main": [
+        [
+          {
+            "node": "SRT",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "LRC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RoutingQualityCheck": {
+      "main": [
+        [
+          {
+            "node": "TranscribedLyrics",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "TimestampMatching",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SubtitlesPreparation": {
+      "main": [
+        [
+          {
+            "node": "SRT",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "LRC",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

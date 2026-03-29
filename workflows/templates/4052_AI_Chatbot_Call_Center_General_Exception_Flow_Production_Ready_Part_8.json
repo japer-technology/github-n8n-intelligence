@@ -1,0 +1,89 @@
+{
+  "_templateId": 4052,
+  "_templateName": "AI Chatbot Call Center: General Exception Flow (Production-Ready, Part 8)",
+  "_templateDescription": "Workflow Name: 👻 Exception Flow\n\nTemplate was created in n8n v1.90.2\n\nSkill Level: Low\n\nCategories: n8n, Chatbot\n\nStacks\n\nError Trigger\nSlack node\n\nWhat this workflow does?\n\nThis is a n8n Error Workflow. It will trigger when there is an error in another workflow. When this happens, it then tries to send an error notification to the preset Slack channel.\n\nHow it works\n\nThe Error Trigger node will trigger when there is an error in another workflow, as long as that workflow is set up to do so.\nA error notification will be sent to the Slack Channel.\n\nSet up instructions\n\nCreate you Slack credentials, refer to n8n integration documentation for more information.\nSet up the Channel in 👻 Exception Alert node.\nFor any n8n workflows to trigger this, switch to that workflow, select menu &gt; settings, and set the Error Workflow to 👻 Exception Flow.\n\nHow to adjust it to your needs\n\nAlthough this workflow template is part of the AI Chatbot Call Center Series, it could be used with any n8n workflows.\n\nUpdate the Channel in 👻 Exception Alert to your own channel\n\nhttps://chatpaylabs.com/blog/part-8-build-your-own-ai-chatbot-call-center-general-exception-flow-production-ready-n8n-workflow-free-download-\n",
+  "_templateCreatedAt": "2025-05-14T15:36:39.923Z",
+  "_templateTotalViews": 766,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:01:46.958Z",
+  "id": "vuso7W8t402BPcT2",
+  "meta": {
+    "instanceId": "daae7bb90c8655b08e0b68de8a52b1178f2812f6a234efb0b0509279dbb70b3e",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "👻 Exception Flow",
+  "tags": [
+    {
+      "id": "no8Mb078mvRgw7PS",
+      "name": "DEMO",
+      "createdAt": "2025-04-30T05:34:10.330Z",
+      "updatedAt": "2025-04-30T05:34:10.330Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "6bc5bef1-2356-4547-b8b6-77d4b1983365",
+      "name": "Error Trigger",
+      "type": "n8n-nodes-base.errorTrigger",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "42f2e2c9-40f7-4201-86c5-892b212863d3",
+      "name": "👻 Exception Alert",
+      "type": "n8n-nodes-base.slack",
+      "notes": "#demo-n8n-error",
+      "position": [
+        200,
+        0
+      ],
+      "webhookId": "ce7e102d-a603-48c5-a98d-cf77c12a425f",
+      "parameters": {
+        "text": "=👻 Exception @DEMO\nWorkflow: {{ $json.workflow.name }}\nUrl: {{ $json.execution.url }}\n{{ $json.execution.error.message }}",
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "mode": "name",
+          "value": "#demo-n8n-error"
+        },
+        "otherOptions": {
+          "includeLinkToWorkflow": false
+        }
+      },
+      "credentials": {
+        "slackApi": {
+          "id": "credential-id",
+          "name": "slackApi Credential"
+        }
+      },
+      "notesInFlow": true,
+      "typeVersion": 2.3
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "timezone": "Etc/UTC",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionOrder": "v1",
+    "executionTimeout": -1
+  },
+  "versionId": "5892bd8a-0aa1-4816-a247-f80e49fb5b02",
+  "connections": {
+    "Error Trigger": {
+      "main": [
+        [
+          {
+            "node": "👻 Exception Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

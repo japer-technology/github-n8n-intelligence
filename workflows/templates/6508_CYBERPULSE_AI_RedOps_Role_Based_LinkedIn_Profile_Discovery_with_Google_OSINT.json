@@ -1,0 +1,191 @@
+{
+  "_templateId": 6508,
+  "_templateName": "CYBERPULSE AI RedOps: Role-Based LinkedIn Profile Discovery with Google OSINT ",
+  "_templateDescription": "Description:\nAutomates public profile discovery for CISO, CEO, and other key roles using Google Programmable Search. Extracts LinkedIn profile links, names, and timestamps to a structured Google Sheet for OSINT, exposure analysis, or Red Team prep.\n\nWho’s It For:\nRed Teams planning phishing simulations\n\nOSINT investigators and social engineers\n\nCybersecurity trainers mapping exposure risk\n\nHow It Works\n\nThis workflow simulates role-based OSINT (Open Source Intelligence) by performing automated LinkedIn discovery using Google Search. Here's a breakdown:\n\nTrigger: \n   Can run manually or via Cron for daily/weekly scraping tasks.\n\nLoad Roles to Target: \n   Reads role-based search queries (e.g., \"CISO site:linkedin.com/in/\") from a pre-filled input list or Google Sheet.\n\nQuery Google Custom Search API: \n   Sends requests to the Programmable Search Engine using secure API credentials (CSE ID + API Key).\n   Each query returns up to 10 LinkedIn profile results.\n\nParse and Extract:  \n   Captures full name, title snippet, LinkedIn URL, and description using JSON response parsing.\n\nOutput:  \n   Logs results to a structured Google Sheet for review or later enrichment.\n   Sheet columns include: role, name, snippet, url, timestamp\n\nOptional enhancements can include:\nEntity tagging by organization\nFiltering by location or keyword\nLead scoring based on search terms\nSearch query editing\nRequirements:\nGoogle Programmable Search Engine (API key + CX ID)\n\nGoogle Sheets credentials\n\nFile Templates:\nRedOps_SocialGraph_Log_Template.xlsx\n\nname\tlinkedin\tteam\tstatus\tmodule\ttimestamp\nJohn Doe\thttps://linkedin.com/in/johndoe\tGRC\tactive\tSocial_Graph_Builder\t2025-07-27T12:00:00Z\n\nCustomization Tips:\nUpdate queries (CISO, CEO, VP IT, etc.)\n\nFilter results by region or org using site filters\n\nExtend to track Twitter or GitHub links\n\nSetup Instructions\n\nSet up a Google Programmable Search Engine (CSE) at https://programmablesearchengine.google.com/\nRestrict it to search only linkedin.com/in/\nCopy your CSE ID and generate a Google API Key from https://console.cloud.google.com/apis/credentials\nIn n8n, use the HTTP Request node:\n   Select Use Authentication: Yes\n   Store your API Key and CSE ID in n8n credentials (not in query parameters)\nConfigure pagination to extract multiple results\nOptional: Append results to Google Sheets or another storage system\n\nEthics Note:\nThis tool uses public Google Search results. It is meant for educational or internal red teaming only. Do not use for scraping or unauthorized targeting.\n\n🔗 Part of the CYBERPULSE AI RedOps Suite\n🌐 https://cyberpulsesolutions.com\n📧 info@cyberpulsesolutions.com",
+  "_templateCreatedAt": "2025-07-27T01:47:52.766Z",
+  "_templateTotalViews": 41,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:04:44.113Z",
+  "id": "gx80ylkt6Qe9LtJr",
+  "meta": {
+    "instanceId": "6feff41aadeb8409737e26476f9d0a45f95eec6a9c16afff8ef87a662455b6df"
+  },
+  "name": "🔴 RedOps Module 3 – Social_Graph_Builder",
+  "tags": [
+    {
+      "id": "uNqHAlvBtMsP4gFd",
+      "name": "Pro",
+      "createdAt": "2025-07-07T09:34:20.437Z",
+      "updatedAt": "2025-07-07T09:34:20.437Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "0740c832-2e7f-4e7c-a548-dfb96a5ddbf7",
+      "name": "⚡ Trigger SocialGraph",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -1360,
+        460
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "77d75082-a35d-49f4-adf1-c09956623159",
+      "name": "🧠 Set Search Queries",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -1140,
+        460
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "39e062b6-4ecc-47bf-9a59-e165da683703",
+      "name": "🔁 Split Queries",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        -920,
+        460
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "0fbb81e5-5315-450d-b6f8-b6691c1024e2",
+      "name": "🌐 Google Search API",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -660,
+        520
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "a72cb264-70ac-40fd-b946-a2ed992b4336",
+      "name": "🧪 Extract Profiles",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -420,
+        520
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "90032840-f159-4989-add4-52e65f484dcc",
+      "name": "📄 Append to RedOps_Targets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -200,
+        520
+      ],
+      "parameters": {},
+      "typeVersion": 4.6
+    },
+    {
+      "id": "36984df7-e234-4df5-b2cf-0330b2812ca2",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "75a1184a-d8ca-421d-979e-0e2988ace9eb",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        200
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b33ffee9-a862-412a-b7e6-dbc273e7d69f",
+  "connections": {
+    "🔁 Split Queries": {
+      "main": [
+        [],
+        [
+          {
+            "node": "🌐 Google Search API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧪 Extract Profiles": {
+      "main": [
+        [
+          {
+            "node": "📄 Append to RedOps_Targets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🌐 Google Search API": {
+      "main": [
+        [
+          {
+            "node": "🧪 Extract Profiles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⚡ Trigger SocialGraph": {
+      "main": [
+        [
+          {
+            "node": "🧠 Set Search Queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧠 Set Search Queries": {
+      "main": [
+        [
+          {
+            "node": "🔁 Split Queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📄 Append to RedOps_Targets": {
+      "main": [
+        [
+          {
+            "node": "🔁 Split Queries",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

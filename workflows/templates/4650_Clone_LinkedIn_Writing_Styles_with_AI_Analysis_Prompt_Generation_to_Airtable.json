@@ -1,0 +1,331 @@
+{
+  "_templateId": 4650,
+  "_templateName": "Clone LinkedIn Writing Styles with AI Analysis & Prompt Generation to Airtable",
+  "_templateDescription": "\nBoost Your Content Speed & Grow Authority in Your LinkedIn Space \n\nAre you tired of spending HOURS crafting the perfect LinkedIn posts? This revolutionary n8n workflow is changing the game for content creators, marketing agencies, and business leaders worldwide.\n\nWHAT MAKES THIS TOOL A GAME-CHANGER \n\nThe LinkedIn Style Extractor & Prompt Generator uses cutting-edge AI technology to analyze ANY LinkedIn profile, extract their unique writing fingerprint, and create custom AI prompts that perfectly replicate their style. Stop struggling with content creation - start publishing high-converting posts in minutes!\n\nPREMIUM FEATURES\n\n✅ Advanced LinkedIn Profile Mining*: Extracts *ALL public posts from any LinkedIn profile with one click\n✅ AI Style Recognition Technology**: Our proprietary algorithm detects unique writing patterns, emotional triggers, persuasion techniques, and engagement hooks that make their content viral\n✅ Custom Prompt Engineering**: Creates pixel-perfect system prompts that force ANY AI to write exactly like your target influencer - their tone, structure, hooks, and signature style\n✅ Seamless Airtable Integration**: Automatically organizes and saves all your generated prompts in your Airtable database for instant access\n\nTHREE SIMPLE STEPS TO CONTENT MASTERY\n\nENTER ANY LINKEDIN PROFILE - Just paste a URL or username into our simple form\nWAIT 60 SECONDS - Our AI engine analyzes hundreds of data points to extract the exact writing formula\nGET YOUR CUSTOM PROMPT - Use it with ChatGPT, Claude, or any AI to instantly create content that sounds exactly like them\n\nWHO NEEDS THIS TOOL? EVERYONE WHO WANTS TO WIN ON LINKEDIN! \n\nMarketing Agencies**: Create client content 10X faster while maintaining their exact voice and style\nBusiness Owners**: Clone your top competitor's writing style and beat them at their own game\nContent Creators**: Analyze viral influencers in your niche and adapt their winning formulas\nLinkedIn Coaches**: Scale your content creation while maintaining your authentic voice\nPersonal Brands**: Ensure consistent messaging across your entire content ecosystem\n\nEASY SETUP - READY IN MINUTES \n\nYou'll need:\n\nApify account (free tier works for testing)\nOpenRouter account (for accessing premium AI models)\nAirtable account (free tier supports up to 1,200 prompt records!)\n\nSETUP IN UNDER 5 MINUTES \n\nImport the workflow into your n8n instance with one click\nConnect your accounts with our guided setup wizard:\n   Apify API Key\n   OpenRouter API Key\n   Airtable API Key\nCustomize your storage with our pre-built Airtable template\nSTART EXTRACTING STYLES and creating viral content immediately!\n\nINSIDER TIPS FOR MAXIMUM ROI \n\nAnalyze Top Performers**: Target LinkedIn creators with high engagement rates (we recommend at least 10-15 posts)\nMaster Multiple Styles**: Create a library of different writing styles for different content purposes\n\nContent Multiplier**: One style prompt can generate HUNDREDS of perfectly matched posts\n\nADVANCED STRATEGY: Analyze profiles in your niche with the highest conversion rates (not just likes!)\n\nCOMPLETELY ETHICAL & TOS-COMPLIANT \n\nThis workflow only accesses publicly available LinkedIn content. We've designed it to respect LinkedIn's Terms of Service while giving you the competitive edge you need. Use this powerful tool to ethically scale your content creation.\n\nNeed a hand with automation? Let’s connect on X! 👉 https://x.com/TBR0007\n\n\n",
+  "_templateCreatedAt": "2025-06-04T13:29:41.494Z",
+  "_templateTotalViews": 153,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:05:30.067Z",
+  "meta": {
+    "instanceId": "4786bf0f18c0e8e92c361de5a158cabf4eb0bb3b9c113091b054ff26e359a029"
+  },
+  "nodes": [
+    {
+      "id": "9c883c20-184a-498e-a24f-163523edf0d8",
+      "name": "Workflow Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1080,
+        40
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e84e7d78-e7c6-42bf-9f9b-8e0fac56f083",
+      "name": "Data Collection Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -360,
+        -80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "423bf7af-022e-4def-8fea-5db171c0eb5e",
+      "name": "Analysis Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        780,
+        -80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "b26ff4b3-a8eb-48ed-b51c-b593f9e240c6",
+      "name": "Storage Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1760,
+        -80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "9cfd5500-7a05-4c79-9db4-e4e52471d170",
+      "name": "1) Fetch LinkedIn Posts",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -320,
+        100
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "8622cc69-0a6f-40b9-8fc2-185b4d105e50",
+      "name": "2) Wait for Scraping",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        -100,
+        100
+      ],
+      "webhookId": "e238029e-e85d-46a0-8c30-aef3ddeeef77",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "f040331c-3b69-4fc2-a436-38053057536b",
+      "name": "3) Check Scraping Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        120,
+        100
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "3ce89941-3ce7-440d-919d-e908edb5ef4b",
+      "name": "4) Verify Completion",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        340,
+        100
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "7d93a9f8-c960-4913-9402-bbbc42483529",
+      "name": "5) Get LinkedIn Data",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        580,
+        40
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "ec535456-a7e1-4fe7-9c1a-5271742b6367",
+      "name": "6) Combine Posts",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        800,
+        40
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "07f350d6-6d33-4a44-b23e-1d6a113a75cc",
+      "name": "7) Analyze Writing Style",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        1020,
+        40
+      ],
+      "parameters": {},
+      "typeVersion": 1.6
+    },
+    {
+      "id": "a1dcbc0e-5f1c-4e7c-a655-b24bdf496890",
+      "name": "8) Generate Style Prompt",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        1440,
+        40
+      ],
+      "parameters": {},
+      "typeVersion": 1.6
+    },
+    {
+      "id": "fca4fd7a-976d-4c4b-8e69-a4652393bd72",
+      "name": "0) Start LinkedIn Analysis",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -540,
+        100
+      ],
+      "webhookId": "0490147c-6165-477a-a482-d3ff1abdd7c8",
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "8501ebd2-608c-4e24-90f1-72bde8d00930",
+      "name": "Style Analysis Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "position": [
+        940,
+        280
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "f58af411-dbb2-4c93-a49a-e2cee8253258",
+      "name": "Prompt Creation Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "position": [
+        1400,
+        280
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "ad4d26bc-cd2a-4d08-9737-c2da1a77dc0f",
+      "name": "9) Save to Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "position": [
+        1800,
+        40
+      ],
+      "parameters": {},
+      "typeVersion": 2.1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "6) Combine Posts": {
+      "main": [
+        [
+          {
+            "node": "7) Analyze Writing Style",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2) Wait for Scraping": {
+      "main": [
+        [
+          {
+            "node": "3) Check Scraping Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4) Verify Completion": {
+      "main": [
+        [
+          {
+            "node": "5) Get LinkedIn Data",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "2) Wait for Scraping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5) Get LinkedIn Data": {
+      "main": [
+        [
+          {
+            "node": "6) Combine Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Style Analysis Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "7) Analyze Writing Style",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prompt Creation Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "8) Generate Style Prompt",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1) Fetch LinkedIn Posts": {
+      "main": [
+        [
+          {
+            "node": "2) Wait for Scraping",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3) Check Scraping Status": {
+      "main": [
+        [
+          {
+            "node": "4) Verify Completion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "7) Analyze Writing Style": {
+      "main": [
+        [
+          {
+            "node": "8) Generate Style Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "8) Generate Style Prompt": {
+      "main": [
+        [
+          {
+            "node": "9) Save to Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "0) Start LinkedIn Analysis": {
+      "main": [
+        [
+          {
+            "node": "1) Fetch LinkedIn Posts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

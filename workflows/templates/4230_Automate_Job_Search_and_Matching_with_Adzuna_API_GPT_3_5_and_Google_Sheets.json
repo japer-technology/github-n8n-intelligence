@@ -1,0 +1,255 @@
+{
+  "_templateId": 4230,
+  "_templateName": "Automate Job Search and Matching with Adzuna API, GPT-3.5, and Google Sheets",
+  "_templateDescription": "Job Search Automation Workflow\nStreamline Job Discovery with API-Powered Intelligence\nThis workflow template transforms the job search process by leveraging the Adzuna API and AI to automatically find, summarize, and evaluate job opportunities. Unlike traditional RSS-based job search tools, this workflow connects directly to Adzuna's comprehensive job API for real-time, high-quality job data.\nWorkflow Overview\nThe Job Search Automation Workflow follows a streamlined process:\n\n    Define job titles to search for\n    Fetch current job listings from Adzuna's API\n    Split individual job results for processing\n    Use AI to extract and summarize key job information\n    Score each job against candidate profiles\n    Organize results for easy review\n\nThis automation eliminates manual searching across job boards and provides objective evaluation of opportunities, saving valuable time for both job seekers and professionals who support them.\nTechnical Implementation\nThe workflow is built with a focus on efficiency and extensibility:\n\n    API Integration: Direct connection to Adzuna's job API ensures access to current listings with comprehensive details\n    AI Processing: Leverages OpenAI's GPT models to intelligently summarize job descriptions and evaluate candidate fit\n    Modular Design: Each node serves a specific purpose, making the workflow easy to understand and customize\n    Scalable Architecture: Can be expanded to include additional job sources or evaluation criteria\n\nUse Cases\nThis template serves multiple user groups:\n\n    Job Seekers: Automate discovery of relevant positions matching your skills\n    Recruiters: Quickly identify quality positions for your candidate pool\n    Career Coaches: Systematically help clients find suitable positions\n    AI Automation Builders: Learn how to integrate job APIs with AI evaluation systems\n\nPrerequisites\nTo use this workflow, you'll need:\n\n    An Adzuna API key (available at Adzuna.com)\n    n8n instance (cloud or self-hosted)\n    OpenAI API credentials (or compatible alternative)\n\nGetting Started\n\n    Import this template to your n8n instance\n    Configure your Adzuna API credentials\n    Set up your OpenAI API connection\n    Customize job titles and candidate profiles\n    Execute the workflow to start discovering opportunities\n\nCustomization Options\nThe workflow can be easily adapted to your specific needs:\n\n    Modify job search parameters (location, industry, etc.)\n    Adjust AI prompts for different summarization styles\n    Customize scoring criteria based on specific skills or requirements\n    Add nodes to integrate with other tools in your workflow\n\nWhy This Approach Matters\nTraditional job search methods often rely on RSS feeds, which can be limited in detail and frequency of updates. By connecting directly to the Adzuna API, this workflow ensures you're always working with the most current job data available.\nThe AI-powered evaluation provides objective scoring of how well each position matches candidate profiles, helping prioritize applications for positions with the highest potential fit.\nWhether you're a job seeker looking to streamline your search, a professional helping others find opportunities, or an automation enthusiast interested in API integrations, this template provides a solid foundation for more efficient job discovery and evaluation.",
+  "_templateCreatedAt": "2025-05-19T18:55:16.297Z",
+  "_templateTotalViews": 723,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:01:41.431Z",
+  "id": "oGkubBx7vHlnSxdU",
+  "meta": {
+    "instanceId": "f2cf6301a998e16084609c8635767c7f2fe71603e7ba21b5457aa517ce5164cb",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Job_Search_Automation",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "ed888fd9-38e4-4585-aa9f-09a3afba4e0c",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        320,
+        -140
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "800bc8ec-0934-4464-a3d7-b6a7c23ae429",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        260,
+        -260
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "1c3748bb-4f5f-4940-9cda-e4c230535a0c",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        260,
+        100
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e58b4dbe-1740-4813-b2a9-faaca338e178",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        260,
+        460
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ced0bd63-edb8-4a46-a3a6-a63801ef652f",
+      "name": "Score Job",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        960,
+        160
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "e21a4adc-cd33-44cf-8e0d-03208a0752f6",
+      "name": "Set Job Title1",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        560,
+        -140
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "51c4b54a-11b3-4af7-a65f-0b78fe9c3107",
+      "name": "Get Jobs from Adzuna1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        920,
+        -140
+      ],
+      "parameters": {},
+      "typeVersion": 4
+    },
+    {
+      "id": "5b1f8c01-c56e-4563-aedf-255018be0741",
+      "name": "Split Jobs1",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        340,
+        160
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "1248fb03-caaf-4291-8c11-0480e18f241b",
+      "name": "Summarize Job1",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        640,
+        160
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "4c58e68b-55b1-445f-b693-cace23b21ecd",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        740,
+        520
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "7c60249d-5444-411f-9eb0-370294589f04",
+      "name": "Gmail1",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        940,
+        520
+      ],
+      "webhookId": "c4aa81ae-e4ee-478f-bfc4-723c40abdcdd",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "eaf4db44-4d28-4f98-87a1-b4c205c986d7",
+      "name": "Write Cover Letter1",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        360,
+        520
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "timezone": "Africa/Lagos",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionOrder": "v1"
+  },
+  "versionId": "ca622bc3-731a-4a1b-b807-5bc5e5983a11",
+  "connections": {
+    "Score Job": {
+      "main": [
+        [
+          {
+            "node": "Write Cover Letter1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Jobs1": {
+      "main": [
+        [
+          {
+            "node": "Summarize Job1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Job Title1": {
+      "main": [
+        [
+          {
+            "node": "Get Jobs from Adzuna1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Summarize Job1": {
+      "main": [
+        [
+          {
+            "node": "Score Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Job Title1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Cover Letter1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Jobs from Adzuna1": {
+      "main": [
+        [
+          {
+            "node": "Split Jobs1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

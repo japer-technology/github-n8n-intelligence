@@ -1,0 +1,193 @@
+{
+  "_templateId": 14009,
+  "_templateName": "Find leads from LinkedIn posts using Airtop agents",
+  "_templateDescription": "This templates connects to an Airtop agent to find leads from LinkedIn posts\n\nUse Cases\nBuild a targeted outreach list by extracting engaged users from an industry influencer's posts.\nMonitor your company's LinkedIn page to identify and connect with your most active community members.\nGenerate warm leads for your sales team by finding users who are actively engaging with a competitor's content.\nSource potential candidates for a job opening by analyzing posts related to a specific skill or industry.\nIdentify potential partners or collaborators who are active in your niche.\n\nGood to know\n\nYou need to install the template \"Turn LinkedIn Engagements to Pipeline\" into your Airtop account. You can create an Airtop account for Free and get credits to start quickly.\n\nHow it works\nThis automation streamlines lead generation from LinkedIn by performing the following actions:\nTargets a specific LinkedIn page: You provide a URL for either a personal profile (e.g., an industry influencer) or a company page (e.g., your own or a competitor's).\nFetches Recent Posts: It scans the page for recent posts, looking back over a customizable number of days.\nExtracts Engaged Users: The automation gathers a unique list of every person who has commented on or reacted to the posts it finds.\nEnriches Lead Data: If you provide a Prospeo API key, it enriches each lead with their email address, job title, and company information. Without a key, it falls back to providing publicly available LinkedIn profile details like name, job title, and company.\nDelivers Results: Finally, the automation delivers the list of enriched leads. You can choose to receive the data as a simple JSON object or have it automatically compiled and saved into a new, cleanly formatted Google Sheet.\n\nCustomization Ideas\nThis template offers significant flexibility to tailor the lead generation process to your specific needs. You can easily customize:\nThe Source: Switch between targeting any personal LinkedIn profile or any company page.\nThe Timeframe: Adjust the \"lookback period\" to gather leads from posts made in the last week, month, or any other duration.\nThe Scale: Control the costs and runtime by setting limits on the maximum number of posts to analyze and the total number of leads to generate.\nThe Enrichment Level: Choose between deep enrichment with email addresses (requires a Prospeo API key) or basic profile enrichment without one.\nThe Output Format: Decide whether you want the final lead list delivered as raw data for other systems (JSON) or organized neatly in a Google Sheet.\n\n",
+  "_templateCreatedAt": "2026-03-11T21:46:32.221Z",
+  "_templateTotalViews": 2,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:03:02.089Z",
+  "id": "dRfcbTGj9Qqk7MW4",
+  "meta": {
+    "instanceId": "28a947b92b197fc2524eaba16e57560338657b2b0b5796300b2f1cedc1d0d355",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Turn LinkedIn Engagements to Pipeline",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "8c6242d8-a334-4b88-b598-b61026a3d7cc",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "linkedinUrl"
+            },
+            {
+              "name": "prospeoApiKey"
+            },
+            {
+              "name": "daysLookback",
+              "type": "number"
+            },
+            {
+              "name": "maxLeads",
+              "type": "number"
+            },
+            {
+              "name": "maxPosts",
+              "type": "number"
+            },
+            {
+              "name": "outputType"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "76c2d808-c0aa-48bc-826c-7ad133cebdb0",
+      "name": "Run \"Turn LinkedIn Engagements to Pipeline\"",
+      "type": "n8n-nodes-base.airtop",
+      "position": [
+        208,
+        0
+      ],
+      "parameters": {
+        "agentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "381de7ea-0dd9-431b-95d3-76afc7963e1a",
+          "cachedResultName": "Turn LinkedIn Engagements to Pipeline"
+        },
+        "resource": "agent",
+        "agentParameters": {
+          "value": {
+            "maxLeads": "={{ $json.maxLeads || 10 }}",
+            "maxPosts": "={{ $json.maxPosts || 3 }}",
+            "outputType": "={{ $json.outputType || 'json' }}",
+            "linkedinUrl": "={{ $json.linkedinUrl }}",
+            "daysLookback": "={{ $json.daysLookback || 30 }}",
+            "prospeoApiKey": "={{ $json.prospeoApiKey || '' }}"
+          },
+          "schema": [
+            {
+              "id": "daysLookback",
+              "type": "number",
+              "display": true,
+              "required": false,
+              "displayName": "daysLookback",
+              "defaultMatch": false
+            },
+            {
+              "id": "linkedinUrl",
+              "type": "string",
+              "display": true,
+              "required": true,
+              "displayName": "linkedinUrl (required)",
+              "defaultMatch": false
+            },
+            {
+              "id": "maxLeads",
+              "type": "number",
+              "display": true,
+              "required": false,
+              "displayName": "maxLeads",
+              "defaultMatch": false
+            },
+            {
+              "id": "maxPosts",
+              "type": "number",
+              "display": true,
+              "required": false,
+              "displayName": "maxPosts",
+              "defaultMatch": false
+            },
+            {
+              "id": "outputType",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "outputType",
+              "defaultMatch": false
+            },
+            {
+              "id": "prospeoApiKey",
+              "type": "string",
+              "display": true,
+              "required": false,
+              "displayName": "prospeoApiKey",
+              "defaultMatch": false
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "credentials": {
+        "airtopApi": {
+          "id": "aNnfz01DNfn7IokQ",
+          "name": "Airtop Templates"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "b884ad9d-a0c1-45d2-94a8-3f92d1b9876f",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -464,
+        -128
+      ],
+      "parameters": {
+        "width": 432,
+        "height": 576,
+        "content": "## Automatically Turn LinkedIn Comments into New Leads\n\nThe Airtop agent will take a LinkedIn Profile and find leads from relevant posts.\n\n### Video Tutorial\n@[youtube](28javM1Djng)\n\n**Important**\nYou need to install the Airtop template \"[Turn LinkedIn Engagements to Pipeline](https://www.airtop.ai/templates/linkedin-lead-generation-from-post-commenters-old-3?utm_source=n8n-template)\" in your account before executing this n8n workflow."
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "maxLeads": null,
+          "maxPosts": null,
+          "outputType": null,
+          "linkedinUrl": "https://www.linkedin.com/in/antonosika/",
+          "daysLookback": null,
+          "prospeoApiKey": null
+        }
+      }
+    ]
+  },
+  "settings": {
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "executionOrder": "v1"
+  },
+  "versionId": "18f89ed7-7fae-444e-918c-3afc7265b6ff",
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Run \"Turn LinkedIn Engagements to Pipeline\"",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "_templateId": 5506,
+  "_templateName": "Auto-Stop Email Sequences Based on Replies with IMAP and Google Sheets",
+  "_templateDescription": "Email Reply Auto-Stopper Workflow\n\nHow It Works\nThis n8n automation automatically stops your email sequences when prospects reply, preventing embarrassing follow-ups and maintaining professional outreach.\n\nThe Process:\n\nEmail Monitoring - IMAP trigger watches your inbox for new emails\nReply Detection - When someone replies, it extracts their email address\n\nDatabase Lookup - Searches your Google Sheet prospect list for a match\nAuto-Stop - Updates the prospect's status to \"STOP\" and logs reply date\nSequence Prevention - Your email sequences skip contacts with \"STOP\" status\nReal-World Example:\n\nYou send Email 1 to John@clinic.com\nJohn replies: \"Thanks, but not interested\"\nThis workflow automatically marks John as \"STOP\"\nYour follow-up sequences skip John completely\nYou look professional, not spammy\nSetup Instructions\nPrerequisites\nn8n instance (cloud or self-hosted)\nEmail account with IMAP access (Gmail, Outlook, etc.)\nGoogle Sheets with your prospect data\nStep 1: Prepare Your Google Sheet\nYour prospect sheet MUST include these columns:\n\nEmail - Prospect email addresses\nEmail Sent Status - Current status (ACTIVE, SENT, STOP, etc.)\nReply Date - When they replied (can be empty initially)\nrow_number - Unique identifier for each row\nSample Sheet Structure:\n\n| First Name | Email | Email Sent Status | Reply Date | row_number |\n|------------|-------|-------------------|------------|------------|\n| John | john@clinic.com | ACTIVE | | 2 |\n| Sarah | sarah@therapy.com | SENT | | 3 |\nStep 2: Set Up Email Credentials\nIn n8n, go to Credentials → Add Credential\nChoose IMAP\nEnter your email settings:\nHost: imap.gmail.com (for Gmail)\nPort: 993\nUsername: your-email@gmail.com\nPassword: your-app-password\nSecure: Yes\nGmail Users: Enable 2FA and create an App Password\n\nStep 3: Set Up Google Sheets Access\nCreate Google Sheets OAuth2 credential\nFollow n8n's Google Sheets setup guide\nGrant access to your prospect spreadsheet\nStep 4: Import & Configure Workflow\nImport the workflow JSON\nEmail Trigger Node:\nSelect your IMAP credential\nKeep \"UNSEEN\" filter enabled\nGoogle Sheets Nodes:\nSelect your Google Sheets credential\nChoose your prospect spreadsheet\nSelect correct sheet tab\nTest the workflow with a test email\nStep 5: Connect to Your Email Sequences\nYour existing email automation should check the \"Email Sent Status\" column:\n\nSkip sending if status = \"STOP\"\nContinue sequence if status = \"ACTIVE\" or \"SENT\"\nImportant Notes\n⚠️ Critical: Your email sequence automation MUST respect the \"Email Sent Status\" field, or this won't work.\n\n💡 Pro Tip: Test with a personal email first to make sure the matching works correctly.\n\n🔧 Customization: You can modify the \"STOP\" status to anything that fits your workflow (REPLIED, UNSUBSCRIBED, etc.).\n\nUse Cases\nCold email campaigns\nSales follow-up sequences\nNewsletter nurture flows\nEvent promotion follow-ups\nCustomer onboarding sequences\nTroubleshooting\nEmails not being detected:\n\nCheck IMAP credentials\nVerify \"UNSEEN\" filter is working\nTest with manual email trigger\nSheet not updating:\n\nConfirm Google Sheets permissions\nCheck column names match exactly\nVerify row_number column exists\nNo matches found:\n\nEmail addresses must match exactly (case-insensitive)\nCheck for extra spaces in email data\nVerify prospect is in the correct sheet tab\nThis automation prevents spam complaints, protects sender reputation, and keeps your outreach professional. Set it once, forget it forever.\n",
+  "_templateCreatedAt": "2025-07-01T07:08:46.874Z",
+  "_templateTotalViews": 28,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:01:03.748Z",
+  "id": "BjAH6U8A1BMNtX7W",
+  "meta": {
+    "instanceId": "2000c64071c20843606b95c63795bb0797c41036047055a6586498e855b96efc"
+  },
+  "name": "IMAP Reply-Based Sequence Stopper",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "4fbf8996-96e4-415c-929f-656629a987a4",
+      "name": "Email Trigger (IMAP)",
+      "type": "n8n-nodes-base.emailReadImap",
+      "position": [
+        500,
+        340
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "f8b81645-947d-4ea4-8808-e86c4a6ef8f6",
+      "name": "Track replies",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        720,
+        340
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "5d30a213-a5b2-4c07-ad48-a7b4c1c3424c",
+      "name": "Sticky Note 1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        180,
+        120
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "def234c3-9968-4288-b58f-7259e67f448f",
+      "name": "Sticky Note 2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        520,
+        180
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "034b73cc-389d-4b6f-a8c7-16043decc2df",
+      "name": "Sticky Note 3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        740,
+        80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "41c67b1a-221e-4d83-8ee0-a2531267ec40",
+      "name": "Sticky Note 4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        960,
+        120
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2fe77256-90ec-463d-8aa5-f250f2100015",
+      "name": "Sticky Note 5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1180,
+        60
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "714310f0-8abd-47ca-a217-1f5f06bc94f4",
+      "name": "SMART MATCHING",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        940,
+        340
+      ],
+      "parameters": {},
+      "typeVersion": 4.6
+    },
+    {
+      "id": "021e5c31-55d2-4784-a7bd-b722a36f6c96",
+      "name": "AUTO-STOP SEQUENCES",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1160,
+        340
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "a21db415-c853-4eb4-9c7d-22530763aa9a",
+      "name": "Update Record",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1400,
+        340
+      ],
+      "parameters": {},
+      "typeVersion": 4.6
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f088a1b0-a58f-4e48-9165-7e139280e62f",
+  "connections": {
+    "Track replies": {
+      "main": [
+        [
+          {
+            "node": "SMART MATCHING",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SMART MATCHING": {
+      "main": [
+        [
+          {
+            "node": "AUTO-STOP SEQUENCES",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AUTO-STOP SEQUENCES": {
+      "main": [
+        [
+          {
+            "node": "Update Record",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Email Trigger (IMAP)": {
+      "main": [
+        [
+          {
+            "node": "Track replies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

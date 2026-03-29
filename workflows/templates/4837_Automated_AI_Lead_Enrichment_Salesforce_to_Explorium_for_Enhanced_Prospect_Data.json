@@ -1,0 +1,312 @@
+{
+  "_templateId": 4837,
+  "_templateName": "Automated AI Lead Enrichment: Salesforce to Explorium for Enhanced Prospect Data",
+  "_templateDescription": "Salesforce Lead Enrichment with Explorium\n\nTemplate\n\nDownload the following json file and import it to a new n8n workflow:\n\nsalesforce\\_workflow.json\n\nOverview\n\nThis n8n workflow monitors your Salesforce instance for new leads and automatically enriches them with missing contact information. When a lead is created, the workflow:\n\nDetects the new lead via Salesforce trigger\nMatches the lead against Explorium's database using name and company\nEnriches the lead with professional email addresses and phone numbers\nUpdates the Salesforce lead record with the discovered contact information\n\nThis automation ensures your sales team always has the most up-to-date contact information for new leads, improving reach rates and accelerating the sales process.\n\nKey Features\n\nReal-time Processing**: Triggers automatically when new leads are created in Salesforce\nIntelligent Matching**: Uses lead name and company to find the correct person in Explorium's database\nContact Enrichment**: Adds professional emails, mobile phones, and office phone numbers\nBatch Processing**: Efficiently handles multiple leads to optimize API usage\nError Handling**: Continues processing other leads even if some fail to match\nSelective Updates**: Only updates leads that successfully match in Explorium\n\nPrerequisites\n\nBefore setting up this workflow, ensure you have:\n\nn8n instance (self-hosted or cloud)\nSalesforce account with:\n   OAuth2 API access enabled\n   Lead object permissions (read/write)\n   API usage limits available\nExplorium API credentials (Bearer token) - Get explorium api key\nBasic understanding of Salesforce lead management\n\nSalesforce Requirements\n\nRequired Lead Fields\n\nThe workflow expects these standard Salesforce lead fields:\n\nFirstName - Lead's first name\nLastName - Lead's last name\nCompany - Company name\nEmail - Will be populated/updated by the workflow\nPhone - Will be populated/updated by the workflow\nMobilePhone - Will be populated/updated by the workflow\n\nAPI Permissions\n\nYour Salesforce integration user needs:\n\nRead access to Lead object\nWrite access to Lead object fields (Email, Phone, MobilePhone)\nAPI enabled on the user profile\nSufficient API calls remaining in your org limits\n\nInstallation & Setup\n\nStep 1: Import the Workflow\n\nCopy the workflow JSON from the template\nIn n8n: Navigate to Workflows → Add Workflow → Import from File\nPaste the JSON and click Import\n\nStep 2: Configure Salesforce OAuth2 Credentials\n\nClick on the Salesforce Trigger node\nUnder Credentials, click Create New\nFollow the OAuth2 flow:\n   Client ID: From your Salesforce Connected App\n   Client Secret: From your Salesforce Connected App\n   Callback URL: Copy from n8n and add to your Connected App\nAuthorize the connection\nSave the credentials as \"Salesforce account connection\"\n\nNote: Use the same credentials for all Salesforce nodes in the workflow.\n\nStep 3: Configure Explorium API Credentials\n\nClick on the Match\\_prospect node\nUnder Credentials, click Create New (HTTP Header Auth)\nConfigure the header:\n   Name: Authorization\n   Value: Bearer YOUR_EXPLORIUM_API_TOKEN\nSave as \"Header Auth account\"\nApply the same credentials to the Explorium Enrich Contacts Information node\n\nStep 4: Verify Node Settings\n\nSalesforce Trigger:\n   Trigger On: Lead Created\n   Poll Time: Every minute (adjust based on your needs)\n\nSalesforce Get Leads:\n   Operation: Get All\n   Condition: CreatedDate = TODAY (fetches today's leads)\n   Limit: 20 (adjust based on volume)\n\nLoop Over Items:\n   Batch Size: 6 (optimal for API rate limits)\n\nStep 5: Activate the Workflow\n\nSave the workflow\nToggle the Active switch to ON\nThe workflow will now monitor for new leads every minute\n\nDetailed Node Descriptions\n\nSalesforce Trigger: Polls Salesforce every minute for new leads\nGet Today's Leads: Retrieves all leads created today to ensure none are missed\nLoop Over Items: Processes leads in batches of 6 for efficiency\nMatch Prospect: Searches Explorium for matching person using name + company\nFilter: Checks if a valid match was found\nExtract Prospect IDs: Collects all matched prospect IDs\nEnrich Contacts: Fetches detailed contact information from Explorium\nMerge: Combines original lead data with enrichment results\nSplit Out: Separates individual enriched records\nUpdate Lead: Updates Salesforce with new contact information\n\nData Mapping\n\nThe workflow maps Explorium data to Salesforce fields as follows:\n\n| Explorium Field     | Salesforce Field | Fallback Logic                    |\n| ------------------- | ---------------- | --------------------------------- |\n| emails[0].address | Email            | Falls back to professions_email |\n| mobile_phone      | MobilePhone      | Falls back to phone_numbers[1]  |\n| phone_numbers[0]  | Phone            | Falls back to mobile_phone      |\n\nUsage & Monitoring\n\nAutomatic Operation\n\nOnce activated, the workflow runs automatically:\n\nChecks for new leads every minute\nProcesses any leads created since the last check\nUpdates leads with discovered contact information\nContinues running until deactivated\n\nManual Testing\n\nTo test the workflow manually:\n\nCreate a test lead in Salesforce\nClick \"Execute Workflow\" in n8n\nMonitor the execution to see each step\nVerify the lead was updated in Salesforce\n\nMonitoring Executions\n\nTrack workflow performance:\n\nGo to Executions in n8n\nFilter by this workflow\nReview successful and failed executions\nCheck logs for any errors or issues\n\nTroubleshooting\n\nCommon Issues\n\nNo leads are being processed\n\nVerify the workflow is activated\nCheck Salesforce API limits haven't been exceeded\nEnsure new leads have FirstName, LastName, and Company populated\nConfirm OAuth connection is still valid\n\nLeads not matching in Explorium\n\nVerify company names are accurate (not abbreviations)\nCheck that first and last names are properly formatted\nSome individuals may not be in Explorium's database\nTry testing with known companies/contacts\n\nContact information not updating\n\nCheck Salesforce field-level security\nVerify the integration user has edit permissions\nEnsure Email, Phone, and MobilePhone fields are writeable\nCheck for validation rules blocking updates\n\nAuthentication errors\n\nSalesforce: Re-authorize OAuth connection\nExplorium: Verify Bearer token is valid and not expired\nCheck API quotas haven't been exceeded\n\nError Handling\n\nThe workflow includes built-in error handling:\n\nFailed matches don't stop other leads from processing\nEach batch is processed independently\nFailed executions are logged for review\nPartial successes are possible (some leads updated, others skipped)\n\nBest Practices\n\nData Quality\n\nEnsure complete lead data: FirstName, LastName, and Company should be populated\nUse full company names: \"Microsoft Corporation\" matches better than \"MSFT\"\nStandardize data entry: Consistent formatting improves match rates\n\nPerformance Optimization\n\nAdjust batch size: Lower if hitting API limits, higher for efficiency\nModify polling frequency: Every minute for high volume, less frequent for lower volume\nSet appropriate limits: Balance between processing speed and API usage\n\nCompliance & Privacy\n\nData permissions: Ensure you have rights to enrich lead data\nGDPR compliance: Consider privacy regulations in your region\nData retention: Follow your organization's data policies\nAudit trail: Monitor who has access to enriched data\n\nCustomization Options\n\nExtend the Enrichment\n\nAdd more Explorium enrichment by:\n\nAdding firmographic data (company size, revenue)\nIncluding technographic information\nAppending social media profiles\nAdding job title and department verification\n\nModify Trigger Conditions\n\nChange when enrichment occurs:\n\nTrigger on lead updates (not just creation)\nAdd specific lead source filters\nProcess only leads from certain campaigns\nInclude lead score thresholds\n\nAdd Notifications\n\nEnhance with alerts:\n\nEmail sales reps when leads are enriched\nSend Slack notifications for high-value matches\nCreate tasks for leads that couldn't be enriched\nLog enrichment metrics to dashboards\n\nAPI Considerations\n\nSalesforce Limits\n\nAPI calls: Each execution uses \\~4 Salesforce API calls\nPolling frequency: Consider your daily API limit\nBatch processing: Reduces API usage vs. individual processing\n\nExplorium Limits\n\nMatch API: One call per batch of leads\nEnrichment API: One call per batch of matched prospects\nRate limits: Respect your plan's requests per minute\n\nIntegration Architecture\n\nThis workflow can be part of a larger lead management system:\n\nLead Capture → This Workflow → Lead Scoring → Assignment\nCan trigger additional workflows based on enrichment results\nCompatible with existing Salesforce automation (Process Builder, Flows)\nWorks alongside other enrichment tools\n\nSecurity Considerations\n\nCredentials**: Stored securely in n8n's credential system\nData transmission**: Uses HTTPS for all API calls\nAccess control**: Limit who can modify the workflow\nAudit logging**: All executions are logged with details\n\nSupport Resources\n\nFor assistance with:\n\nn8n issues**: Consult n8n documentation or community forum\nSalesforce integration**: Reference Salesforce API documentation\nExplorium API**: Contact Explorium support for API questions\nWorkflow logic**: Review execution logs for debugging",
+  "_templateCreatedAt": "2025-06-10T06:39:17.145Z",
+  "_templateTotalViews": 1229,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:05:22.309Z",
+  "id": "bmpD7lpy41VJb94g",
+  "meta": {
+    "instanceId": "0a70652f43c1b29dd16c35b61a38fd31c8004f58bc7e723bf43262a797407c77",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Automated AI Lead Enrichment: Salesforce to Explorium for Enhanced Prospect Data",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "7b9667bd-8245-42e9-ac26-ffe57270b047",
+      "name": "Salesforce Trigger",
+      "type": "n8n-nodes-base.salesforceTrigger",
+      "position": [
+        -912,
+        128
+      ],
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "triggerOn": "leadCreated"
+      },
+      "credentials": {
+        "salesforceOAuth2Api": {}
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "fa2866a7-fcf5-4548-8f11-646ab2fa51c6",
+      "name": "Update Lead",
+      "type": "n8n-nodes-base.salesforce",
+      "position": [
+        496,
+        128
+      ],
+      "parameters": {
+        "leadId": "={{ $('Salesforce Trigger').item.json.Id}}",
+        "operation": "update",
+        "updateFields": {
+          "city": "={{ $json.city || null }}",
+          "email": "={{ $json.professions_email || null }}",
+          "phone": "={{ $json.phone_numbers?.[0]?.phone_number || \"null\" }}\n",
+          "state": "={{ $json.region_name || '' }}",
+          "title": "={{ $json.experience?.[0]?.title?.name || null }}",
+          "company": "={{ $json.company_name || null }}",
+          "country": "={{ $json.country_name || null }}",
+          "website": "={{ $json.experience?.[0]?.company?.website || null }}",
+          "mobilePhone": "={{ $json.mobile_phone }}"
+        }
+      },
+      "credentials": {
+        "salesforceOAuth2Api": {}
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "210875ef-3a63-424e-91b4-33d352d3db59",
+      "name": "Extract Prospect IDs from Matched Results",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -256,
+        128
+      ],
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nconst prospectIds = allItems.map(item => \n  item.json.matched_prospects.map(prospect => prospect.prospect_id)\n).flat();\n\nreturn [{\n  json: {\n    prospect_ids: prospectIds\n  }\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "b53e0084-5680-4a2a-a5b9-4e46dd8b041f",
+      "name": "Filter non-matched",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        -464,
+        128
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "6896e951-8d66-41b1-87a5-a96d2e049675",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.matched_prospects.some(prospect => prospect.prospect_id !== null).toBoolean() }}",
+              "rightValue": "null"
+            }
+          ]
+        }
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "4787e9f4-8235-462f-9ffa-72a183fe9664",
+      "name": "Code - flatten",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        224,
+        128
+      ],
+      "parameters": {
+        "jsCode": "const items = [];\n\nfor (const item of $input.all()) {\n  if (item.json.enriched_data && item.json.enriched_data.length > 0) {\n    items.push({\n      json: {\n        prospect_id: item.json.enriched_data[0].prospect_id,\n        ...item.json.enriched_data[0].data\n      }\n    });\n  }\n}\n\nreturn items;"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "7c787669-8605-4a4e-8df7-0cd173de7854",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -352,
+        608
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 760,
+        "height": 1780,
+        "content": "## Workflow Overview\n\n### Node 1: Salesforce Trigger\nThis node listens for real-time events from the connected Salesforce account, specifically monitoring for new lead creation events.\n\n- **Event**: leadCreated\n- **Trigger Type**: Real-time webhook\n\nOnce triggered, the node passes metadata about the newly created lead to the next step in the flow.\n\n### Node 2: Match_prospect\nThis node sends the lead's data to Explorium's AI-powered prospect matching API in real time.\n\n- **Method**: POST\n- **Endpoint**: https://api.explorium.ai/v1/prospects/match\n- **Authentication**: Generic Header Auth (using a configured credential)\n- **Headers**: Content-Type: application/json\n\nThe request body is dynamically built from lead data, typically including: full_name, company_name, email, phone_number, linkedin. These fields are matched against Explorium's intelligence graph to return enriched or validated profiles.\n\n**Response Output**: total_matches, matched_prospects, and a prospect_id. Each response is used downstream to enrich and update lead information.\n\n### Node 3: Filter non-matched\nThis node filters the output from the Match_prospect step to ensure that only valid, matched results continue in the flow. Only records that contain at least one matched prospect with a non-null prospect_id are passed forward.\n\n**Filter Logic**: Keeps only leads that have successful prospect matches from Explorium\n\n### Node 4: Extract Prospect IDs from Matched Results\nThis node extracts all valid prospect_id values from previously matched prospects and compiles them into a flat array. It loops over all matched items, extracts each prospect_id from the matched_prospects array and returns a single object with an array of all prospect_ids.\n\n### Node 5: Explorium Enrich Contacts Information\nThis node performs bulk enrichment of contacts by querying Explorium with a list of matched prospect_ids.\n\n**Node Configuration:**\n- **Method**: POST\n- **Endpoint**: https://api.explorium.ai/v1/prospects/contacts_information/bulk_enrich\n- **Authentication**: Header Auth (using saved credentials)\n- **Headers**: \"Content-Type\": \"application/json\", \"Accept\": \"application/json\"\n\nReturns enriched contact information, such as:\n- **emails**: professional/personal email addresses\n- **phone_numbers**: mobile and work numbers\n- **professions_email**, **professional_email_status**, **mobile_phone**\n\n### Node 6: Explorium Enrich Profiles\nThis additional enrichment node provides supplementary contact data enhancement, running in parallel with the primary enrichment process to maximize data collection from different Explorium endpoints.\n\n### Node 7: Merge\nThis node combines multiple data streams from the parallel enrichment processes into a single output, allowing you to consolidate data from different Explorium enrichment endpoints. The \"combine\" setting indicates it will merge the incoming data streams rather than overwriting them.\n\n### Node 8: Code - flatten\nThis custom code node processes and transforms the merged enrichment data before updating the Salesforce lead. It can be used to:\n- Flatten nested data structures from Explorium responses\n- Format data according to Salesforce field requirements\n- Apply business logic or data validation\n- Map Explorium fields to Salesforce lead properties\n- Handle data type conversions and null values\n\n### Node 9: Update Lead\nThis final node updates the original lead in Salesforce using the enriched data returned by Explorium.\n\n- **Credential**: Salesforce OAuth2 or Username/Password\n- **Resource**: Lead\n- **Operation**: Update Lead\n\nThe node updates the existing lead record with enriched information including additional contact details, professional data, and enhanced company information obtained through the Explorium enrichment process."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "10d3214f-389e-4f90-bc4a-46d56c72b5a7",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1104,
+        608
+      ],
+      "parameters": {
+        "color": 6,
+        "width": 640,
+        "height": 620,
+        "content": "# Automatically enrich leads in Salesforce using Explorium MCP\n\nThis n8n workflow streamlines the process of enriching lead information by automatically detecting new leads created in Salesforce, processing them through Explorium's AI-powered tools, and updating the same leads back in Salesforce with enhanced prospect details.\n\n## Credentials Required\n\nTo use this workflow, set up the following credentials in your n8n environment:\n\n### Salesforce\n- **Type**: OAuth2 or Username/Password\n- **Used for**: triggering on new leads, updating lead records\n\n### Explorium API\n- **Type**: Generic Header Auth\n- **Header**: Authorization\n- **Value**: Bearer YOUR_TOKEN_HERE\n\nGo to Settings → Credentials, create these two credentials, and assign them in the respective nodes before running the workflow."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f171641a-78cc-4e5d-97b3-25db10e76e00",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        496,
+        608
+      ],
+      "parameters": {
+        "width": 600,
+        "height": 620,
+        "content": "## Workflow Flow Summary\n\n1. **Trigger**: Salesforce webhook triggers on new lead creation\n2. **Match**: Find prospect matches using Explorium based on lead data\n3. **Filter**: Keep only successfully matched prospects\n4. **Extract**: Compile prospect IDs for bulk enrichment\n5. **Enrich**: Parallel enrichment of contact information through multiple Explorium endpoints\n6. **Merge**: Combine enrichment results into unified data\n7. **Transform**: Flatten and prepare data for Salesforce update (Code node)\n8. **Update**: Update the original lead record in Salesforce with enriched data\n\nThis workflow ensures comprehensive lead enrichment while maintaining data quality and providing seamless integration within your Salesforce environment. The parallel enrichment structure maximizes data collection efficiency, and the filtering ensures only high-quality matches are processed, resulting in enhanced lead records with valuable prospect intelligence."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "7384c08e-c19a-4e48-a89a-f8b15ea61ae9",
+      "name": "Explorium API",
+      "type": "@exploriumai/n8n-nodes-explorium-ai.exploriumApiNode",
+      "position": [
+        -704,
+        128
+      ],
+      "parameters": {
+        "type": "prospects",
+        "jsonInput": "={{\n  {\n    \"prospects_to_match\": [{\n      \"full_name\": $json.FirstName + ' ' + $json.LastName,\n      \"company_name\": $json.Company,\n      \"email\": $json.Email\n    }]\n  }\n}}",
+        "operation": "match",
+        "useJsonInput": true
+      },
+      "credentials": {
+        "exploriumApi": {}
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "9c8e556a-34e5-4866-8739-1930c425765a",
+      "name": "Explorium API1",
+      "type": "@exploriumai/n8n-nodes-explorium-ai.exploriumApiNode",
+      "position": [
+        -16,
+        128
+      ],
+      "parameters": {
+        "type": "prospects",
+        "jsonInput": "={{ { \"prospect_ids\": $json.prospect_ids } }}",
+        "operation": "enrich",
+        "enrichment": [
+          "contacts",
+          "profiles"
+        ],
+        "useJsonInput": true
+      },
+      "credentials": {
+        "exploriumApi": {}
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": true,
+  "pinData": {
+    "Salesforce Trigger": [
+      {
+        "json": {
+          "Id": "00QQJ00000MSy7p2AD",
+          "City": null,
+          "Email": "ziv.nadil@explorium.ai",
+          "Status": "Connected",
+          "Street": null,
+          "Company": "Explorium",
+          "LastName": "nadil",
+          "FirstName": "ziv",
+          "PostalCode": null,
+          "attributes": {
+            "url": "/services/data/v59.0/sobjects/Lead/00QQJ00000MSy7p2AD",
+            "type": "Lead"
+          }
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b9635898-3447-4cb7-b002-7b65fc0da1c9",
+  "connections": {
+    "Explorium API": {
+      "main": [
+        [
+          {
+            "node": "Filter non-matched",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code - flatten": {
+      "main": [
+        [
+          {
+            "node": "Update Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Explorium API1": {
+      "main": [
+        [
+          {
+            "node": "Code - flatten",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter non-matched": {
+      "main": [
+        [
+          {
+            "node": "Extract Prospect IDs from Matched Results",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Salesforce Trigger": {
+      "main": [
+        [
+          {
+            "node": "Explorium API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Prospect IDs from Matched Results": {
+      "main": [
+        [
+          {
+            "node": "Explorium API1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

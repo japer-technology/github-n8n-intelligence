@@ -1,0 +1,316 @@
+{
+  "_templateId": 14235,
+  "_templateName": "Execute forex trading signals from Telegram on MetaTrader 5 with Claude",
+  "_templateDescription": "Telegram Signal Receiver and Processor\n\nThis n8n template is the missing link between your Telegram trading signal channels and MetaTrader 5. It listens to your Telegram bot, uses AI to detect and parse trading signals in real time, then forwards them directly to your MT5 instance via the signal handler webhook — no manual copying required.\n\nThe full system includes an n8n workflow, a Python forwarder script, a compiled MT5 Expert Advisor (.mq5), and a setup guide. Everything you need to run copy trading from Telegram, out of the box.\n\nHow it works\n\nA Python forwarder script monitors your target Telegram signal channel and relays messages to your personal bot\nThe n8n Telegram Trigger receives each message from your bot\nAn LLM (Claude/Anthropic) checks whether the message is a valid trading signal — it looks for direction, asset, and stop loss\nIf it's a signal, the parsed data (asset, direction, entry, SL, TP, risk, order type) is forwarded to the MT5 Signal Handler webhook\nIf it's not a signal, the workflow skips it silently\nMQL5 code handles position sizing as well\n\nSet up steps\n\nCreate a Telegram bot via @BotFather and save your bot token\nGet your Telegram API credentials (api_id and api_hash) from my.telegram.org\nInstall Python dependencies and configure the forwarder script with your credentials and target channel\nAdd your Telegram Bot and Anthropic API credentials to n8n\nActivate this workflow and run the Python forwarder\nMake sure your MT5 Signal Handler workflow is also running and the webhook URL is correct in the \"Send to MT5 Handler\" node\n\nRequirements\n\nn8n instance running locally or on a private VPS\nMetaTrader 5 with the included Expert Advisor compiled and attached to a chart\nAnthropic API key (or swap in any compatible LLM node)\nPython 3.8+ with Telethon library installed\nThe MT5 Signal Handler workflow (sold together with this template)\n\n(Or you can run everything on a virtual computer so it runs on the cloud 24/7)\n\nCustomising this workflow\n\nUse it for crypto or stocks since this works only for forex and gold for now.\nAdd authentication to be more secure with this workflow or run it privately on a demo account since this is meant for educational purposes\n\nPurchasing this N8N workflow comes with the Python file and MQL EA as well so it is sold together. Everything you need to execute trades from telegram signals to MT5 is included at the price of 99 usd.\n\nQuestions?\nIf you have questions or need help with this workflow, feel free to reach out:\n\nelijahmamuri@gmail.com\nelijahfxtrading@gmail.com\n\n\nImportant Disclaimer: This workflow is provided for educational purposes and demo account testing only. It demonstrates technical concepts for signal routing and automation architecture. Always test thoroughly on demo accounts, implement proper security measures, and understand that automated trading involves substantial risk. No warranties, financial advice, or guarantees are provided. See the full disclaimer in the workflow sticky notes for complete terms.",
+  "_templateCreatedAt": "2026-03-22T16:27:50.704Z",
+  "_templateTotalViews": 1,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T04:58:50.790Z",
+  "meta": {
+    "instanceId": "eb9ee42bfef3c519124f0be151bf6abfa6da4541fe2a6acf93b21413ad73a656",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "8c329388-758b-4d65-accb-7aff8f179c5c",
+      "name": "Instructions1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -976,
+        1072
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "febab5d6-3a82-4c5b-9c7e-e3d3476522a2",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -320,
+        1328
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "d2021c39-c947-4cbd-8fec-b84199fb0ac9",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        176,
+        1184
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "278f904b-ab83-40a5-875c-475472ed68cc",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        768,
+        1184
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0ea8e25c-75dc-4cf0-93be-29c73380addd",
+      "name": "Receive from Forwarder",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -256,
+        1488
+      ],
+      "webhookId": "telegram-signal",
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "be601e6e-8812-49ca-9820-9e75a4df634e",
+      "name": "Extract Message",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -48,
+        1488
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "f60e2325-c3e9-452c-8cd4-009e015540d5",
+      "name": "Has text?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        224,
+        1488
+      ],
+      "parameters": {},
+      "typeVersion": 2.3
+    },
+    {
+      "id": "d68a6345-c58f-4610-b814-550c88080468",
+      "name": "Analyze Signal",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        432,
+        1312
+      ],
+      "parameters": {},
+      "typeVersion": 1.4
+    },
+    {
+      "id": "9ac4d184-e526-445f-8340-8af1c2491c53",
+      "name": "Respond (Empty)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        432,
+        1632
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "720fa4b4-8ffa-4ea8-b217-ae60caf4a027",
+      "name": "Parse LLM Response",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        848,
+        1488
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "e5c3651c-ce02-4664-a83d-eba090a3da0a",
+      "name": "Is Signal?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1024,
+        1488
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "82e67f38-8dbc-4802-b43e-12e4d8ce1f1d",
+      "name": "Send to MT5 Handler",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1264,
+        1376
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "3a00ee2e-d3ec-4c7b-bc9b-15ace439c3f5",
+      "name": "Respond (Signal Sent)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        1488,
+        1376
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "b762b7e1-1dbf-4758-a038-a8dfd3dd97ff",
+      "name": "Respond (Skipped)",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        1264,
+        1616
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "1275b9fa-695a-47f6-a5fb-b8545fe59cc9",
+      "name": "Anthropic Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "position": [
+        432,
+        1472
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "c9e0a2fa-7fbb-424c-a4f9-5713ee81b69b",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        576,
+        1472
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Has text?": {
+      "main": [
+        [
+          {
+            "node": "Analyze Signal",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond (Empty)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Signal?": {
+      "main": [
+        [
+          {
+            "node": "Send to MT5 Handler",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond (Skipped)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Signal": {
+      "main": [
+        [
+          {
+            "node": "Parse LLM Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Message": {
+      "main": [
+        [
+          {
+            "node": "Has text?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse LLM Response": {
+      "main": [
+        [
+          {
+            "node": "Is Signal?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send to MT5 Handler": {
+      "main": [
+        [
+          {
+            "node": "Respond (Signal Sent)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Analyze Signal",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive from Forwarder": {
+      "main": [
+        [
+          {
+            "node": "Extract Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Analyze Signal",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

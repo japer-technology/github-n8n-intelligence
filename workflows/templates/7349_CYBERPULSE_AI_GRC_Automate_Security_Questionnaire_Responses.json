@@ -1,0 +1,261 @@
+{
+  "_templateId": 7349,
+  "_templateName": "CYBERPULSE AI GRC: Automate Security Questionnaire Responses",
+  "_templateDescription": "\nDescription\n\nAutomates vendor/customer security questionnaire responses. It ingests a questionnaire (Sheet/CSV/XLSX), matches each question to your approved answers and evidence, and writes a clean “Auto-Fill” sheet ready to review and send back. Optional alerts nudge reviewers and track progress to completion.\n\nWho’s It For\n\nGRC / Compliance teams responding to customer security reviews\n\nSecurity engineers and sales engineers supporting questionnaires\n\nStartups that need fast, consistent, audit-ready answers\n\nHow It Works\n\nTrigger\n\nRun manually, on a schedule, or when a questionnaire file/row is added.\n\nIngest & Normalize\n\nReads questions from Google Sheets/CSV/XLSX.\n\nNormalizes columns (e.g., question, category, customer_notes) and de-duplicates.\n\nClassify\n\nDetects question type (Yes/No, multi-select, free text).\n\nTags topics (encryption, access control, incident response, privacy, HR, etc.).\n\nAnswer Retrieval\n\nLooks up approved answers from your Answer Library sheet (mapped by keywords/category/control).\n\nFalls back to templates (short form/long form) when no exact match exists.\n\nEvidence Linking\n\nInserts Drive links for policies, diagrams, SOC2/ISO docs (from your evidence folder).\n\nAdds version/date so reviewers can verify what was sent.\n\nAuto-Fill Output\n\nWrites a new sheet with columns like:\nquestion, proposed_answer, rationale/notes, evidence_link, control_ref, owner, status, confidence, last_updated.\n\nReview & Notifications\n\nEmails the reviewer/owner with a link to the output sheet for quick approval edits.\n\nStatus can move from draft → reviewed → ready to send.\n\nExport\n\nOptional export to CSV/XLSX to match customer’s template.\n\nOptional PDF of responses for audit trail.\n\nRequirements\n\nGoogle Sheets & Drive credentials\n\nDestination Sheet & Evidence folder (env vars used in the template):\n\nGSHEET_ID, GSHEET_SHEET\n\nDRIVE_FOLDER_ID (or keep SANITIZED and set after import)\n\nAlert email: GRC_ALERT_EMAIL\n\nFile Templates\n\nGRC_SQ_AutoFill_Template.xlsx – target sheet with the output columns above\n\nAnswer_Library.xlsx / Sheet tab – key-value pairs: keywords/category → approved answers\n\nControl_Mapping.xlsx / Sheet tab – optional mapping to ISO 27001, SOC2, NIST CSF\n\nOutput\n\nA populated Auto-Fill sheet ready to review/share\n\nEvidence links with versioning\n\nEmail notification to the reviewer with next steps\n\nCustomization Tips\n\nAdd your framework tags (ISO/SOC2/NIST) to enable quick mapping in the output.\n\nSet owners per topic (e.g., “Encryption → Security Eng”, “Privacy → Legal”).\n\nAdd a confidence score threshold to flag answers needing human review.\n\nEnable “strict mode” to prevent sending answers without evidence links.\n\nSchedule a weekly run to pre-fill common questionnaires and keep answers fresh.",
+  "_templateCreatedAt": "2025-08-14T03:29:59.817Z",
+  "_templateTotalViews": 16,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:00:51.589Z",
+  "id": "suFwbFh7NOckUGrH",
+  "meta": {
+    "instanceId": "6feff41aadeb8409737e26476f9d0a45f95eec6a9c16afff8ef87a662455b6df"
+  },
+  "name": "GRC – Security Questionnaire AutoFill",
+  "tags": [
+    {
+      "id": "gJSr5qMwZv8VikrA",
+      "name": "Compliance Responder",
+      "createdAt": "2025-08-04T01:27:51.485Z",
+      "updatedAt": "2025-08-04T01:27:51.485Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "123b4768-29e6-44e4-b5f8-4efd7755fc7e",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -1640,
+        180
+      ],
+      "webhookId": "a134d3f5-179d-4a44-a6b3-74844d04ae25",
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "ee0965d6-0cdc-46f6-a82a-0aa3396ac0e8",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -1240,
+        180
+      ],
+      "parameters": {},
+      "typeVersion": 4.6
+    },
+    {
+      "id": "2eba0fe8-b3f5-4a3d-a5e3-00d70a16b447",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -720,
+        120
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "73a3e582-d02d-4d00-b147-1eea18665d9f",
+      "name": "OpenAI",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        -480,
+        120
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "12d1abd5-7826-4235-b792-a4c0ba6ffae6",
+      "name": "Google Sheets1",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 4.6
+    },
+    {
+      "id": "1e27c1f2-bf19-48ae-a4f3-3b0f6bccce32",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -1020,
+        180
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "39b53f5e-87a6-4178-be48-31bb27efe926",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        0,
+        260
+      ],
+      "parameters": {},
+      "typeVersion": 3.2
+    },
+    {
+      "id": "1c1e83ed-eadd-4cce-83be-e79d58a88623",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        440,
+        140
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "66271d78-bca4-4b47-ae70-5ccb58fac9ac",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        660,
+        140
+      ],
+      "webhookId": "985a1edf-4cec-4ab8-8ebb-8e1ffa581f4b",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "d555c006-215b-4bab-8bde-7df72b35767e",
+      "name": "Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        -1440,
+        180
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "7c882edd-18c8-4300-b05f-ece5ae3fdf89",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -660,
+        460
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b6f97c2b-05fc-4e73-b054-7c75d8255e39",
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "OpenAI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Drive": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

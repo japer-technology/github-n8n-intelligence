@@ -1,0 +1,411 @@
+{
+  "_templateId": 4853,
+  "_templateName": "Automate GPT-4o Fine-Tuning with Google Sheets or Airtable Data",
+  "_templateDescription": "Who is this for?  \nAnyone curating before/after text examples in a spreadsheet and wanting a push-button path to a fine-tuned GPT model—without touching curl. Works with Google Sheets or Airtable.\n\nWhat problem does it solve?  \nManually downloading CSVs, converting to JSONL, uploading, and polling OpenAI is a slog.  \nThis flow automates the whole loop: grab examples flagged Ready, build the JSONL file, start the fine-tune, then log the resulting model ID back to a registry sheet/table for reuse.\n\nHow it works  \n\n| # | Node | Purpose |\n|---|------|---------|\n| 1 | Schedule Trigger | Runs weekly by default (change as needed). |\n| 2a | Get Examples from Sheet | Pulls rows where Ready = TRUE from your Google Sheet. Uses the JSONL-Template Sheet as the expected column layout. |\n| 2b | Get Examples from Airtable (disabled) | Alternate source for Airtable users. |\n| 3 | Create JSONL File (Code) | Converts each example to chat-format JSONL and splits into train.jsonl / val.jsonl (80/20). |\n| 4 | Upload JSONL | Uploads the training file to OpenAI (purpose: fine-tune). |\n| 5 | Begin Fine-Tune | Starts a fine-tune job on gpt-4o (editable). |\n| 6 | Wait → Check Job → IF | Polls every minute until status = succeeded. |\n| 7a | Write Model to Sheet | Appends the new model ID + meta to your Model Registry sheet. |\n| 7b | Write Model to Airtable (disabled) | Equivalent logging step for Airtable. |\n\nSetup steps  \n\nImport & connect credentials  \n   Import the JSON flow into n8n.  \n   Add your OpenAI API key.  \n   Google Sheets: create an OAuth2 credential and link it to both Sheets nodes.  \n   Airtable (optional): create a Personal Access Token and attach it to the Airtable nodes.\n\nCopy the template sheet  \n   Duplicate the JSONL-Template Sheet linked above into your own Drive.  \n   Required columns (exact names):  \n     | systemPrompt | userPrompt | assistantResponse | Ready |  \n   Tick Ready = TRUE for rows you want to include.\n\nCreate the registry sheet/table  \n   Google Sheet (or Airtable table) named Model Registry with columns:  \n     Model ID, Training Examples, Epochs, Batch Size, Learning Rate, Finished At.\n\nTweak model & schedule  \n   Change the base model in Begin Fine-Tune if desired.  \n   Adjust the Schedule Trigger for daily / on-demand runs.\n\nTest it  \n   Mark a few examples Ready = TRUE.  \n   Run the flow manually.  \n   Check OpenAI for the new fine-tune job and confirm the model ID is logged in your registry.\n\nResources  \n\nn8n Docs – &lt;https://docs.n8n.io/&gt;  \nOpenAI Fine-Tuning – &lt;https://platform.openai.com/docs/guides/fine-tuning&gt;  \nGoogle Sheets API – &lt;https://developers.google.com/sheets/api&gt;  \nAirtable API – &lt;https://airtable.com/api&gt;\n\nExtending the flow  \n\nWebhook trigger** – swap the schedule for a webhook to train on demand.  \nMulti-source merge* – enable both Sheets *and Airtable nodes to combine datasets.  \nAuto-deploy** – save the new model name to an env-var or Secrets Manager for downstream generation workflows.",
+  "_templateCreatedAt": "2025-06-10T12:18:16.840Z",
+  "_templateTotalViews": 274,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:01:13.413Z",
+  "id": "n5I2z5PXIENtW9ri",
+  "meta": {
+    "instanceId": "78cd535d8c280c9f391d1c1efae71bb3b005620d19729d7bf9cd5c4e1509eeb2",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Fine Tune GPT",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "fc478cd0-8d84-4e8a-b0d8-7b2a4bb6b65c",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1560,
+        0
+      ],
+      "webhookId": "441a25bb-a01c-4a27-a18b-3e242ea1c1b2",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "4a6895a6-5a5c-48f2-98ea-2c6ed1d428e3",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -180,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "dec836ff-a0fb-4b6c-9ea6-e7a383343a2b",
+      "name": "Set GPT Model",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1020,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "f349a57b-0720-4ef1-8b0c-4d07c7908c73",
+      "name": "Begin Fine-tune Job",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1300,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "857dd175-1d8b-4b11-aabd-27a9ed9519a8",
+      "name": "Upload JSONL File",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        740,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "5b297840-c851-42a0-8490-6b8c2f77e6d2",
+      "name": "Create JSONL File",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "5270eae1-1218-4ef6-b423-b4267df04c2f",
+      "name": "Check Fine-Tune Job",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1740,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "3a2349ac-836a-4145-b0f9-cf1814db5180",
+      "name": "If Succeeded",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1920,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "5ab2283c-3c25-4c4a-a786-3bb4c7c68702",
+      "name": "If Failed",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        2120,
+        100
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "18b2ad15-896b-48b9-a3fd-fc10214172a2",
+      "name": "Error: FAILED",
+      "type": "n8n-nodes-base.stopAndError",
+      "position": [
+        2300,
+        100
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "992ac7d4-c889-4d5c-8359-e85f82068144",
+      "name": "Add Fine-Tuned Model to Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "disabled": true,
+      "position": [
+        2620,
+        80
+      ],
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "b0af9c97-b6e2-466d-9961-925685a6eb9d",
+      "name": "Add  Fine-Tuned Model to Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2620,
+        -120
+      ],
+      "parameters": {},
+      "typeVersion": 4.6
+    },
+    {
+      "id": "abd193e2-472b-4bee-a4d5-8d78327eebe9",
+      "name": "Get Examples from Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        120,
+        -100
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "cc556207-aa3f-4eaa-a8f6-1bec94c055fc",
+      "name": "Get Examples from Airtable",
+      "type": "n8n-nodes-base.airtable",
+      "disabled": true,
+      "position": [
+        120,
+        120
+      ],
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "3d97f4cf-135c-49ba-b47c-43bfdf7ebb18",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -220,
+        -280
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "06bc45b5-f279-4154-b3a5-bc7690019a64",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        360,
+        -280
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8d11924b-c641-40e7-8b0b-fee2db50a9c7",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        940,
+        -280
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "bad9fdb4-b769-48f2-9335-3b1a3a2236f5",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1500,
+        -280
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2cce770f-eb21-4c86-8a19-16a2c0e37f2b",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2480,
+        -280
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {
+    "Schedule Trigger": [
+      {
+        "json": {
+          "Hour": "04",
+          "Year": "2025",
+          "Month": "June",
+          "Minute": "10",
+          "Second": "35",
+          "Timezone": "America/Los_Angeles (UTC-07:00)",
+          "timestamp": "2025-06-10T04:10:35.192-07:00",
+          "Day of week": "Tuesday",
+          "Day of month": "10",
+          "Readable date": "June 10th 2025, 4:10:35 am",
+          "Readable time": "4:10:35 am"
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6bd0a799-f4a7-4907-8a14-204d023f4ae6",
+  "connections": {
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Check Fine-Tune Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Failed": {
+      "main": [
+        [
+          {
+            "node": "Error: FAILED",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Succeeded": {
+      "main": [
+        [
+          {
+            "node": "Add Fine-Tuned Model to Airtable",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Add  Fine-Tuned Model to Sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If Failed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set GPT Model": {
+      "main": [
+        [
+          {
+            "node": "Begin Fine-tune Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Examples from Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Examples from Airtable",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create JSONL File": {
+      "main": [
+        [
+          {
+            "node": "Upload JSONL File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload JSONL File": {
+      "main": [
+        [
+          {
+            "node": "Set GPT Model",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Begin Fine-tune Job": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Fine-Tune Job": {
+      "main": [
+        [
+          {
+            "node": "If Succeeded",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Examples from Sheet": {
+      "main": [
+        [
+          {
+            "node": "Create JSONL File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Examples from Airtable": {
+      "main": [
+        [
+          {
+            "node": "Create JSONL File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

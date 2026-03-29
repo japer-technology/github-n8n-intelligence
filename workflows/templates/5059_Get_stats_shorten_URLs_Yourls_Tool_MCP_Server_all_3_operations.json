@@ -1,0 +1,121 @@
+{
+  "_templateId": 5059,
+  "_templateName": "Get stats, shorten URLs 🛠️ Yourls Tool MCP Server 💪 all 3 operations",
+  "_templateDescription": "Need help? Want access to this workflow + many more paid workflows + live Q&A sessions with a top verified n8n creator?\n\nJoin the community\n\nComplete MCP server exposing all Yourls Tool operations to AI agents. Zero configuration needed - all 3 operations pre-built.\n\n⚡ Quick Setup\n\nImport this workflow into your n8n instance\nActivate the workflow to start your MCP server\nCopy the webhook URL from the MCP trigger node\nConnect AI agents using the MCP URL\n\n🔧 How it Works\n\n• MCP Trigger: Serves as your server endpoint for AI agent requests\n• Tool Nodes: Pre-configured for every Yourls Tool operation\n• AI Expressions: Automatically populate parameters via $fromAI() placeholders\n• Native Integration: Uses official n8n Yourls Tool tool with full error handling\n\n📋 Available Operations (3 total)\n\nEvery possible Yourls Tool operation is included:\n\n🔧 Url (3 operations)\n\n• Expand a URL\n• Shorten a URL\n• Get stats for a URL\n\n🤖 AI Integration\n\nParameter Handling: AI agents automatically provide values for:\n• Resource IDs and identifiers\n• Search queries and filters\n• Content and data payloads\n• Configuration options\n\nResponse Format: Native Yourls Tool API responses with full data structure\n\nError Handling: Built-in n8n error management and retry logic\n\n💡 Usage Examples\n\nConnect this MCP server to any AI agent or workflow:\n\n• Claude Desktop: Add MCP server URL to configuration\n• Custom AI Apps: Use MCP URL as tool endpoint\n• Other n8n Workflows: Call MCP tools from any workflow\n• API Integration: Direct HTTP calls to MCP endpoints\n\n✨ Benefits\n\n• Complete Coverage: Every Yourls Tool operation available\n• Zero Setup: No parameter mapping or configuration needed\n• AI-Ready: Built-in $fromAI() expressions for all parameters\n• Production Ready: Native n8n error handling and logging\n• Extensible: Easily modify or add custom logic\n\n&gt; 🆓 Free for community use! Ready to deploy in under 2 minutes.",
+  "_templateCreatedAt": "2025-06-19T21:38:58.244Z",
+  "_templateTotalViews": 284,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:05:14.564Z",
+  "meta": {
+    "instanceId": "cd59eaaeb7b34d06e24511380db94cdb7fbce6037cc4de22e539c5158ab9cdfc"
+  },
+  "nodes": [
+    {
+      "id": "67cab801-1959-48b2-aab3-f4d91a95d065",
+      "name": "Workflow Overview",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1460,
+        -100
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "6dbb0524-dfba-4388-b12b-05718ae80ec4",
+      "name": "Yourls Tool MCP Server",
+      "type": "@n8n/n8n-nodes-langchain.mcpTrigger",
+      "position": [
+        -860,
+        -80
+      ],
+      "webhookId": "4f094d4c-3a44-46f4-9c5a-5975fd8f04a2",
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "fcb9f196-13c1-4d21-946f-e05ac2f04f4f",
+      "name": "Expand a URL",
+      "type": "n8n-nodes-base.yourlsTool",
+      "position": [
+        -800,
+        140
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "0b0fa272-780f-4d1a-a900-a1dbc911994f",
+      "name": "Shorten a URL",
+      "type": "n8n-nodes-base.yourlsTool",
+      "position": [
+        -580,
+        140
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "0007277a-c1fa-4f6e-aea0-1982b4552d20",
+      "name": "Get stats for a URL",
+      "type": "n8n-nodes-base.yourlsTool",
+      "position": [
+        -360,
+        140
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "cbdc5018-c3e6-49db-9d60-500ee808a900",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1000,
+        120
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Expand a URL": {
+      "ai_tool": [
+        [
+          {
+            "node": "Yourls Tool MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Shorten a URL": {
+      "ai_tool": [
+        [
+          {
+            "node": "Yourls Tool MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get stats for a URL": {
+      "ai_tool": [
+        [
+          {
+            "node": "Yourls Tool MCP Server",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

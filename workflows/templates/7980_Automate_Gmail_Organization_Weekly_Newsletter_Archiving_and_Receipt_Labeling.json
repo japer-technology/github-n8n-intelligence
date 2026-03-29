@@ -1,0 +1,115 @@
+{
+  "_templateId": 7980,
+  "_templateName": "Automate Gmail Organization: Weekly Newsletter Archiving and Receipt Labeling",
+  "_templateDescription": "Feel like your inbox is a junk drawer you’re scared to open? 📧\n\nMeet the Sunday Sweep Gmail Zero workflow—the soft-tech hug your Gmail has been waiting for. 🕊️\n\nWhat it does (in plain English)\n\n• Every Sunday at 9 PM it quietly hunts down newsletters older than 30 days and gently archives them—no scary deletions, just a neat sweep.\n\n• Fresh receipts, invoices or order confirmations from the past 24 hours are instantly labeled 🧾 “Receipts” so you can find them at tax time without digging.\n\n• You wake up Monday to a crystal-clear inbox, zero overwhelm, and one big check-mark off your to-do list. ✅\n\nWho it’s perfect for:\n\n✨ Etsy shop owners, virtual assistants, wellness coaches, and any homemaker-preneur who wants automation that feels like a friend, not a robot takeover. No coding skills, no jargon—just plug in your Gmail account and let the calm routine run on autopilot.\n\nBonus goodies\n• Emoji-coded labels ready to go\n• Works with free Gmail accounts\n\nStop living in inbox chaos. Start your week lighter—with Sunday Sweep Gmail Zero.",
+  "_templateCreatedAt": "2025-08-28T09:18:27.220Z",
+  "_templateTotalViews": 3,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:04:19.786Z",
+  "meta": {
+    "instanceId": "__PLACEHOLDER__"
+  },
+  "name": "Sunday Sweep Gmail Zero",
+  "nodes": [
+    {
+      "id": "cron",
+      "name": "Sun 9 PM Trigger",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        240,
+        300
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "getNews",
+      "name": "Find Old Newsletters",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        480,
+        250
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "archiveNews",
+      "name": "Archive Softly",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        720,
+        250
+      ],
+      "operation": "delete",
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "getReceipts",
+      "name": "Find Receipts",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        480,
+        420
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "labelReceipts",
+      "name": "Label Receipts",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        720,
+        420
+      ],
+      "operation": "addLabel",
+      "parameters": {},
+      "typeVersion": 2
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Find Receipts": {
+      "main": [
+        [
+          {
+            "node": "Label Receipts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Sun 9 PM Trigger": {
+      "main": [
+        [
+          {
+            "node": "Find Old Newsletters",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Find Receipts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Old Newsletters": {
+      "main": [
+        [
+          {
+            "node": "Archive Softly",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,464 @@
+{
+  "_templateId": 6084,
+  "_templateName": "Viral Video Generator: HeyGen to TikTok & Instagram Auto-Post + Any Content",
+  "_templateDescription": "HeyGen AI Video Generation with Social Media Publishing\n\nDescription\n\nThis workflow automates the entire process of creating AI-generated videos from trending news content and publishing them to social media platforms (Instagram and TikTok). It runs daily at 6 AM, finds viral-worthy news, generates scripts, creates AI avatar videos using HeyGen, and automatically publishes to multiple social platforms.\n\nHow it works\n\nContent Discovery & Script Generation\nSchedule Trigger: Runs daily at 6 AM or any time you choose. \nPerplexity Search: Finds trending news articles that would make good viral content\nWrite Video Script: Uses GPT-4.1 to create a 30-second video script with hook, main content, and CTA\nExtract URL: Parses the article URL and script data for further processing\n\nVideo Creation Pipeline\nGet Screenshot: Uses ScreenshotOne API to create an animated scrolling video of the news article\nUpload to Cloudinary: Temporarily stores the background video\nWrite Video Caption: Generates an engaging social media caption (150-200 characters)\nPrepare Avatar Data: Combines all data needed for HeyGen video generation\nCreate Avatar Video: Sends request to HeyGen API to generate AI avatar video with:\n   Talking photo avatar\n   Text-to-speech voice\n   Background video from the news article\n   720x1280 dimensions (vertical format)\n\nData Management\nPrepare Sheets Data: Formats video metadata\nStore to Google Sheets: Saves video_id, caption, timestamp, and status for tracking\n\nWebhook Processing (Asynchronous)\nHeyGen Webhook: Receives callback when video generation is complete\nProcess HeyGen Callback: Extracts video URLs and status from webhook\nGet Caption from Sheets: Retrieves the associated caption using video_id\nCombine Data: Merges video data with caption\n\nSocial Media Publishing\nUpload to Blotato: Uploads the completed video to Blotato media service\nExtract Blotato URL: Gets the media URL for social posting\nAssign Social Media IDs: Sets the account IDs for each platform\nINSTAGRAM: Posts video to Instagram with caption\nTIKTOK: Posts video to TikTok with caption and appropriate settings\n\nSetup\n\nPrerequisites\nAPI Keys Required:\n   Perplexity API (for news search)\n   OpenAI API (for script and caption generation)\n   ScreenshotOne API (for article screenshots)\n   HeyGen API (for AI video generation)\n   Cloudinary account (for temporary video storage)\n   Blotato API (for social media posting)\n   Google Sheets API (for data tracking)\n\nHeyGen Setup:\n   Create a talking photo avatar and get the talking_photo_id\n   Select a voice and get the voice_id\n   Set up a webhook endpoint in n8n for callbacks\n\nGoogle Sheets Setup:\n   Create a new Google Sheet\n   Add headers: video_id, caption, timestamp, status\n   Get the sheet ID from the URL\n\nSocial Media Setup:\n   Connect Instagram and TikTok accounts to Blotato\n   Get the account IDs for each platform\n\nConfiguration Steps\n\nReplace all placeholder values:\n   YOUR_TALKING_PHOTO_ID - HeyGen avatar ID\n   YOUR_VOICE_ID - HeyGen voice ID\n   YOUR_WEBHOOK_URL - Your n8n webhook URL\n   YOUR_GOOGLE_SHEET_ID - Google Sheets document ID\n   YOUR_INSTAGRAM_ACCOUNT_ID - Blotato Instagram account ID\n   YOUR_TIKTOK_ACCOUNT_ID - Blotato TikTok account ID\n   YOUR_CLOUD_NAME - Cloudinary cloud name\n   YOUR_UPLOAD_PRESET - Cloudinary upload preset\n\nAdd credentials in n8n:\n   Perplexity API credentials\n   OpenAI API credentials\n   HeyGen API credentials (create custom API credentials with X-Api-Key)\n   Blotato API credentials\n   Google Sheets OAuth2\n   ScreenshotOne API credentials\n\nConfigure the webhook:\n   Copy the webhook URL from the \"HeyGen Webhook\" node\n   Use this URL in the \"Create Avatar Video\" node's callback_url\n\nNotes\n\nThe workflow uses a two-part asynchronous process: initial video creation and webhook-based completion\nVideos are optimized for vertical format (720x1280) for mobile social media\nThe Google Sheet acts as a database to link video IDs with captions\nAll sensitive content (URLs, API keys) should be replaced with your own values\nConsider content moderation and copyright when selecting news sources\nMonitor API usage and costs, especially for HeyGen video generation\n\nCustomization Options\n\nContent Sources**: Modify the Perplexity search query to target specific news sources or topics\nVideo Style**: Adjust avatar position, scale, and background video settings\nVoice Settings**: Change voice_id, speed, and pitch for different narration styles\nPublishing Schedule**: Modify the Schedule Trigger for different times or frequencies\nSocial Platforms**: Add more platforms by duplicating the Blotato posting nodes",
+  "_templateCreatedAt": "2025-07-17T09:28:15.763Z",
+  "_templateTotalViews": 525,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-03-29T05:00:57.686Z",
+  "id": "",
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "name": "HeyGen AI Video Generation with Social Media Publishing",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "12077b84-937a-4317-a126-80aab5b2311e",
+      "name": "Schedule Daily Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -288,
+        128
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "bbee0d58-182c-4ccc-8b81-9a5045baa6ba",
+      "name": "Perplexity Search",
+      "type": "n8n-nodes-base.perplexity",
+      "position": [
+        -64,
+        128
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "01c94fc6-796a-46a6-9dd2-176adbc3813c",
+      "name": "Write Video Script",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        160,
+        128
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "1a30d646-2583-4711-a8af-1303ec3fe7ea",
+      "name": "Get Screenshot",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        608,
+        128
+      ],
+      "parameters": {},
+      "retryOnFail": true,
+      "typeVersion": 4.2
+    },
+    {
+      "id": "28fdb385-a0a5-4c82-9cf0-ac84741b3e07",
+      "name": "Write Video Caption",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        1248,
+        128
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "23d6e640-5c1c-4478-b119-c24c3ce6cf6a",
+      "name": "Extract URL",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        384,
+        128
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "5a18e418-047a-4a41-9bd6-7d06258e50fc",
+      "name": "Prepare Avatar Data",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1456,
+        128
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "56f84477-257d-42dd-80e6-a71eba6d121c",
+      "name": "Create Avatar Video (Optimized)",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1680,
+        128
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "7d28cd0e-e000-4179-a6e8-d0c586210cc2",
+      "name": "Store to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "notes": "You need to:\n1. Create a Google Sheet\n2. Add headers: video_id, caption, timestamp, status\n3. Replace YOUR_GOOGLE_SHEET_ID with actual ID\n4. Connect your Google account",
+      "position": [
+        2128,
+        128
+      ],
+      "parameters": {},
+      "notesInFlow": true,
+      "typeVersion": 4.5
+    },
+    {
+      "id": "7b6a9415-6b36-4da0-9092-b00fb4f2b062",
+      "name": "Prepare Sheets Data",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1904,
+        128
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "af47ca8b-1d8b-4d70-adb4-06aa58c03ea2",
+      "name": "HeyGen Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -288,
+        480
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "87c82997-22c8-4761-80af-e8c0df7ecf43",
+      "name": "Process HeyGen Callback",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -64,
+        480
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "8160bf99-05c0-4c3d-9349-1c39f2f36ed3",
+      "name": "Get Caption from Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "notes": "This looks up the video_id in Google Sheets to get the caption",
+      "position": [
+        160,
+        480
+      ],
+      "parameters": {},
+      "notesInFlow": true,
+      "typeVersion": 4.5
+    },
+    {
+      "id": "f240f457-ae29-486e-b53f-6e72c83bc1eb",
+      "name": "Combine Data",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        384,
+        480
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "2c068a8e-2506-49a2-ae79-413b56db6c91",
+      "name": "Assign Social Media IDs",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1024,
+        480
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "31e17a13-f3dd-4df2-b0a0-08a60cf91fac",
+      "name": "INSTAGRAM",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1248,
+        384
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "62f97acb-7042-4217-b203-a79c0ca04f2b",
+      "name": "TIKTOK",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1248,
+        592
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "bc266583-d522-41b8-95f3-10aa0d00071a",
+      "name": "Upload to tmpfiles",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        816,
+        128
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "eec0d2b5-01b1-480f-854b-be5c4dadd7fe",
+      "name": "Extract tmpfiles",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1024,
+        128
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "1bdca4f3-f2bc-402b-8ca6-63e8ed2a4dc6",
+      "name": "Upload to Blotato",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        592,
+        480
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "5c95297b-750a-4970-a4e7-7bca0d5f96c5",
+      "name": "Extract Blotato URL",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        800,
+        480
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "",
+  "connections": {
+    "Extract URL": {
+      "main": [
+        [
+          {
+            "node": "Get Screenshot",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Combine Data": {
+      "main": [
+        [
+          {
+            "node": "Upload to Blotato",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Screenshot": {
+      "main": [
+        [
+          {
+            "node": "Upload to tmpfiles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HeyGen Webhook": {
+      "main": [
+        [
+          {
+            "node": "Process HeyGen Callback",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract tmpfiles": {
+      "main": [
+        [
+          {
+            "node": "Write Video Caption",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Perplexity Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Perplexity Search": {
+      "main": [
+        [
+          {
+            "node": "Write Video Script",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to Blotato": {
+      "main": [
+        [
+          {
+            "node": "Extract Blotato URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload to tmpfiles": {
+      "main": [
+        [
+          {
+            "node": "Extract tmpfiles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Video Script": {
+      "main": [
+        [
+          {
+            "node": "Extract URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Blotato URL": {
+      "main": [
+        [
+          {
+            "node": "Assign Social Media IDs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Avatar Data": {
+      "main": [
+        [
+          {
+            "node": "Create Avatar Video (Optimized)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Sheets Data": {
+      "main": [
+        [
+          {
+            "node": "Store to Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Write Video Caption": {
+      "main": [
+        [
+          {
+            "node": "Prepare Avatar Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Assign Social Media IDs": {
+      "main": [
+        [
+          {
+            "node": "INSTAGRAM",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "TIKTOK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Caption from Sheets": {
+      "main": [
+        [
+          {
+            "node": "Combine Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process HeyGen Callback": {
+      "main": [
+        [
+          {
+            "node": "Get Caption from Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Avatar Video (Optimized)": {
+      "main": [
+        [
+          {
+            "node": "Prepare Sheets Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
