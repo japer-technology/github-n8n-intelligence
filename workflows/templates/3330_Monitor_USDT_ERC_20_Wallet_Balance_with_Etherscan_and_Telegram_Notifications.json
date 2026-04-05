@@ -1,0 +1,283 @@
+{
+  "_templateId": 3330,
+  "_templateName": "Monitor USDT ERC-20 Wallet Balance with Etherscan and Telegram Notifications",
+  "_templateDescription": "\nOverview\n\nThis n8n workflow is specifically designed to monitor the USDT ERC-20 balance within a specific wallet. It uses Etherscan's public blockchain database, which does not require API authentication, to periodically check and process transaction data. This workflow is ideal for users who need an automated solution to track ERC-20 wallet transactions.\n\nFeatures\nAutomatic Monitoring**: Executes every 5 minutes to capture new transactions.\nCustomizable Filters**: Customize tracking based on parameters like transaction duration and wallet addresses.\nData Aggregation**: Compiles transaction data into a single, structured list.\nFormatted Outputs**: Presents processed data in an organized format.\nTelegram Tracking**: Tracks wallet balances via Telegram notifications using the bot.\n\nRequirements\nn8n Setup**: Requires a self-hosted or cloud-based n8n instance.\nBasic Understanding**: Basic knowledge of n8n workflows and nodes.\n\nInstallation and Configuration\n\nImport Workflow: Load the provided JSON workflow into your n8n instance.\nConfigure the User Data Node:\n   Enter your ERC-20 Wallet Address in the 'Your Wallet Address' field.\n   Enter your Etherscan API Key in the “Your Etherscan API Key” field.\n   Enter your USDT ERC-20 Contract Address in the \"Your ERC-20 USDT Contract Address\" field (0xdAC17F958D2ee523a2206206994597C13D831ec7). You can also monitor another token by entering a different contract address.\n   \nConfigure the Telegram Node:\n   Go to Telegram and search for \"BotFather\".\n   \n   Select /newbot from the BotFather menu to create your bot.\n   Get the API key BotFather provides.\n   Go to Telegram and search for \"Get My ChatID\".\n   \n   Start the conversation and get your ChatID.\n   Use this information to configure the Telegram Node.\n\nSchedule Trigger Node: By default, the workflow is triggered every 5 minutes. Adjust this according to your needs.\n\nTest the Workflow: Execute the workflow manually to ensure everything is working as expected.\n\nHow It Works\n\nSchedule Trigger: Starts the workflow at predetermined intervals.\nEdit Fields: Sets the wallet address, Etherscan API key, and USDT ERC-20 token address.\nEdit Telegram Settings: Create a bot via BotFather. Configure the API key and Telegram Chat ID.\nEtherscan Data Import: Collects transaction data from the ERC-20 wallet using Etherscan's public database.\nFinal Results: Organizes and formats the transaction data for review.\nTelegram Bot Message Sending: If there is a balance change, it sends a formatted message about the balance change. If there is no balance change, it sends a message that your balance has not changed. You can configure it to avoid sending a message when there is no change.\n",
+  "_templateCreatedAt": "2025-03-26T09:00:34.592Z",
+  "_templateTotalViews": 1055,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:01:37.745Z",
+  "id": "AlEVIPHR3dMJkYWt",
+  "meta": {
+    "instanceId": "58e59e36ad4158b4534237c364ed053a36843e3394fa02af59feb8df38262a79",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Monitor USDT ERC-20 Wallet Balance with Etherscan and Telegram Notifications",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "35b62ca1-3603-4dcb-a3b5-77e1325c78f7",
+      "name": "Balance Changed?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        -40,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.balanceChanged}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "dfeef0d5-0bb2-40a1-ae75-51d7caeb9c3d",
+      "name": "Balance Changed.",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        320,
+        -140
+      ],
+      "webhookId": "a8fa72ce-638b-4245-bcbc-d59948ae1144",
+      "parameters": {
+        "text": "=🚨 *USDT Balance Change!*\n\nWallet Address: {{ $json.walletAddress }}\n\n🔴 Previous Balance: {{parseFloat($json.previousBalance)/1e6}} USDT\n\n🟢 New Balance: {{parseFloat($json.currentBalance)/1e6}} USDT",
+        "chatId": "< Your Telegram Chat ID >",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "credentials": {
+        "telegramApi": {
+          "id": "credential-id",
+          "name": "telegramApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ffebdb46-a6f0-4ed8-88ed-75ab427af969",
+      "name": "Balance Not Changed.",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        320,
+        20
+      ],
+      "webhookId": "a8fa72ce-638b-4245-bcbc-d59948ae1144",
+      "parameters": {
+        "text": "=Balance Unchanged. USDT balance remained stable.",
+        "chatId": "< Your Telegram Chat ID >",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "049ff717-ba10-4b7f-9f84-9eaaeee902ec",
+      "name": "userData",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -780,
+        0
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4455d1e7-a489-4ab6-a526-4fc755db99d0",
+              "name": "Your Wallet Address",
+              "type": "string",
+              "value": "< Wallet Address Paste Here >"
+            },
+            {
+              "id": "3d84deba-8093-42cf-833f-6891db778de7",
+              "name": "Your Etherscan Api Key",
+              "type": "string",
+              "value": "< Etherscan Api Key Paste Here>"
+            },
+            {
+              "id": "971ea723-e3de-4cff-b4e7-5899f3d8fb00",
+              "name": "USDT ERC-20 Token Address",
+              "type": "string",
+              "value": "0xdACYOUR_TWILIO_ACCOUNT_SID31ec7"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "0488f2dd-6b71-4be5-9ce8-cf0763b82990",
+      "name": "balanceChecker",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        -280,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const staticData = $getWorkflowStaticData('global');\n\nconst currentBalance = items[0].json.result;\n\nconst walletAddress = $('userData').first().json['Your Wallet Address']\n\nlet previousBalance = staticData.previousBalance;\n\nif (!previousBalance) {\n  staticData.previousBalance = currentBalance;\n  previousBalance = currentBalance;\n}\n\nconst balanceChanged = previousBalance !== currentBalance;\n\nstaticData.previousBalance = currentBalance;\n\nreturn [{json: {balanceChanged, previousBalance, currentBalance, walletAddress}}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "d7b23d5b-b4c5-4d9a-93f9-360ae0d539c7",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1040,
+        -180
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 1540,
+        "height": 400,
+        "content": "## USDT ERC-20 Wallet Balance Tracker\n**This workflow** Is a basic concept of integrating your ERC-20 wallet with n8n nodes."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "7c8f0d69-6c37-469c-b466-89a467db9bbd",
+      "name": "Check Balance Every 5 Minutes",
+      "type": "n8n-nodes-base.cron",
+      "position": [
+        -1000,
+        0
+      ],
+      "parameters": {
+        "triggerTimes": {
+          "item": [
+            {
+              "mode": "everyX",
+              "unit": "minutes",
+              "value": 5
+            }
+          ]
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ea603f03-25e0-4c80-90f2-eb5f09e71ad1",
+      "name": "Fetch USDT Balance from Etherscan",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -480,
+        0
+      ],
+      "parameters": {
+        "url": "https://api.etherscan.io/api",
+        "options": {},
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "module",
+              "value": "account"
+            },
+            {
+              "name": "action",
+              "value": "tokenbalance"
+            },
+            {
+              "name": "address",
+              "value": "={{ $json['Your Wallet Address'] }}"
+            },
+            {
+              "name": "tag",
+              "value": "latest"
+            },
+            {
+              "name": "apikey",
+              "value": "={{ $json['Your Etherscan Api Key'] }}"
+            },
+            {
+              "name": "contractaddress",
+              "value": "={{ $json['USDT ERC-20 Token Address'] }}"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "7ebf18de-7adf-40dd-99b4-ff8dd1e37f08",
+  "connections": {
+    "userData": {
+      "main": [
+        [
+          {
+            "node": "Fetch USDT Balance from Etherscan",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "balanceChecker": {
+      "main": [
+        [
+          {
+            "node": "Balance Changed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Balance Changed.": {
+      "main": [
+        []
+      ]
+    },
+    "Balance Changed?": {
+      "main": [
+        [
+          {
+            "node": "Balance Changed.",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Balance Not Changed.",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Balance Every 5 Minutes": {
+      "main": [
+        [
+          {
+            "node": "userData",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch USDT Balance from Etherscan": {
+      "main": [
+        [
+          {
+            "node": "balanceChecker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

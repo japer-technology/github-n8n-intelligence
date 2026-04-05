@@ -1,0 +1,359 @@
+{
+  "_templateId": 3176,
+  "_templateName": "Generate Images from Text Prompts with Google Imagen 3 via Replicate API",
+  "_templateDescription": "Who is this for?\nThis n8n workflow is designed for developers, digital artists, and content creators who want to leverage the power of AI-generated images using the Replicate API.\n\nWhat problem is this workflow solving? / Use case\nThe workflow automates the process of generating images from textual prompts using the Replicate API. It allows users to generate, check the status of, and retrieve images with minimal manual intervention.\n\nWhat this workflow does\nInitialize Workflow**: Triggered by a manual click, the workflow starts with a prompt for image generation.\nSet Image Generation Parameters**: The user can define a prompt and other parameters, which will be sent to the Replicate API for processing.\nCreate Prediction**: The workflow sends a request to generate an image based on the provided input.\nCheck Prediction Status**: After a short waiting period, the workflow checks the status of the image generation process.\nHandle Errors**: If the status indicates an error (e.g., \"failed\" or \"canceled\"), the workflow stops and reports an error.\nRetrieve Image URL**: If the image generation is successful, it retrieves and outputs the URL of the generated image.\n\nSetup\nReplicate API Key:\n   Go to the Replicate website and sign up for an account if you don’t have one.\n   Generate an API key from your Replicate dashboard.\nConfigure HTTP Credentials:\n   In n8n, navigate to the \"Credentials\" section and create a new HTTP Header Authentication credential.\n   Set the name to Authorization, and enter Bearer YOUR_REPLICATE_API_KEY in the value field, replacing YOUR_REPLICATE_API_KEY with your actual API key.\n\nHow to customize this workflow to your needs\nEdit the Prompt Text**: Change the text in the \"Set prompt\" node to customize the image you want to generate. This can be adjusted to include dynamic input from other parts of your n8n workflow.\nChange Image Generation Settings**: In the \"Create prediction\" node, you may modify any parameters such as aspect ratio, safety filter level, or even the model being used by changing the URL.\nAdd More Logic**: If you want to add more complex logic or branching conditions based on the image generation results, modify the \"Check for success\" and \"Check for errors\" nodes accordingly.\nModify Wait Duration**: Depending on your application, you may want to adjust the waiting times in the \"Wait\" and \"Pause\" nodes to optimize processing time based on expected image generation speed.",
+  "_templateCreatedAt": "2025-03-15T22:08:03.398Z",
+  "_templateTotalViews": 1514,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:01:48.904Z",
+  "meta": {
+    "instanceId": "568298fde06d3db80a2eea77fe5bf45f0c7bb898dea20b769944e9ac7c6c5a80",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "c8352756-4848-4a5f-8300-c1d8f5b25f50",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -20,
+        -100
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "e4271dac-0119-493d-a481-286fa95c8920",
+      "name": "Stop and Error",
+      "type": "n8n-nodes-base.stopAndError",
+      "position": [
+        2160,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "4ce20910-01f0-48c2-927a-e8588f7a2fcf",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1860,
+        280
+      ],
+      "webhookId": "59d47606-522a-4eab-8baf-c0d67ec771be",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "21c0e61a-3d0f-4669-9875-077c7f6822da",
+      "name": "Check for errors",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1660,
+        120
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "7aeaa726-cbc9-4d10-90b2-8d2c7e729f02",
+      "name": "Get the image URL",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1920,
+        -220
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "2167258a-f51b-425b-ae8d-ca6e6c25623f",
+      "name": "Check prediction status",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1000,
+        -100
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "da3b4773-d505-4526-8af7-289284302a34",
+      "name": "Set fields for prediction",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        800,
+        -100
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "4bfdadb4-0db8-45b9-b27c-e856a27d9725",
+      "name": "Pause",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        600,
+        -100
+      ],
+      "webhookId": "2008b7e9-6fbb-48b6-843a-c477d74fc319",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "7d4c2649-b444-4dbc-8401-ac89b98cd5cf",
+      "name": "Create prediction",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        380,
+        -100
+      ],
+      "parameters": {},
+      "notesInFlow": false,
+      "typeVersion": 4.2
+    },
+    {
+      "id": "52ef99ec-6fcc-4ca1-9f5e-0cd550e129a3",
+      "name": "Set prompt",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        180,
+        -100
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "925f4691-3da6-46c5-93c9-66a180ed7faf",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        160,
+        -200
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2a176375-a1ce-49d0-b74d-287b31b60b75",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        740,
+        -200
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "010a33a7-d815-46b0-b618-3d67b0e04808",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1180,
+        -200
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "be727fe6-6c2d-4084-987a-61c6e1c5dad2",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1620,
+        0
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "c2f0605f-02f4-46fb-8971-6136a99e5c1e",
+      "name": "Check for success",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        1240,
+        -80
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "741515e3-fe77-408f-8b69-ccb202241853",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2080,
+        0
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "c9c03037-f315-4691-886c-ec5f0fcc9812",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1620,
+        -280
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "01a34517-52f1-4960-b425-af528854bacd",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        160,
+        -600
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "90864709-1be1-4af9-9625-4b7d159414df",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1180,
+        -600
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Set fields for prediction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pause": {
+      "main": [
+        [
+          {
+            "node": "Set fields for prediction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set prompt": {
+      "main": [
+        [
+          {
+            "node": "Create prediction",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for errors": {
+      "main": [
+        [
+          {
+            "node": "Stop and Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check for success": {
+      "main": [
+        [
+          {
+            "node": "Get the image URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Check for errors",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create prediction": {
+      "main": [
+        [
+          {
+            "node": "Pause",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check prediction status": {
+      "main": [
+        [
+          {
+            "node": "Check for success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set fields for prediction": {
+      "main": [
+        [
+          {
+            "node": "Check prediction status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Set prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

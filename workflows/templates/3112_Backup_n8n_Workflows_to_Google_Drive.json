@@ -1,0 +1,187 @@
+{
+  "_templateId": 3112,
+  "_templateName": "Backup n8n Workflows to Google Drive",
+  "_templateDescription": "This workflow automates the backup of your n8n workflows data to Google Drive every day. \n\nIt ensures that important configurations and execution logs are securely stored, reducing the risk of data loss and improving workflow resilience.\n\n🔹 Why Use This?\n✅ Automates routine backups effortlessly.\n✅ Reduces manual intervention and potential data loss.\n✅ Securely stores critical workflow configurations in Google Drive.\n\nWith this workflow, you can focus on innovation while n8n takes care of your backups. 🔐✨\n\n🚀 How It Works\nThis workflow operates seamlessly with a combination of scheduled triggers, JSON data transformation, and secure cloud storage.\n\n🛠 Setup Steps\n\tTrigger the backup – Choose between manual execution or automated scheduling at 1:30 AM daily.\n\tData preparation – Your workflow parameters define the backup location and organize files effectively.\n\tTransformation & Encoding – The data is processed and converted into a JSON file in base64 format.\n\tCloud Storage – The backup is securely uploaded to your designated Google Drive folder.\n\n🔧 Customization Options\nYou can modify various aspects of the backup workflow to better suit your needs:\n\n1️⃣ Adjusting Backup Frequency\n\nBy default, the workflow runs daily at 1:30 AM. To change this:\n\nOpen the Trigger Node in n8n.\n\nModify the Cron Expression or select a different frequency (e.g., hourly, weekly, or custom intervals).\n\n2️⃣ Selecting Specific Workflows to Backup\n\nInstead of backing up all workflows, you can filter which ones to include:\n\nAdd a Filter Node before exporting data.\n\nDefine specific workflow IDs or names to include in the backup.\n\n3️⃣ Changing the Backup Destination\n\nThe default destination is Google Drive, but you can change this:\n\nReplace the Google Drive Node with a different storage provider (e.g., Dropbox, AWS S3, or local storage via FTP/SFTP).\n\nConfigure authentication for the new destination.\n\n4️⃣ Modifying Data Format\n\nBy default, the workflow stores data in JSON format. If you need a different format:\n\nConvert JSON to CSV using the Spreadsheet File Node.\n\nStore backups in a compressed format (ZIP) by adding a Compression Node.\n\n5️⃣ Encrypting the Backup for Extra Security\n\nFor added protection:\n\nUse the Crypto Node to encrypt the JSON file before uploading.\n\nSet up an Access-Controlled Folder in Google Drive with limited permissions.\n\n✅ Verify That Your Backup Works\n\nBefore relying on this workflow for your automated backups, make sure it works correctly by performing a quick test:\n\tManually trigger the workflow in n8n and check if the backup file appears in your Google Drive.\n\tOpen Google Drive, navigate to the backup folder, and download the JSON file.\n\tVerify its content by checking if the data matches your workflow’s execution logs.\n\tTry to import the JSON file back into n8n using the “Import File” function to ensure the workflow structure is intact.\n\tAlternatively, copy and paste a test file into Google Drive and confirm that it appears correctly in your workflow logs.\n\nThis quick test will confirm that your backup is running smoothly and that your data is retrievable whenever needed.\n\n📁 How to Find Your Google Drive Directory ID\nTo ensure that the backup is uploaded to the correct folder, you need to retrieve your Google Drive Directory ID. Follow these simple steps:\n\nOpen Google Drive.\nNavigate to the folder where you want to store your backups.\nClick on the folder and check the URL in your browser.\nThe Directory ID is the long string of characters at the end of the URL after /folders/.\n\nExample: 📌 If your folder URL is:\n\nhttps://drive.google.com/drive/folders/14oUlH_LW_NT0Xb2woZWvuzRncV-bhla\nThen, your Directory ID is:\n\n14oUlH_LW_NT0Xb2woZWvuzRncV-bhla\nCopy this Directory ID and use it in the workflow's parameters to ensure the backup is saved in the correct location.\n\n\n.\n\nPhil | Inforeole | Linkedin\n\n🇫🇷 Contactez nous pour automatiser vos processus",
+  "_templateCreatedAt": "2025-03-09T10:33:49.411Z",
+  "_templateTotalViews": 5134,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:01:54.427Z",
+  "meta": {
+    "instanceId": "c911aed9995230b93fd0d9bc41c258d697c2fe97a3bab8c02baf85963eeda618",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "3239827a-ba1c-4131-bfbe-6fa7d35bfaae",
+      "name": "Parameters",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        360,
+        720
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "1b65def6-4984-497d-a4bc-232af22927ad",
+              "name": "directory",
+              "type": "string",
+              "value": "https://drive.google.com/drive/folders/your-directory-id"
+            },
+            {
+              "id": "c8c98f88-9f22-4574-88b8-1db99f6e4ec4",
+              "name": "parentdrive",
+              "type": "string",
+              "value": "https://drive.google.com/drive/my-drive"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "de6411b5-5d53-4d42-b3b6-0fc4b84c52ea",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        180,
+        720
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 1,
+              "triggerAtMinute": 30
+            }
+          ]
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "5b25b86a-c957-4aa3-9c10-b884ee30d9a1",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        160,
+        460
+      ],
+      "parameters": {
+        "color": 3,
+        "width": 560,
+        "height": 140,
+        "content": "## Simplest n8n Workflow Backup – Automating Your Data Security in Google Drive"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f5033398-ccf6-4126-9039-6fa8a5968552",
+      "name": "Code",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        720,
+        720
+      ],
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  const jsonData = JSON.stringify(item.json);\n  const binaryData = Buffer.from(jsonData).toString('base64');\n  item.binary = {\n    data: {\n      data: binaryData,\n      mimeType: 'application/json',\n      fileName: 'data.json'\n    }\n  };\n  return item;\n});"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "b8532f27-a619-4683-a835-096f3a450397",
+      "name": "Get all n8n Workflows",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        540,
+        720
+      ],
+      "parameters": {
+        "filters": {},
+        "requestOptions": {}
+      },
+      "credentials": {
+        "n8nApi": {
+          "id": "credential-id",
+          "name": "n8nApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e6c815c6-00ac-4d91-b92f-dfc0c962bcd3",
+      "name": "Backup to Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        900,
+        720
+      ],
+      "parameters": {
+        "name": "={{  $json.name+ \".json\"}}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive",
+          "cachedResultUrl": "https://drive.google.com/drive/my-drive",
+          "cachedResultName": "My Drive"
+        },
+        "options": {},
+        "folderId": {
+          "__rl": true,
+          "mode": "url",
+          "value": "={{ $('Parameters').item.json.directory }}"
+        }
+      },
+      "retryOnFail": true,
+      "typeVersion": 3
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Backup to Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parameters": {
+      "main": [
+        [
+          {
+            "node": "Get all n8n Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all n8n Workflows": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

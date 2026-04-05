@@ -1,0 +1,436 @@
+{
+  "_templateId": 3622,
+  "_templateName": "AI-Powered Upwork Cover Letter Generator – Pinecone, Groq, Google Gemin, SerpAPI",
+  "_templateDescription": "\n🚀 Automated Upwork Cover Letter Generator with n8n + MacOS Shortcut + Pinecone Context Retrieval\n\nThis n8n automation is designed to streamline the Upwork proposal process by generating highly personalized, context-aware cover letters using your own skills and project data stored in a Pinecone vector store.\n\nWith the help of an AI Agent powered by Groq’s Qwen LLM, and triggered instantly via a MacOS Shortcut, this system takes job descriptions from your clipboard and returns a ready-to-use HTML cover letter—right on your desktop.\n\n⚙️ Workflow Breakdown\n\n🔹 MacOS Shortcut – Trigger the Workflow Instantly\nThe process begins with a MacOS Shortcut that captures job description text from your clipboard and sends it to a custom webhook in n8n.\n\n🔹 Webhook Node – Receive and Process Input\nThe webhook node receives the clipboard data, along with the required credentials for authentication. This node serves as the entry point to the full automation.\n\n🔹 Field Mapping & Pre-Processing\nA series of basic logic nodes map and clean up the input fields. These are then passed to an LLM Chain to generate specific questions related to the job description.\n\n🔹 Question Answer Chain + Vector Search (Pinecone)\nUsing your previously stored skills and project data in a Pinecone vector store, the system retrieves relevant information to answer the generated questions and builds a rich context around the job description.\n\n🔹 AI Agent Node – Generate Personalized Cover Letter\nWith both the job post and contextual data, the AI Agent (powered by Groq’s Qwen LLM) creates a tailored cover letter.  \nThe agent is equipped with:\n\n🔍 Google Search Tool  \n🧠 Vector Store Retriever Tool  \n🗃️ Buffer Memory  \n\nThis ensures the generated proposal is insightful, relevant, and professional.\n\n🔹 Markdown to HTML – Clean Output Conversion\nThe markdown output from the AI is converted into HTML using a Markdown node, making it easy to paste directly into Upwork or emails.\n\n🔹 Return to Shortcut – Display Final Result\nThe final HTML response is sent back to the MacOS Shortcut, which displays it in a modal window for easy review and copy-paste.\n\n💼 Use Case\n\nThis automation is built specifically for freelancers on Upwork (or any freelance platform) who want to:\n\n✅ Save time on repetitive proposal writing  \n✅ Create job-specific cover letters with context  \n✅ Stand out with better personalization  \n✅ Reduce manual effort with automation  \n\nWhether you’re a beginner or a seasoned pro, this tool elevates your workflow while staying simple to use.\n\n📦 Setup Instructions\n\nImport Workflow to your n8n instance  \nCreate and Configure MacOS Shortcut (drag-and-drop ready)  \nPrepare and Embed Your Skills/Project Data into Pinecone  \nAdd API Credentials:\n   Groq (for Qwen LLM)  \n   Pinecone  \n   n8n Webhook (Basic Auth if needed)  \nRun the Workflow & Submit Smarter Proposals\n\n&gt; Note: This workflow is designed for building and returning Upwork cover letters using job descriptions copied to your clipboard. All generation is context-aware and tailored per submission.\n",
+  "_templateCreatedAt": "2025-04-20T15:24:51.535Z",
+  "_templateTotalViews": 762,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:01:15.205Z",
+  "id": "4FnexGEw3EKxHlzw",
+  "meta": {
+    "instanceId": "d16fb7d4b3eb9b9d4ad2ee6a7fbae593d73e9715e51f583c2a0e9acd1781c08e",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Prod: Cover Letter Generator",
+  "tags": [
+    {
+      "id": "Vs70y1mj5s2XzUap",
+      "name": "Production",
+      "createdAt": "2024-12-24T14:42:00.549Z",
+      "updatedAt": "2024-12-24T14:42:00.549Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "98b74f0f-4fe1-4501-9c96-8b7b4969308b",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        188,
+        20
+      ],
+      "parameters": {},
+      "typeVersion": 1.7
+    },
+    {
+      "id": "79ff8cbb-866b-45ba-bec5-3d02d573b69b",
+      "name": "Pinecone Vector Store",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "position": [
+        -324,
+        435
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "5d86f816-53b3-433c-9570-f3f07375ec2c",
+      "name": "Embeddings Google Gemini",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsGoogleGemini",
+      "position": [
+        -236,
+        630
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "e9f86249-b1df-4f85-8924-1b35efa5534e",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        -1140,
+        20
+      ],
+      "webhookId": "87466a6e-2c70-4862-865c-5fdd1313557c",
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "fe11ef69-aada-4eb3-a7e1-0dffa54c8b1e",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        172,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "df37619f-f7fc-403e-b41f-bcb27c5034a1",
+      "name": "Groq Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "position": [
+        52,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "75e711b5-4675-4006-a70f-a9ea7839cad8",
+      "name": "Respond to Webhook",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "position": [
+        1008,
+        20
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "c057a3fd-d0b8-435d-9111-50f173448f99",
+      "name": "Markdown",
+      "type": "n8n-nodes-base.markdown",
+      "position": [
+        788,
+        20
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "93a9f162-9d86-4ce6-9d8e-4a45026747cf",
+      "name": "Fields_Mappings",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -920,
+        20
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "d58d312e-c995-4183-a53d-1d7f67f26fac",
+      "name": "Basic LLM Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        -700,
+        20
+      ],
+      "parameters": {},
+      "typeVersion": 1.5
+    },
+    {
+      "id": "b3d6ca0d-3a03-4a23-aa4c-672be3cac6af",
+      "name": "Groq Chat Model1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "position": [
+        -612,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "b112f5b3-71c5-4be4-abb0-8a68095b102a",
+      "name": "Question and Answer Chain",
+      "type": "@n8n/n8n-nodes-langchain.chainRetrievalQa",
+      "position": [
+        -324,
+        20
+      ],
+      "parameters": {},
+      "typeVersion": 1.4
+    },
+    {
+      "id": "66bf3d46-9edf-4db6-89ce-d08a1f0eeec3",
+      "name": "Vector Store Retriever",
+      "type": "@n8n/n8n-nodes-langchain.retrieverVectorStore",
+      "position": [
+        -324,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "56c90cd4-b0a2-493d-99a9-bbb8d376635e",
+      "name": "Answer questions with a vector store",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "position": [
+        292,
+        242.5
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "31d3cb1f-9289-4220-af2f-5f9d8b56bbdd",
+      "name": "SerpAPI",
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "position": [
+        588,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "36062623-556e-4a0f-8cab-f7de150b2c1d",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -740,
+        -220
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2db7a969-2c06-4078-8ca5-62374fc6d383",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -360,
+        -220
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "352bdb73-3b34-4ada-9c1f-0b60d79cf6d3",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        20,
+        -220
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "9a08b587-c8dd-4246-a1ab-99828a01af3a",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        740,
+        -220
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "cfc704e2-8d48-4361-b0e3-7899c8ba1695",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1180,
+        -220
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "24291116-031f-4dd9-bc4e-89ff30adab75",
+  "connections": {
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Fields_Mappings",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Markdown",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Markdown": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fields_Mappings": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone Vector Store": {
+      "ai_tool": [
+        []
+      ],
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Retriever",
+            "type": "ai_vectorStore",
+            "index": 0
+          },
+          {
+            "node": "Answer questions with a vector store",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Retriever": {
+      "ai_retriever": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_retriever",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings Google Gemini": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Question and Answer Chain": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Answer questions with a vector store": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

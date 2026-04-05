@@ -1,0 +1,267 @@
+{
+  "_templateId": 3519,
+  "_templateName": "Generate Dynamic Images with Text & Templates using ImageKit.",
+  "_templateDescription": "A Game-Changer in Dynamic Content Generation!\nIn a world where Templated.io and ApiTemplate.io charge between $29 to $179/month, we’re flipping the script…\n\nWhat if you could get all the power – for FREE?\nWe’re proud to introduce our N8N workflow, a modern, fast, and developer-friendly tool for generating dynamic images with $zero subscription fees.\n\nNo pricing tiers.\nNo usage caps.\nNo hidden fees.\nJust pure value – 100% free.\n\nHow We Compare:\n\n\nor \n\n\n\n\n\nBut we are always Free\n\nNote: Pricing is based on 2025-04-01 and the free imagekit plan.\n\nWhy Free?\n\nWe believe that powerful tools should be accessible to everyone — startups, developers, creators, and students alike. Our mission is to empower you to create amazing things without breaking the bank.\n\nWhat is a template idea, and how can you build one? (With examples)\nFollow this page to better understand everything. Add overlays on images\n\nGet Started in Seconds\n\nNo credit card. No trials. No limitations.\nJust sign up and start creating.\n\nWhat You Need\n\nn8n (Cloud or self-hosted).\nImagekit just the FREE plan.\n\nHow to Generate imagekit API\nAfter signing up, go to the ImageKit dashboard. On the left sidebar, scroll down until you find \"Developer Options\", then click on it.\n\nChoose your preferred method of integration – either API keys or Webhooks. In this case, we will proceed with the API option.\n\nOn the right side of the screen, you will see your Private Key. This is the API key you'll need for your n8n workflow, along with code samples in different programming languages.\n\nFor beginners: If you're not familiar with how to connect using the code from the previous step, simply visit this link: Upload file V1\n\nOn the right side of that page, enter your Private Key in the input field labeled \"API Key\", then click on the \"Send API Request\" button.\n\nOnce the request is sent, scroll down to view the Shell/cURL code. From this code, copy only the part that looks like this:  \n   --header 'Authorization: Basic ...'  \n   and use it in your n8n workflow.\n\nN8N Workflow Setup\n1- Import the workflow into n8n.\n\n2- Add imagekit API.\n\n3- Follow the instructions in the workflow.\n\n4- Test & launch",
+  "_templateCreatedAt": "2025-04-11T08:27:56.751Z",
+  "_templateTotalViews": 653,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:01:23.668Z",
+  "meta": {
+    "instanceId": "6d1a6576bda3635d8164ddb46e094e7d0d39b6b94fe9f321d0f6558d0b6c27d4",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "adda98f8-54e0-4d0a-9eee-57aad2e13b5d",
+      "name": "Extract Image Extension",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        100,
+        -320
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "005ebc38-105d-467b-917a-4ee10fb87316",
+      "name": "Image Properties",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -120,
+        -320
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "18a62cc0-177e-482b-9853-62f5eadd2473",
+      "name": "Upload Post Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        320,
+        -320
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "72644b00-5891-4729-86bd-e7c3079e5b2b",
+      "name": "Generate & Store Social IMG on Cloud",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        540,
+        -320
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "1bfb8b1e-b380-499c-815d-95be76c00e4c",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -340,
+        -320
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "7d4380b9-ef1c-4f0d-bed5-baa831f776e7",
+      "name": "Image Previewer",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        760,
+        -320
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "986457b1-44cc-491f-b842-ab507f59d53d",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -340,
+        -680
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e4293925-2640-4ab9-aaf2-62b56d5d23a2",
+      "name": "APITemplate.io",
+      "type": "n8n-nodes-base.apiTemplateIo",
+      "position": [
+        880,
+        -80
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "43cf11d0-2271-4f87-bec2-44fe4b9692ab",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -340,
+        -80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "64562c84-9e9b-44a7-869e-ece814e888a0",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -180,
+        -340
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "bbf83933-e6cb-481f-b89d-6fb5a2360576",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        40,
+        -340
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "806a00b5-f463-4ffa-b029-911f88104e42",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -340,
+        140
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a49fa75c-71ba-4cc6-aeb3-93b2624063cf",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        260,
+        -340
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "deed5c78-f076-4a19-a1d7-df338b7c41ac",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -340,
+        240
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "6ea3109e-b90e-492c-b6a1-4f77effa3f33",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        200,
+        -80
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "22ab82e0-0ba1-45ae-aed3-cb233a7697fd",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        480,
+        -340
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Image Properties": {
+      "main": [
+        [
+          {
+            "node": "Extract Image Extension",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Post Image": {
+      "main": [
+        [
+          {
+            "node": "Generate & Store Social IMG on Cloud",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Image Extension": {
+      "main": [
+        [
+          {
+            "node": "Upload Post Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Image Properties",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate & Store Social IMG on Cloud": {
+      "main": [
+        [
+          {
+            "node": "Image Previewer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

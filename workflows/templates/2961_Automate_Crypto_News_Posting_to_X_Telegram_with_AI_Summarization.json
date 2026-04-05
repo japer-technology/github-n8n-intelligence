@@ -1,0 +1,387 @@
+{
+  "_templateId": 2961,
+  "_templateName": "Automate Crypto News Posting to X & Telegram with AI Summarization",
+  "_templateDescription": "Automate Crypto News Posting to X & Telegram with AI Summarization\n\nThis n8n template automates the process of curating and sharing the latest cryptocurrency news on X (formerly Twitter) and Telegram. By leveraging AI for content summarization, this workflow allows you to effortlessly maintain an active social media presence, keeping your audience informed about the dynamic crypto market without manual effort.\n\nWho is this for?\n\nThis template is ideal for:\n\nContent Creators & Marketers:** Aiming to consistently share valuable news and engage their audience without manual content curation.\nCrypto Influencers & Educators:** Looking to provide timely news updates to their followers across multiple platforms.\nCrypto Communities & DAOs:** Seeking to automate news dissemination within their Telegram channels and wider X audience.\nAnyone interested in automated news monitoring and sharing.**\n\nWhat problem is this workflow solving?\n\nManually tracking, summarizing, and posting crypto news across different social media platforms is time-consuming and requires constant effort. This workflow eliminates these manual tasks, allowing users to:\n\nSave Time & Effort:** Automate the entire news curation and posting process.\nMaintain Consistent Presence:** Ensure a regular flow of valuable crypto news updates on X and Telegram.\nIncrease Audience Engagement:** Provide timely and summarized news to keep your audience informed and engaged.\nFocus on Strategy:** Free up time to focus on broader content strategy and audience growth instead of repetitive manual posting.\n\nWhat this workflow does:\n\nThis workflow automates the following key steps:\n\nScheduled News Retrieval: Uses a Schedule Trigger to run every 90 minutes (configurable), initiating the news gathering process.\nReal-time Crypto News Aggregation: Fetches the latest cryptocurrency news from the CryptoPanic API.\nRecent News Filtering: Filters news articles to include only those published within the last 30 minutes, ensuring timely updates.\nContent Extraction from News URLs: Visits individual news URLs and extracts the full article content.\nAI-Powered Content Summarization: Leverages GPT or other LLMs to extract the core content from news articles.\nContent Aggregation: Merges content from multiple news articles into a single input for summarization.\nAI-Driven Social Media Content Generation: Utilizes GPT or other LLMs to summarize the aggregated news and create two distinct outputs:\n    Concise & Engaging X Post: Optimized for Twitter's character limit, designed to be attention-grabbing.\n    Detailed Telegram Report: A more comprehensive summary suitable for a Telegram channel or group.\nAutomated Posting to X (Twitter): Automatically posts the generated X summary to your connected Twitter account.\nAutomated Delivery to Telegram: Automatically sends the detailed Telegram report to your specified Telegram chat ID.\n\nSetup:\n\nTo get started, you will need to configure the following services and credentials:\n\nCryptoPanic API Token:\n\n    Obtain a free API token from the CryptoPanic website: https://cryptopanic.com/\n    In n8n, navigate to the \"HTTP Request\" node (named \"HTTP Request\").\n    In the node parameters, locate the \"URL\" field and replace \"YOURTOKEN\" in the URL with your obtained CryptoPanic API token.\n\nOpenAI API Key:\n\n    Obtain an API key from OpenAI: https://platform.openai.com/\n    For Content Extraction: In n8n, connect your OpenAI account to the \"ContentExtraction GPT3.5\" node (named \"ContentExtraction GPT3.5\"). Use your OpenAI API key for the credentials.\n    For News Summarization & Social Media Content Generation: In n8n, connect your OpenAI account to the \"Summary news GPT\" node (named \"Summary news GPT\"). Use your OpenAI API key for the credentials.\n\nX (Twitter) Developer Credentials:\n\n    Create a developer account and project on the X Developer Portal: https://developer.twitter.com/\n    Obtain the necessary API keys and tokens for your X app.\n    In n8n, connect your X Developer account credentials to the \"X\" node (named \"X\").\n\nTelegram Bot and Chat ID:\n\n    Create a Telegram bot using BotFather on Telegram. Obtain your bot's API token.\n    Obtain the Chat ID of the Telegram chat where you want to send news reports.\n    In n8n, connect your Telegram Bot API token to the \"Telegram\" node (named \"Telegram\").\n    In the \"Telegram\" node parameters, replace \"YOUR_TELEGRAM_CHAT_ID\" with your Telegram Chat ID.\n\nHow to customize this workflow:\nAdapt to ANY Topic:**  Change the \"HTTP Request\" node to use a news API for your desired topic (AI, Sports, World News, etc.).  Critically, adjust the prompts in the \"Summary news GPT\" node to be relevant to your chosen topic so the AI generates appropriate summaries and social media content.\nAdjust Scheduling Frequency:** Modify the \"Schedule Trigger\" node to change how often the workflow runs and posts news.\nAdjust Scheduling Frequency:** Modify the \"Schedule Trigger\" node to change the frequency of news updates (e.g., change the interval from 90 minutes to a different value).\nModify News Filtering:** Customize the Python code in the \"Extract Meta\" node to adjust the news filtering criteria. You can change the time window (currently 30 minutes) or filter based on other criteria from the CryptoPanic API response.\nExperiment with GPT Models:** In the \"Summary news GPT\" node, try different OpenAI models (e.g., gpt-4, gpt-3.5-turbo-16k) to see how they affect the summarization quality and output. Note that more advanced models may incur higher API costs.\nCustomize AI Prompts:** Fine-tune the system and user prompts in the \"Summary news GPT\" node to alter the tone, style, or format of the generated X and Telegram content. You can adjust the persona of the AI blogger, the desired level of detail in summaries, or specific keywords to include.\nExtend to Other Platforms:** Add nodes to post to other social media platforms like LinkedIn, Facebook, or Discord by adapting the \"Summary news GPT\" prompts and integrating relevant n8n nodes for those platforms.\n\nCategory:\n\nMarketing, Social Media, AI, News Automation, Content Creation\n\nWorkflow by: Tianyi (muzi)\nn8n Creators Profile: https://n8n.io/creators/muzi/",
+  "_templateCreatedAt": "2025-02-21T07:39:52.106Z",
+  "_templateTotalViews": 2811,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:02:09.975Z",
+  "id": "5E8JU2KX8vmhNsj5",
+  "meta": {
+    "instanceId": "f638a47e4e563f91fde8b98ed9f5fa6a9faa41a207143e9ce05d85200c905524",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "X/Twitter Crypto News AI-Influencer",
+  "tags": [
+    {
+      "id": "dNuSmJmhSOBNp9lV",
+      "name": "Social Media",
+      "createdAt": "2025-01-26T15:22:52.143Z",
+      "updatedAt": "2025-01-26T15:22:52.143Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "e62c883e-a647-4bb4-ac42-6f80f50ea799",
+      "name": "No Operation, do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        2040,
+        500
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "21628346-5888-457a-9966-6044aa67ef17",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -540,
+        360
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "165e740a-e5e5-48f1-b074-232912fd8044",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -200,
+        360
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "39a3e74f-bef9-42df-a540-a500ffcdc221",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        100,
+        360
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "fae85f67-3038-4e38-a468-dbc16787788e",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        340,
+        360
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "c4fb131f-4c65-4b59-a07b-fbd16da2e467",
+      "name": "Sticky Note10",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        360
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "d39b8d5b-33ad-4b4c-ab56-c61d630e9464",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -520,
+        0
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "295968f9-b8ab-49e7-83eb-09cb80ea91d2",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1240,
+        360
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4de265c5-909f-45d3-85aa-7e3c8eb3fb33",
+      "name": "Sticky Note11",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        580,
+        360
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "6511fcdc-ff93-49fc-a980-fc8bffd671ed",
+      "name": "Summary news GPT",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        1280,
+        500
+      ],
+      "parameters": {},
+      "typeVersion": 1.7,
+      "alwaysOutputData": true
+    },
+    {
+      "id": "610952b8-afb1-4993-9656-e19df8a90ab1",
+      "name": "Sticky Note12",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        20
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f65b3baa-1722-485a-9222-47f25f34359f",
+      "name": "ContentExtraction GPT3.5",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        640,
+        500
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "9d9f301d-4af7-4e0b-a140-5ec06676d315",
+      "name": "Sticky Note8",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        980,
+        360
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "79fe1453-8129-4254-b7ba-004c5f7c3d73",
+      "name": "Set the posting interval",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -440,
+        500
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "9ad1cf42-b92c-451d-8372-85e1a3e4dc75",
+      "name": "Get Crypto news from  CryptoPanic",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -120,
+        500
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "b1b97496-e52c-45ce-83bd-8e829ff18a93",
+      "name": "Merge all the news together",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        1040,
+        500
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "b2e463a2-ac31-40eb-8edf-2e67619a6d52",
+      "name": "Automatically post to X",
+      "type": "n8n-nodes-base.twitter",
+      "onError": "continueRegularOutput",
+      "position": [
+        1760,
+        500
+      ],
+      "parameters": {},
+      "executeOnce": false,
+      "typeVersion": 2
+    },
+    {
+      "id": "78c51f7c-3a74-48e6-833c-3ab2c66c7da3",
+      "name": "Send a news report to Telegram",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1760,
+        160
+      ],
+      "webhookId": "0937b258-1fff-4628-bff2-c0c6a2b3cfea",
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "75474f9f-4892-4eab-aa4f-2cc7a7ad87fb",
+      "name": "Visit the News Page",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        380,
+        500
+      ],
+      "parameters": {},
+      "typeVersion": 4.2,
+      "alwaysOutputData": false
+    },
+    {
+      "id": "c056f7ba-0e84-48a8-bc29-07dfba4c8da8",
+      "name": "Extract title and URL",
+      "type": "n8n-nodes-base.code",
+      "maxTries": 5,
+      "position": [
+        140,
+        500
+      ],
+      "parameters": {},
+      "executeOnce": true,
+      "retryOnFail": false,
+      "typeVersion": 2,
+      "alwaysOutputData": true
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionOrder": "v1"
+  },
+  "versionId": "4adacf3d-79b5-4f50-b566-24cd8d6f7b51",
+  "connections": {
+    "Summary news GPT": {
+      "main": [
+        [
+          {
+            "node": "Send a news report to Telegram",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Automatically post to X",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Visit the News Page": {
+      "main": [
+        [
+          {
+            "node": "ContentExtraction GPT3.5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract title and URL": {
+      "main": [
+        [
+          {
+            "node": "Visit the News Page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Automatically post to X": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ContentExtraction GPT3.5": {
+      "main": [
+        [
+          {
+            "node": "Merge all the news together",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set the posting interval": {
+      "main": [
+        [
+          {
+            "node": "Get Crypto news from  CryptoPanic",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge all the news together": {
+      "main": [
+        [
+          {
+            "node": "Summary news GPT",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a news report to Telegram": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Crypto news from  CryptoPanic": {
+      "main": [
+        [
+          {
+            "node": "Extract title and URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,176 @@
+{
+  "_templateId": 2738,
+  "_templateName": "Transform Image to Lego Style Using Line and Dall-E",
+  "_templateDescription": "Who is this for?\nThis workflow is designed for:\nContent creators**, artists, or hobbyists looking to experiment with AI-generated art.\nSmall business owners* or *marketers** using LEGO-style designs for branding or promotions.\nDevelopers* or *AI enthusiasts** wanting to automate image transformations through messaging platforms like LINE.\n\nWhat problem is this workflow solving?\nSimplifies the process of creating custom AI-generated LEGO-style images.\nAutomates the manual effort of transforming user-uploaded images into AI-generated artwork.\nBridges the gap between messaging platforms (LINE) and advanced AI tools (DALL·E).\nProvides a seamless system for users to upload an image and receive an AI-transformed output without technical expertise.\n\nWhat this workflow does\nImage Upload via LINE:\n   Users send an image to the LINE chatbot.\nAI-Powered Prompt Creation:\n   GPT generates a prompt to describe the uploaded image for LEGO-style conversion.\nAI Image Generation:\n   DALL·E 3 processes the prompt and creates a LEGO-style isometric image.\nImage Delivery:\n   The generated image is returned to the user in LINE.\n\nSetup\n\nPrerequisites\nLINE Developer Account** with API credentials.\nAccess to OpenAI API with DALL·E and GPT-4 capabilities.\nA configured n8n instance to run this workflow.\n\nSteps\nEnvironment Setup:\n   Add your LINE API Token and OpenAI credentials as environment variables (LINE_API_TOKEN, OPENAI_API_KEY) in n8n.\nConfigure LINE Webhook:\n   Point the LINE webhook to your n8n instance.\nConnect OpenAI:\n   Set up OpenAI API credentials in the workflow nodes for GPT-4 and DALL·E.\nTest Workflow:\n   Upload a sample image in LINE and ensure it returns the LEGO-style AI image.\n\nHow to customize this workflow to your needs\nLocalization**:\n  Modify response messages in LINE to fit your audience's language and tone.\nIntegration**:\n  Add nodes to send notifications through other platforms like Slack or email.\nImage Style**:\n  Replace the LEGO-style image prompt with other artistic styles or themes.\n\nAdvanced Use Cases\nArt Contests:\n   Users upload images and receive AI-enhanced outputs for community voting or branding.\nMarketing Campaigns:\n   Quickly generate creative visual content for ads and promotions using customer-submitted photos.\nEducation:\n   Use the workflow to teach students about AI-generated art and automation through a hands-on approach.\n\nTips for Optimization\nError Handling**:\n  Add fallback nodes to handle invalid images or API errors gracefully.\nLogging**:\n  Implement a logging mechanism to track requests and outputs for debugging and analytics.\nScalability**:\n  Use queue-based systems or cloud scaling to handle large volumes of image requests.\n\nEnhancements\nAdd sticky notes in n8n to provide inline instructions for configuring each node.\nCreate a tutorial video or documentation for first-time users to set up and customize the workflow.\nInclude advanced filters to allow users to select from multiple styles beyond LEGO (e.g., pixel art, watercolor).\n\nThis workflow enables seamless interaction between messaging platforms and advanced AI capabilities, making it highly versatile for various creative and business applications.",
+  "_templateCreatedAt": "2025-01-17T03:33:28.196Z",
+  "_templateTotalViews": 1539,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:02:31.467Z",
+  "meta": {
+    "instanceId": "c59c4acfed171bdc864e7c432be610946898c3ee271693e0303565c953d88c1d",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Transform Image to Lego Style Using Line and Dall-E",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "82b62d4e-a263-4232-9bae-4c581db2269c",
+      "name": "Receive a Line Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "2a27c148-3977-485f-b197-567c96671023",
+      "parameters": {
+        "path": "lineimage",
+        "options": {},
+        "httpMethod": "POST"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "f861c4eb-3d4f-4253-810f-8032602f079b",
+      "name": "Receive Line Messages",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {
+        "url": "=https://api-data.line.me/v2/bot/message/{{ $json.body.events[0].message.id }}/content",
+        "options": {},
+        "jsonHeaders": "={\n\"Authorization\": \"Bearer YOUR_TOKEN_HERE\",\n\"Content-Type\": \"application/json\"\n}",
+        "sendHeaders": true,
+        "specifyHeaders": "json"
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "da3a9188-028d-4c75-b23f-5f1f4e50784c",
+      "name": "Creating an Image using Dall-E",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        860,
+        0
+      ],
+      "parameters": {
+        "prompt": "={{ $json.content }}",
+        "options": {
+          "returnImageUrls": true
+        },
+        "resource": "image"
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 1.7
+    },
+    {
+      "id": "36c826e5-eacd-43ad-b663-4d788005e61a",
+      "name": "Creating a Prompt for Dall-E (Lego Style)",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        540,
+        0
+      ],
+      "parameters": {
+        "text": "Creating the DALL·E 3 prompt to transform this kind of image into a isometric LEGO image (Only provide me with a prompt).",
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "options": {},
+        "resource": "image",
+        "inputType": "base64",
+        "operation": "analyze",
+        "binaryPropertyName": "=data"
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "credential-id",
+          "name": "openAiApi Credential"
+        }
+      },
+      "typeVersion": 1.7
+    },
+    {
+      "id": "3c19f931-9ca0-4bd7-b4eb-1628d89bbba1",
+      "name": "Send Back an Image through Line",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1160,
+        0
+      ],
+      "parameters": {
+        "url": "https://api.line.me/v2/bot/message/reply",
+        "method": "POST",
+        "options": {},
+        "jsonBody": "={\n  \"replyToken\": \"{{ $('Receive a Line Webhook').item.json.body.events[0].replyToken }}\",\n  \"messages\": [\n    {\n      \"type\": \"image\",\n      \"originalContentUrl\": \"{{ $json.url }}\",\n      \"previewImageUrl\": \"{{ $json.url }}\"\n    }\n  ]\n}",
+        "sendBody": true,
+        "jsonHeaders": "{\n\"Authorization\": \"Bearer YOUR_TOKEN_HERE\",\n\"Content-Type\": \"application/json\"\n}",
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "specifyHeaders": "json"
+      },
+      "typeVersion": 4.2
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "",
+  "connections": {
+    "Receive Line Messages": {
+      "main": [
+        [
+          {
+            "node": "Creating a Prompt for Dall-E (Lego Style)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Receive a Line Webhook": {
+      "main": [
+        [
+          {
+            "node": "Receive Line Messages",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creating an Image using Dall-E": {
+      "main": [
+        [
+          {
+            "node": "Send Back an Image through Line",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Creating a Prompt for Dall-E (Lego Style)": {
+      "main": [
+        [
+          {
+            "node": "Creating an Image using Dall-E",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

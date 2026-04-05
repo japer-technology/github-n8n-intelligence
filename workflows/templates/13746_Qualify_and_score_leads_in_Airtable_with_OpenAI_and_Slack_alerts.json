@@ -1,0 +1,504 @@
+{
+  "_templateId": 13746,
+  "_templateName": "Qualify and score leads in Airtable with OpenAI and Slack alerts",
+  "_templateDescription": "🧩 Description\nAutomatically qualify, score, and route new leads using a hybrid AI + rule-based scoring engine. This workflow analyzes incoming leads from Airtable, enriches them with OpenAI-powered qualification, applies deterministic business rules, and instantly alerts your sales team in Slack when a high-intent lead is detected.\n\n🎯 Who’s it for\n\nSales teams that want instant alerts for high-intent leads\nFounders who need automated qualification without hiring SDRs\nMarketing teams running paid campaigns and capturing inbound leads\nRevOps teams building structured, explainable scoring systems\n\nIf you store leads in Airtable and want AI-assisted qualification with fallback logic (not just blind AI scoring), this template is for you.\n\n🤖 What it does\nThis workflow implements a hybrid lead scoring model:\n\nTriggers when a new lead is created in Airtable.\nNormalizes and standardizes lead data.\nSends structured context to OpenAI for qualification.\nValidates the AI response (strict JSON parsing).\nFalls back to deterministic scoring if AI fails.\nCombines AI score (50% weight) + rule-based score.\nUpdates Airtable with:\n\tFinal score (0–100)\n\tHot/Warm/Cold tag\n\tAI reasoning\n\tConfidence level\n\nSends Slack alerts:\n\t🔥 Hot leads (score ≥ 80)\n\t⚠️ AI scoring failures (manual review required)\n\nUnlike basic AI-only scoring, this workflow guarantees reliability by combining LLM reasoning with business logic.\n\n🔄 How it works \n\n Lead intake & guardrail\n\tAirtable Trigger watches for new records.\n\tA guard condition prevents re-processing already scored leads (processed = true).\n\nAI qualification engine\n\tA structured prompt sends lead context to OpenAI.\n\tA code node vlidates and safely parses the JSON.\n\tIf invalid - fallback scoring is activated + Slack alert.\n\nDeterministic scoring layer\nBusiness logic evaluates:\n\tCompany size\n\tRole authority (Founder, Executive, Manager)\n\tIndustry relevance\n\tIntent message length\n\n\tThe deterministic score is capped at 50.\n\n\tHow deteministic scoring works?\nLarger companies receive higher baseline scores:\n\t1-10: 5\n  \t11-50: 10\n  \t51-200: 20\n  \t201-500\": 25\n  \t501-1000\": 30\n\t1000+: 35\n\t\n\tYou can increase or decrease these values depending on your Ideal Customer Profile (ICP).\n\n\tIndustry boost\n\tTechnology/Software: 10\n  \tSaaS/Cloud Services: 15\n  \tCybersecurity: 20\n  \tIT Services/Consulting: 10\n\t\n\tIf your product is industry-specific, this is where you fine-tune relevance.\n \n\tRole authority boost \t\n\tDecision-making power increases lead quality:\n\n\tFounder → +20\n\tExecutive → +20\n\tManager → +10\n\tHead → +10\n\n\tThe workflow detects these keywords inside the role field and applies the corresponding boost.\n\tIntent boost (message length)\n\tLonger intent messages imply higher purchase interest:\n\t100 characters → +15\n\t50 characters → +8\n\t\t\nHybrid scoring formula\t\nFinal Score = (AI Score × 0.5) + Deterministic Score\n\n\tTag thresholds:\n\t80–100 → Hot\n\t50–79 → Warm\n\t0–49 → Cold\nCRM update\n\n\tThe workflow updates Airtable with:\n\tscore\n\tai_score\n\tdeterministic_score\n\ttag\n\tai_reason\n\tscore_confidence\n\tprocessed = true\n\nSales alert logic\n\tIf:\n\tTag = Hot\n\tScore ≥ 80\n\n\t→ Slack sends an immediate notification to the sales team.\n\n📋 Requirements\nYou’ll need:\n\nAirtable account (Base with Leads table)\nOpenAI API credentials\nSlack bot credentials\nn8n (Cloud or Self-hosted)\n\nNo API keys are hardcoded. All credentials use secure n8n credential storage.\n\n🛠️ How to set up\n\nImport the workflow.\nConnect credentials:\n\tAirtable\n\tOpenAI\n\tSlack\n\nUpdate:\n\tAirtable Base ID\n\tTable name\n\tSlack channel\n\nEnsure your Airtable table includes:\n\tlead_id (unique)\n\tfirst_name (text)\n\tlast_name (text)\n\temail\t\n\tphone\n\tjob_role (single select)\n\tindustry (single select)\n\tcompany_size (single select)\n\tintent_message (long text)\t- \n\tscore (number)\n\tai_score (number)\n\tdeterministic_score (number)\n\ttag (text)\n\tai_tag (text)\n\tscore_confidence (text)\n\tcreated_at (created time) \n\tprocessed (checkbox/boolean)\n\n\tActivate the workflow.\n\n🎛️ How to customize\n\nThis template uses a hybrid scoring model, combining:\n\n🤖 AI qualification score (50% weight)\n📊 Deterministic rule-based scoring (fully customizable)\n\nAll deterministic scoring logic can be modified inside the Hybrid Lead Scoring Engine Code node.\n\nThat node contains the full business rule logic for:\n\nCompany size scoring\nIndustry boosts\nRole authority boosts\nIntent-based scoring\n\nFinal score calculation formula\nYou can easily adjust:\nAI scoring weight (currently 50%)\nHot lead threshold (currently 80)\nSlack notification logic\nAI prompt instructions (to match your ICP)\n\nYou can also:\nAdd email notifications\nRoute Warm leads to nurturing workflows\nPush Hot leads into a CRM like HubSpot or Salesforce\n\n✨ Why this template is different\nUses AI with validation and fallback\nPrevents double-processing\nPreserves explainability (AI reasoning stored in CRM)\nAvoids over-reliance on LLM output\nProduction-ready structure with clear separation of logic blocks\n\nThis is not just AI scoring — it’s a resilient, sales-ready qualification engine.\n",
+  "_templateCreatedAt": "2026-02-27T07:40:52.941Z",
+  "_templateTotalViews": 0,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:06:15.566Z",
+  "id": "l6zve788hmIguUgf",
+  "meta": {
+    "instanceId": "34602c084e5be719bdc7b716ca03240d692da7381ab3033f433636bdf92af238",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "AI-Powered Hybrid Lead Scoring with Sales ALerts",
+  "tags": [
+    {
+      "id": "MEeQUEFhxM5YOMNn",
+      "name": "lead scoring",
+      "createdAt": "2026-02-27T07:29:21.755Z",
+      "updatedAt": "2026-02-27T07:29:21.755Z"
+    },
+    {
+      "id": "L5El8MyzNzdVBJAP",
+      "name": "sales automation",
+      "createdAt": "2026-02-27T07:29:42.633Z",
+      "updatedAt": "2026-02-27T07:29:42.633Z"
+    },
+    {
+      "id": "d19lkWgLXhr6YFw8",
+      "name": "CRM automation",
+      "createdAt": "2026-02-27T07:30:18.275Z",
+      "updatedAt": "2026-02-27T07:30:18.275Z"
+    },
+    {
+      "id": "0zERJEGDfj3aK2ld",
+      "name": "sales workflow",
+      "createdAt": "2026-02-27T07:30:32.671Z",
+      "updatedAt": "2026-02-27T07:30:32.671Z"
+    },
+    {
+      "id": "65eTTDaOWqswtml9",
+      "name": "sales pipeline",
+      "createdAt": "2026-02-27T07:30:51.426Z",
+      "updatedAt": "2026-02-27T07:30:51.426Z"
+    },
+    {
+      "id": "xaTW1lbhOD9IcGcJ",
+      "name": "lead qualification",
+      "createdAt": "2026-02-27T07:31:04.799Z",
+      "updatedAt": "2026-02-27T07:31:04.799Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "d14041b6-d191-4a69-ad19-f647aad42cdb",
+      "name": "Trigger: New Lead Created",
+      "type": "n8n-nodes-base.airtableTrigger",
+      "position": [
+        -144,
+        -320
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "5a2add48-cba8-4fb1-af26-7e4ec33e5685",
+      "name": "Normalize & Standardize Lead Data",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        96,
+        -320
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "b5d33a59-816f-4175-8f95-95a31e1fe3d7",
+      "name": "Guard: Skip Already Processed Leads",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        304,
+        -320
+      ],
+      "parameters": {},
+      "typeVersion": 2.3
+    },
+    {
+      "id": "7c6d0b48-e983-4eb8-9058-5763ec0f5f3c",
+      "name": "Exit: Already Processed",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        528,
+        -32
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "eb40b73a-8fde-4bc2-ae12-1503fcf39338",
+      "name": "Prepare AI Scoring Context",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        544,
+        -336
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "1be3882d-08cc-4a70-8063-bd385752c9f0",
+      "name": "AI Lead Qualification (GPT)",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        800,
+        -336
+      ],
+      "parameters": {},
+      "typeVersion": 2,
+      "alwaysOutputData": false
+    },
+    {
+      "id": "7c68db5a-c1e9-44d6-989d-498fb5105363",
+      "name": "Validate & Parse AI Response",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1136,
+        -336
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "7d8bb4e6-d838-4d4a-9bdf-45f42bfb9f16",
+      "name": "AI Response Validation",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        864,
+        -64
+      ],
+      "parameters": {},
+      "typeVersion": 2.3
+    },
+    {
+      "id": "de8b1dc2-90d4-4949-8360-ed342a87c13c",
+      "name": "Merge Valid & Fallback Paths",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1136,
+        -64
+      ],
+      "parameters": {},
+      "typeVersion": 3.2
+    },
+    {
+      "id": "9671bf02-fb74-4405-ad32-bd188fc396ba",
+      "name": "Alert: AI Scoring Failure",
+      "type": "n8n-nodes-base.slack",
+      "position": [
+        1136,
+        224
+      ],
+      "webhookId": "d2752e20-4f8b-4630-8ba6-edbe647152b8",
+      "parameters": {},
+      "typeVersion": 2.4
+    },
+    {
+      "id": "f0894b0c-13fd-4723-9742-d98b4d80c38e",
+      "name": "Hybrid Lead Scoring Engine",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1456,
+        -272
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "6bf92f87-2d41-47f1-aaa2-c0ee717c9a72",
+      "name": "Prepare CRM Update Payload",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1808,
+        -272
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "7fc88fb3-720d-4dc6-b61c-1c7eddb99c97",
+      "name": "Update Lead Record (CRM)",
+      "type": "n8n-nodes-base.airtable",
+      "position": [
+        1824,
+        -48
+      ],
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "037cc655-0103-4472-9eed-4093f6d9deef",
+      "name": "Prepare Hot Lead Notification",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2112,
+        -48
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "7a39ed59-600c-4930-8359-8b264684dce8",
+      "name": "Decision: Is High-Intent Lead?",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        2256,
+        -336
+      ],
+      "parameters": {},
+      "typeVersion": 2.3
+    },
+    {
+      "id": "4a1e3829-ae4d-44be-b883-81ab748f007c",
+      "name": "Notify Sales Team – Hot Lead",
+      "type": "n8n-nodes-base.slack",
+      "position": [
+        2464,
+        -352
+      ],
+      "webhookId": "faa3a3be-913d-4632-a94c-db42d479f5ec",
+      "parameters": {},
+      "typeVersion": 2.4
+    },
+    {
+      "id": "5cfe888a-794b-4e1e-a1fd-8117c5c77d08",
+      "name": "Exit: No Sales Notification",
+      "type": "n8n-nodes-base.noOp",
+      "position": [
+        2464,
+        -32
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "dc26a99e-38c2-4743-a16d-ef39fb40086d",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -816,
+        -608
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "d3fd89d7-f129-4b2d-a739-eae0b04d961e",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -192,
+        -496
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "5454a239-90f5-42bc-b8cf-e2da7908301f",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        768,
+        -496
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "fc813e38-4e27-4c7b-9585-e1adfdd465a6",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1344,
+        -496
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "01462396-8611-43bc-a6ec-cc1b45d5aef1",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1680,
+        -480
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "5cd59010-7672-4f63-83e5-64b2f2aa6b1a",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2048,
+        -480
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": true,
+  "pinData": {},
+  "settings": {
+    "timezone": "Asia/Manila",
+    "callerPolicy": "workflowsFromSameOwner",
+    "timeSavedMode": "fixed",
+    "availableInMCP": false,
+    "executionOrder": "v1"
+  },
+  "versionId": "f84d0e21-ef55-4790-aa62-adcf984e69c5",
+  "connections": {
+    "AI Response Validation": {
+      "main": [
+        [
+          {
+            "node": "Merge Valid & Fallback Paths",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Merge Valid & Fallback Paths",
+            "type": "main",
+            "index": 1
+          },
+          {
+            "node": "Alert: AI Scoring Failure",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Lead Record (CRM)": {
+      "main": [
+        [
+          {
+            "node": "Prepare Hot Lead Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger: New Lead Created": {
+      "main": [
+        [
+          {
+            "node": "Normalize & Standardize Lead Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hybrid Lead Scoring Engine": {
+      "main": [
+        [
+          {
+            "node": "Prepare CRM Update Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare AI Scoring Context": {
+      "main": [
+        [
+          {
+            "node": "AI Lead Qualification (GPT)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare CRM Update Payload": {
+      "main": [
+        [
+          {
+            "node": "Update Lead Record (CRM)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Lead Qualification (GPT)": {
+      "main": [
+        [
+          {
+            "node": "Validate & Parse AI Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Valid & Fallback Paths": {
+      "main": [
+        [
+          {
+            "node": "Hybrid Lead Scoring Engine",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate & Parse AI Response": {
+      "main": [
+        [
+          {
+            "node": "AI Response Validation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Hot Lead Notification": {
+      "main": [
+        [
+          {
+            "node": "Decision: Is High-Intent Lead?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decision: Is High-Intent Lead?": {
+      "main": [
+        [
+          {
+            "node": "Notify Sales Team – Hot Lead",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Exit: No Sales Notification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Normalize & Standardize Lead Data": {
+      "main": [
+        [
+          {
+            "node": "Guard: Skip Already Processed Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Guard: Skip Already Processed Leads": {
+      "main": [
+        [
+          {
+            "node": "Prepare AI Scoring Context",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Exit: Already Processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

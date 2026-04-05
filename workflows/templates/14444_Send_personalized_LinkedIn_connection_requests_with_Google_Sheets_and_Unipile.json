@@ -1,0 +1,539 @@
+{
+  "_templateId": 14444,
+  "_templateName": "Send personalized LinkedIn connection requests with Google Sheets and Unipile",
+  "_templateDescription": "Send personalized LinkedIn connection requests automatically using n8n, Google Sheets, and Unipile — with built-in safety limits, duplicate prevention, and full invitation tracking.\n\nScale your LinkedIn outreach without manually sending a single connection request. This workflow reads your leads from a Google Sheet, filters out already-contacted prospects, and sends each one a personalized connection note via LinkedIn — automatically, on a schedule, and safely within LinkedIn's limits.\n\nBuilt for founders, sales teams, and recruiters who want consistent LinkedIn outreach without repetitive manual work. Every request is tracked back to your sheet with its invitation ID and status, making follow-up workflows easy to build on top.\n\nGood to know\n\nUnipile pricing is based on the number of connected accounts, not per API call or per message sent. The base plan starts at €49/$55 per month and includes up to 10 linked accounts\nFor this workflow, connecting one LinkedIn account counts as one account\nUnipile does not enforce usage limits — you can send as many requests as you need. However, LinkedIn itself applies its own rate limits and usage policies\nA 7-day free trial is available with all features included and no credit card required\nLinkedIn has daily connection request limits — keep your total across all runs under 20 per day to avoid account restrictions\nAlready-contacted leads are automatically skipped on every future run — no risk of sending duplicate requests\n\nHow it works\n\nSchedule Trigger runs the workflow automatically at your chosen frequency\nAll leads are fetched from your Google Sheet and filtered to only those with an empty connection_request_status column\nA configurable Limit node caps how many requests go out per run to stay within LinkedIn's safe limits\nA Code node extracts the LinkedIn username from each profile URL\nAll required data — username, connection note, and Unipile credentials — is bundled in the Data Arrangement node\nThe Loop node processes leads one by one, sending each through the full request flow individually\nUnipile API resolves the LinkedIn username to an internal Provider ID required for sending invites\nThe connection request is sent with the personalized note pulled directly from your Google Sheet\nThe sheet is immediately updated with the invitation status and unique invitation ID\nA Wait node pauses between each request to mimic human behavior and avoid LinkedIn restrictions\nThe loop continues until all leads in the current batch are processed\n\nSet up steps\n\nStep 1: Prepare Your Google Sheet\nCreate a sheet with these exact columns:\n\nfirst_name | last_name | linkedin_url | connection_note | connection_request_status | invitation_id | row_number\n\nLeave connection_request_status and invitation_id empty — the workflow fills these automatically\nWrite a personalized message per lead in the connection_note column\n\nStep 2: Get Your Unipile Credentials\nSign up at unipile.com — a 7-day free trial is available with no credit card required\nConnect your LinkedIn account from the Unipile dashboard\nCopy your API Key, DSN, and LinkedIn Account ID\nOpen the Data Arrangement node and replace the three placeholder values with your credentials\n\nStep 3: Connect Google Sheets\nIn n8n, go to Credentials → New Credential → Google Sheets OAuth2\nAuthenticate with the Google account that owns your leads sheet\nUpdate the Get Leads and Update Connection Request Status and ID nodes to point to your sheet\n\nStep 4: Set Your Safety Limits\nOpen the Limit Connection Request node — set max items per run (recommended: 10–15)\nOpen the Wait node — set your delay between requests (recommended: 3–5 minutes)\nOpen the Schedule Trigger — set your run frequency (recommended: every 4–8 hours)\n\nRequirements\n\nUnipile account with LinkedIn connected — starts at €49/$55/month for up to 10 accounts, 7-day free trial available\nGoogle Sheet with lead data in the required column format\nn8n instance (cloud or self-hosted)\n\nCustomising this workflow\n\nBuild a follow-up message workflow triggered when a connection is accepted, using the stored invitation_id\nReplace the Schedule Trigger with a webhook to fire outreach from your CRM when a new lead is added\nAdd an AI node to auto-generate personalized connection notes from each lead's job title or company name\nAdd Slack or email notifications for a daily outreach summary\nAdd error handling nodes to catch failed API calls and log them in a separate sheet tab\nFilter leads by industry, title, or location by adding extra conditions to the Filter node\n\n*For assistance and support: salmanmehboob1947@gmail.com\nLinkedin: https://www.linkedin.com/in/salman-mehboob-pro/*",
+  "_templateCreatedAt": "2026-03-29T18:33:13.546Z",
+  "_templateTotalViews": 1,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T04:59:28.607Z",
+  "meta": {
+    "instanceId": "4f3d674a636d1510e4120a3e346e6ed10c98f6398c5a8f2f5294ee80b39a7bc0"
+  },
+  "nodes": [
+    {
+      "id": "09a7c560-e540-4643-ad75-d1af11dcd7ed",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        1248,
+        304
+      ],
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "typeVersion": 1.3
+    },
+    {
+      "id": "9ab7d97d-4358-4e21-9e2a-d9e70eecbea6",
+      "name": "Get Leads",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1456,
+        304
+      ],
+      "parameters": {
+        "options": {},
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultName": "leads"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1IM0qnZlhYK7Pbj__xwyPgEprW-5-P3RBnen1xGZjSSk",
+          "cachedResultName": "linkedin_connection_request_template"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pqhCUJdTO98td28J",
+          "name": "Google Sheets account"
+        }
+      },
+      "typeVersion": 4.7
+    },
+    {
+      "id": "406ea666-cf94-46a8-a8e4-caa3ebd4a5c9",
+      "name": "Filter",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        1648,
+        304
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 3,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "d7a7f360-9796-4544-be34-834b20134833",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              },
+              "leftValue": "={{ $json.connection_request_status }}",
+              "rightValue": "UserInvitationSent"
+            }
+          ]
+        }
+      },
+      "typeVersion": 2.3
+    },
+    {
+      "id": "e499cc36-ed44-42d1-94c5-de8117f99ecc",
+      "name": "Limit Connection Request",
+      "type": "n8n-nodes-base.limit",
+      "position": [
+        1824,
+        304
+      ],
+      "parameters": {
+        "maxItems": 10
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "29311348-574e-4c90-9496-a6deca605334",
+      "name": "Get Linkedin Username",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2080,
+        304
+      ],
+      "parameters": {
+        "jsCode": "const linkedinUrl = $input.first().json.linkedin_url;\nconst cleanUrl = linkedinUrl.replace(/\\/$/, '');\nconst username = cleanUrl.split('/in/')[1]?.split('/')[0] || null;\n\nreturn [{\n  json: {\n    username: username\n  }\n}];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "4fb137da-fe83-4ad4-a090-7d43992257f1",
+      "name": "Data Arrangement",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2352,
+        304
+      ],
+      "parameters": {
+        "options": {},
+        "assignments": {
+          "assignments": [
+            {
+              "id": "85e65f5e-2c0f-49ed-ab1c-c055ae3d6803",
+              "name": "username",
+              "type": "string",
+              "value": "={{ $json.username }}"
+            },
+            {
+              "id": "4010206c-e5a4-41e0-9f3b-4a42509ed118",
+              "name": "row_number",
+              "type": "number",
+              "value": "={{ $('Filter').item.json.row_number }}"
+            },
+            {
+              "id": "2631f30b-9886-4547-809e-be8bba4f0cba",
+              "name": "first_name",
+              "type": "string",
+              "value": "={{ $('Filter').item.json.first_name }}"
+            },
+            {
+              "id": "ba11efc2-09ec-465a-aa03-265a29a98408",
+              "name": "connection_note",
+              "type": "string",
+              "value": "={{ $('Filter').item.json.connection_note }}"
+            },
+            {
+              "id": "5bb53f3e-ee85-437d-8dc1-3d1ba5d92922",
+              "name": "unipile_DSN",
+              "type": "string",
+              "value": "unipile-DSN"
+            },
+            {
+              "id": "16c58cb4-3ce0-48c0-aaba-b7679f6aa30c",
+              "name": "unipile_api_key",
+              "type": "string",
+              "value": "your-api-key-here"
+            },
+            {
+              "id": "07d81241-ded9-4df1-ba96-cd5730f5a960",
+              "name": "unipile_account_ID",
+              "type": "string",
+              "value": "your-unipile-linkedin-account-id-here"
+            }
+          ]
+        }
+      },
+      "typeVersion": 3.4
+    },
+    {
+      "id": "32de3e00-855b-4738-81be-8869af3000ba",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        2592,
+        304
+      ],
+      "parameters": {
+        "options": {}
+      },
+      "typeVersion": 3
+    },
+    {
+      "id": "5074fbd6-a232-4e95-af39-b48df19384d9",
+      "name": "Get Linkedin Provider ID",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        2864,
+        320
+      ],
+      "parameters": {
+        "url": "=https://{{ $json.unipile_DSN }}/api/v1/users/{{ $json.username }}",
+        "options": {},
+        "sendQuery": true,
+        "sendHeaders": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "account_id",
+              "value": "={{ $json.unipile_account_ID }}"
+            }
+          ]
+        },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $json.unipile_api_key }}"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "2777a601-7dd8-407c-b949-24e741f180fb",
+      "name": "Send Connection Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3136,
+        320
+      ],
+      "parameters": {
+        "url": "=https://{{ $('Loop Over Items').item.json.unipile_DSN }}/api/v1/users/invite",
+        "method": "POST",
+        "options": {},
+        "sendBody": true,
+        "sendHeaders": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "provider_id",
+              "value": "={{ $json.provider_id }}"
+            },
+            {
+              "name": "account_id",
+              "value": "={{ $('Data Arrangement').item.json.unipile_account_ID }}"
+            },
+            {
+              "name": "message",
+              "value": "={{ $('Loop Over Items').item.json.connection_note }}"
+            }
+          ]
+        },
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "={{ $('Loop Over Items').item.json.unipile_api_key }}"
+            },
+            {
+              "name": "accept",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "634e66be-9e37-4cae-bf99-637538794a9e",
+      "name": "Update Connection Request Status and ID",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        3344,
+        320
+      ],
+      "parameters": {
+        "columns": {
+          "value": {
+            "row_number": "={{ $('Loop Over Items').item.json.row_number }}",
+            "invitation_id": "={{ $json.invitation_id }}",
+            "connection_request_status": "={{ $json.object }}"
+          },
+          "schema": [],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [
+            "row_number"
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {},
+        "operation": "update",
+        "sheetName": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gid=0",
+          "cachedResultName": "leads"
+        },
+        "documentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "1IM0qnZlhYK7Pbj__xwyPgEprW-5-P3RBnen1xGZjSSk",
+          "cachedResultName": "linkedin_connection_request_template"
+        }
+      },
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pqhCUJdTO98td28J",
+          "name": "Google Sheets account"
+        }
+      },
+      "typeVersion": 4.7
+    },
+    {
+      "id": "b5588ed4-5802-4b53-92ff-ba0e3206c358",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        3600,
+        320
+      ],
+      "webhookId": "2c09f1bd-3121-4221-9d5e-e4ead924f8fe",
+      "parameters": {
+        "unit": "minutes"
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "6da65c08-5492-42c3-8815-ccc9aab317da",
+      "name": "📖 Setup Instructions",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        656,
+        -320
+      ],
+      "parameters": {
+        "color": 4,
+        "width": 500,
+        "height": 820,
+        "content": "# 🔗 LinkedIn Auto Connection Request\n**Automated LinkedIn outreach — personalized, safe, and trackable.**\n\n### 🎯 What This Workflow Does:\n✅ Reads leads from Google Sheets\n✅ Filters out already-contacted leads\n✅ Sends personalized connection requests via LinkedIn\n✅ Tracks every invitation back in your sheet\n✅ Adds delays to avoid LinkedIn restrictions\n\n### 📋 Setup Required:\n\n**1️⃣ Google Sheet**\nMake sure your sheet has these columns:\n`first_name` | `last_name` | `linkedin_url` | `connection_note` | `connection_request_status` | `invitation_id` | `row_number`\n\n**2️⃣ Unipile Account**\n- Sign up at: https://unipile.com\n- Connect your LinkedIn account\n- Get your: API Key, DSN, and Account ID\n- Fill these in the **Data Arrangement** node\n\n**3️⃣ Schedule**\n- Set your preferred run frequency in the Schedule Trigger node\n- Recommended: every 4–8 hours for safe outreach\n\n**4️⃣ Set Your Daily Limit**\n- Open the **Limit Connection Request** node\n- Set max items to 10–15 per run (safe range)\n\n### 🚀 Quick Start:\n1. Complete setup steps above\n2. Activate the workflow\n3. Add leads to your Google Sheet\n4. Watch connections go out automatically!"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a99c390c-053c-43bc-98a2-2f79f28a972f",
+      "name": "📥 Lead Collection Path",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        -144
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 760,
+        "height": 640,
+        "content": "## 📥 LEAD COLLECTION & FILTERING\n\n**Pulls leads from Google Sheets and prepares them for outreach.**\n\n### 🔄 Flow:\n1️⃣ **Schedule Trigger** — Runs on your set schedule\n2️⃣ **Get Leads** — Reads all rows from the 'leads' sheet\n3️⃣ **Filter** — Keeps only leads where `connection_request_status` is empty (not yet contacted)\n4️⃣ **Limit** — Caps the batch size per run\n\n### 💡 Key Points:\n- Leads already sent a request are automatically skipped\n- Adjust the Limit node to control daily volume\n- Recommended limit: **10–15 per run** to stay safe\n\n### 📊 Sheet Columns Needed:\n`linkedin_url` | `connection_note` | `connection_request_status`"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8e4edf7a-df26-4243-833c-ea2782328793",
+      "name": "⚙️ Data Preparation",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2000,
+        -224
+      ],
+      "parameters": {
+        "color": 3,
+        "width": 540,
+        "height": 724,
+        "content": "## ⚙️ DATA PREPARATION\n\n**Extracts the LinkedIn username and arranges all data needed for the API calls.**\n\n### 🔄 Flow:\n1️⃣ **Get LinkedIn Username** — Parses the username from the LinkedIn URL\n   - Input: `https://linkedin.com/in/john-doe/`\n   - Output: `john-doe`\n\n2️⃣ **Data Arrangement** — Bundles all required fields into one clean item:\n   - `username` → for API lookup\n   - `row_number` → to update the correct sheet row later\n   - `connection_note` → personalized message per lead\n   - `unipile_DSN`, `unipile_api_key`, `unipile_account_ID` → your API credentials\n\n### ⚙️ Setup — Fill In the Data Arrangement Node:\n- `unipile-DSN` → Your Unipile DSN\n- `your-api-key-here` → Your Unipile API Key\n- `your-unipile-linkedin-account-id-here` → Your LinkedIn Account ID"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4cd20a6e-04e1-4351-985f-67cef7dde723",
+      "name": "📨 Connection Request Loop",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2576,
+        -112
+      ],
+      "parameters": {
+        "color": 6,
+        "width": 820,
+        "height": 608,
+        "content": "## 📨 CONNECTION REQUEST LOOP\n\n**Sends connection requests one by one with a delay between each.**\n\n### 🔄 Flow:\n1️⃣ **Loop Over Items** — Processes leads one at a time\n2️⃣ **Get LinkedIn Provider ID** — Calls Unipile API to resolve the username to LinkedIn's internal `provider_id`\n3️⃣ **Send Connection Request** — Posts the invite with your personalized note\n4️⃣ **Update Status & ID** — Writes `UserInvitationSent` + `invitation_id` back to Google Sheets\n5️⃣ **Wait** — Pauses between requests to mimic human behavior\n🔁 Loop repeats until all leads in the batch are processed\n\n### ⚠️ LinkedIn Safety Tips:\n- Set Wait to **3–5 minutes** for safest operation\n- Keep daily total under **20 requests**\n- Use a warmed-up LinkedIn account\n- Vary your connection notes per lead"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "6a329601-d7e7-4b78-96fe-f710a8aae766",
+      "name": "✅ Tracking & Updates",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3408,
+        -160
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 432,
+        "height": 660,
+        "content": "## ✅ TRACKING & STATUS UPDATE\n\n**Keeps your Google Sheet up to date after every request.**\n\n### 📝 What Gets Written Back:\n| Column | Value |\n|---|---|\n| `connection_request_status: ` | `UserInvitationSent` |\n| `invitation_id: ` | Unique ID from Unipile |\n\n### 🎯 Why This Matters:\n- The **Filter node** uses `connection_request_status` to skip leads on future runs\n- `invitation_id` can be used for follow-up message workflows\n- Matched by `row_number` — always updates the exact correct row\n\n### 💡 Build On This:\nYou can extend this workflow to send follow-up messages to accepted connections using the stored `invitation_id`."
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Limit Connection Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Leads": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Get Linkedin Provider ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Data Arrangement": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Get Leads",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Linkedin Username": {
+      "main": [
+        [
+          {
+            "node": "Data Arrangement",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send Connection Request": {
+      "main": [
+        [
+          {
+            "node": "Update Connection Request Status and ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Linkedin Provider ID": {
+      "main": [
+        [
+          {
+            "node": "Send Connection Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit Connection Request": {
+      "main": [
+        [
+          {
+            "node": "Get Linkedin Username",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Connection Request Status and ID": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

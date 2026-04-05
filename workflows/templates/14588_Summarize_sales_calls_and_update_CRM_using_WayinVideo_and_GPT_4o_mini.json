@@ -1,0 +1,379 @@
+{
+  "_templateId": 14588,
+  "_templateName": "Summarize sales calls and update CRM using WayinVideo and GPT-4o-mini",
+  "_templateDescription": "Description\n\nPaste any sales call recording URL into a form — this n8n workflow automatically transcribes the call using WayinVideo, extracts structured CRM data with AI, and saves a complete report directly to your shared Google Doc.** No manual note-taking, no missed action items, no forgotten follow-ups. Just submit the recording and your CRM notes write themselves.\n\nBuilt for sales teams, digital marketing agencies, and freelancers who want to turn every client call into structured, searchable CRM data — automatically.\n\nWhat This Workflow Does\n\nThis automation handles your complete call-to-CRM pipeline:\n\nForm-triggered input** — Salesperson submits a Zoom or Google Meet recording URL plus client details via a simple web form and the workflow starts instantly\nAI transcription** — WayinVideo automatically generates a speaker-labeled transcript from the recording, identifying who said what and when\nSmart polling loop** — Waits and retries every 45 seconds until transcription is fully complete before moving forward\nAI-powered CRM extraction** — GPT-4o-mini analyzes the full transcript and extracts deal status, action items, client objections, buying signals, pricing discussed, and next follow-up date\nAuto-save to Google Docs** — Appends the complete CRM report to your shared team Google Doc with a timestamp and separator for every call\nZero manual work** — No editing, no copy-paste, no summarizing. Submit the URL and your CRM updates itself\n\nSetup Requirements\n\nTools You'll Need\n\nActive n8n instance (self-hosted or n8n Cloud)\nWayinVideo account with API access\nOpenAI account with API access (GPT-4o-mini)\nGoogle account with Google Docs access\n\nEstimated Setup Time: 15–20 minutes\n\nStep-by-Step Setup\n\n1. Get Your WayinVideo API Key\n\nWayinVideo is the transcription engine that converts your call recording into a speaker-labeled text transcript.\n\nGo to WayinVideo and create or log into your account\nNavigate to your Dashboard → API section\nCopy your Bearer API token\nOpen the 2. WayinVideo — Submit Transcript node in n8n\nReplace YOUR_WAYIN_API_KEY in the Authorization header with your actual token\nOpen the 4. WayinVideo — Get Transcript node\nReplace YOUR_WAYIN_API_KEY in that node's Authorization header as well\n\n&gt; ⚠️ The API key appears in two separate nodes — Submit Transcript and Get Transcript. You must replace it in both or the workflow will fail at the polling step.\n\n2. Connect Your OpenAI Account\n\nOpenAI's GPT-4o-mini is the AI brain that reads the transcript and writes the structured CRM report.\n\nIn n8n, go to Credentials → Add Credential → OpenAI API\nPaste your OpenAI API key (get it from platform.openai.com → API Keys)\nOpen the OpenAI Chat Model — GPT-4o-mini node\nSelect your newly added OpenAI credential from the dropdown\n\n3. Connect Google Docs and Set Your Document\n\nThis is where every completed CRM report gets saved automatically.\n\nIn n8n, go to Credentials → Add Credential → Google Docs OAuth2 API\nComplete the Google OAuth authentication flow\nOpen the 7. Google Docs — Save CRM Report node\nSelect your Google Docs credential\nReplace YOUR_GOOGLE_DOC_URL_OR_ID with your actual Google Doc ID\n\nHow to find your Google Doc ID:\nOpen your Google Doc in the browser. The URL will look like:\nhttps://docs.google.com/document/d/1aBcDeFgHiJkLmNoPqRsTuVwXyZ/edit\nCopy only the long string of characters between /d/ and /edit — that is your Doc ID.\n\n4. Activate the Workflow and Share the Form\n\nToggle the workflow Active at the top of the n8n editor ✅\nClick the 1. Form — Call Recording + Details node\nCopy the Production Form URL\nShare this URL with your sales team — anyone can now submit call recordings without needing access to n8n\n\nHow It Works (Step by Step)\n\nStep 1 — Web Form Trigger\nA salesperson opens the form and fills in four fields: the call recording URL (Zoom, Google Meet, or any accessible video link), the client or company name, their own name, and the product or service discussed in the call. Clicking submit triggers the entire workflow instantly.\n\nStep 2 — Submit Recording to WayinVideo\nThe workflow sends the recording URL to the WayinVideo transcription API. WayinVideo processes the audio, identifies different speakers automatically, and returns a Job ID. That Job ID is stored and used in the next check to retrieve the completed transcript.\n\nStep 3 — Wait 45 Seconds\nThe workflow pauses for 45 seconds to give WayinVideo time to process the recording. This prevents the next step from checking too early and receiving an empty or incomplete response.\n\nStep 4 — Poll for Transcript Result\nUsing the Job ID from Step 2, the workflow calls the WayinVideo results endpoint to check whether the transcript is ready. The response includes a transcript array with each speaker's lines, their speaker label, and a timestamp in milliseconds.\n\nStep 5 — Is the Transcript Ready? (Smart Retry Loop)\nA check runs to see whether the transcript array contains any data:\n\nYES (transcript ready)** → The workflow moves forward and passes the full transcript to the AI report generator\nNO (still processing)** → The workflow loops back to Step 3, waits another 45 seconds, and checks again automatically\n\nThis retry loop runs on its own every 45 seconds until transcription is complete — no manual re-runs needed.\n\nStep 6 — AI Agent Generates CRM Report\nGPT-4o-mini receives the full speaker-labeled transcript alongside the call details from the form. It analyzes the conversation and writes a structured CRM report covering: call summary, action items, deal status with reasoning, client objections, buying signals, pricing discussed, next follow-up timeline, and overall call sentiment.\n\nStep 7 — Save Report to Google Docs\nThe completed CRM report is appended to your shared Google Doc. Each entry is separated by a clear header line showing the client name, salesperson name, and exact timestamp — so your full call history stays organized and searchable in one document.\n\nKey Features\n\n✅ Zero manual CRM entry — AI extracts and writes all CRM data from the raw transcript automatically\n\n✅ Speaker identification — WayinVideo labels who is speaking at each point, so the AI knows exactly who is the salesperson and who is the client\n\n✅ Smart retry loop — Auto-checks every 45 seconds until transcription is complete, no timeouts, no manual re-runs\n\n✅ Deal status classification — AI automatically categorizes each call as Hot Lead, Warm Lead, Cold Lead, Negotiating, Closed Won, or Closed Lost with a one-line reason\n\n✅ Objection and buying signal detection — Every client concern and every positive signal is pulled out and listed separately\n\n✅ Team-ready form — Share one URL with your whole sales team, no n8n access needed\n\n✅ Timestamped entries — Every report is saved with an exact date and time so your call history stays chronologically organized\n\n✅ Supports any recording platform — Works with Zoom, Google Meet, Loom, or any publicly accessible video URL\n\nCustomisation Options\n\nSend a Slack notification after each report is saved:\nAdd a Slack node after the 7. Google Docs — Save CRM Report step. Map the client name, deal status, and salesperson name into the message so your sales manager gets an instant alert every time a new call is logged.\n\nSwitch to GPT-4o for higher accuracy:\nOpen the OpenAI Chat Model — GPT-4o-mini node and change the model from gpt-4o-mini to gpt-4o. Use this for longer calls or complex enterprise deals where nuance matters.\n\nAdd a max-retry counter to prevent infinite loops:\nAdd a counter variable before the Wait node and increment it each loop. Add a second IF branch that stops execution and sends an error alert if retries exceed 5 — this protects against recordings that fail to process.\n\nSave to a CRM like HubSpot or Notion instead of Google Docs:\nReplace the 7. Google Docs — Save CRM Report node with a HubSpot, Notion, or Airtable node. Map the AI output fields to the corresponding CRM properties — deal status, contact name, next steps, and notes.\n\nIncrease wait time for longer recordings:\nChange the amount in the 3. Wait — 45 Seconds node from 45 to 90 or 120 for calls that are over 60 minutes long and need more processing time.\n\nAdd an email confirmation to the salesperson:\nAfter the Google Docs node, add a Gmail node that sends the salesperson a copy of their CRM report directly to their inbox as soon as it's ready.\n\nTroubleshooting\n\nWayinVideo API returning an error or empty response:\nCheck that your API key is replaced correctly in both the Submit and Get Transcript nodes — not just one\nMake sure the Bearer format is correct: Bearer YOUR_ACTUAL_KEY with a space after Bearer\nConfirm your WayinVideo account is active and has API access enabled\n\nTranscript never becomes ready — workflow keeps looping:\nVerify the recording URL is publicly accessible (not behind a login or expiry link)\nTry opening the URL in an incognito browser window to confirm it loads without authentication\nCheck that the video format is supported by WayinVideo (MP4, Zoom links, and Google Meet recordings all work)\n\nOpenAI node failing or returning no output:\nConfirm your OpenAI API key is valid and has available credits\nCheck that the credential is properly selected inside the OpenAI Chat Model node\nIf the transcript is very long, the token limit may be exceeded — switch to GPT-4o which has a larger context window\n\nGoogle Docs node not saving the report:\nConfirm your Google Docs OAuth credential is connected and not expired — reconnect if needed\nDouble-check the Document ID is correct — it should be only the ID string, not the full URL\nMake sure the Google account you authenticated with has edit access to the document\n\nForm not triggering the workflow:\nConfirm the workflow is set to Active (not just saved)\nUse the Production URL from the form node, not the test URL\nIf testing inside n8n, use the test execution button and submit the form while the test is running\n\nSupport\n\nNeed help setting this up or want a custom version built for your team or agency?\n\n📧 Email: info@isawow.com\n🌐 Website: https://isawow.com\n\n&gt; Pro Tip: Pin your shared Google Doc link to your team's Slack channel or CRM dashboard so every salesperson can view the full call history without needing to search for it after each meeting.",
+  "_templateCreatedAt": "2026-04-02T07:51:58.641Z",
+  "_templateTotalViews": 1,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T04:59:21.854Z",
+  "meta": {
+    "instanceId": "bc8ca75c203589705ae2e446cad7181d6f2a7cc1766f958ef9f34810e53b8cb2",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "a988d437-77e0-4a64-a6d0-af5311e6ef10",
+      "name": "Main — Overview & Setup",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -544,
+        -192
+      ],
+      "parameters": {
+        "width": 400,
+        "height": 748,
+        "content": "## Sales Call Auto-Summarizer & CRM Updater\n\n### How it works\nSalesperson pastes a Zoom or Google Meet recording URL into a form along with client details. The workflow sends the recording to WayinVideo for transcription, waits for processing, then uses GPT-4o-mini to extract structured CRM data — including deal status, action items, objections, and buying signals — and saves the full report to a shared Google Doc automatically.\n\n### Setup\n1. Replace **YOUR_WAYIN_API_KEY** in nodes 2 and 4 with your WayinVideo bearer token\n2. Connect your **OpenAI** account in node 6 (OpenAI Chat Model)\n3. Replace **YOUR_GOOGLE_DOC_URL_OR_ID** in node 7 with your actual Google Doc ID or URL\n4. Connect your **Google Docs OAuth2** credential in node 7\n5. Activate the workflow and share the form URL with your sales team\n\n### Customization tips\n- Swap GPT-4o-mini for GPT-4o for higher accuracy on complex calls\n- Add a Slack or email node after step 7 to notify the team when a new report is saved\n- Extend the IF loop retry limit by adding a counter variable to avoid infinite loops on failed transcriptions"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "86fb351e-179d-4c2f-8d48-9dc2f773cf36",
+      "name": "Section — Input Form",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -112,
+        -112
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 296,
+        "height": 116,
+        "content": "## Section 1 — Input\nSalesperson fills a form with the recording URL and call details. This triggers the entire automation pipeline."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "d1cb65d3-f900-4fba-9929-b78e2e24e72d",
+      "name": "Section — Transcription",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        208,
+        -112
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 520,
+        "height": 116,
+        "content": "## Section 2 — Transcription\nRecording URL is submitted to WayinVideo. The workflow waits 45 seconds then polls for the completed speaker-labeled transcript."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "fa6fc0f8-3fbd-48ec-b67b-16562e3f58a2",
+      "name": "Section — Readiness Check",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        752,
+        -112
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 344,
+        "height": 116,
+        "content": "## Section 3 — Readiness Check\nIF node checks whether the transcript array is non-empty. If not ready, loops back to wait another 45 seconds and retries."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f5f61c59-5246-4217-8b5e-dc744a443365",
+      "name": "Section — AI Report & Save",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1104,
+        -112
+      ],
+      "parameters": {
+        "color": 5,
+        "width": 396,
+        "height": 132,
+        "content": "## Section 4 — AI Report & Save\nGPT-4o-mini analyzes the transcript and generates a structured CRM report. The report is appended to the shared Google Doc with a timestamp."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "075a3a16-2865-480c-b354-d99bf9949a0a",
+      "name": "Warning — Infinite Loop Risk",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        400,
+        288
+      ],
+      "parameters": {
+        "color": 3,
+        "width": 648,
+        "height": 140,
+        "content": "## ⚠️ WARNING — Infinite Loop Risk\nIf WayinVideo never returns a transcript (e.g. invalid URL, unsupported format), the IF node will loop indefinitely between Wait and Get Transcript. Add a counter or max-retry limit to prevent runaway executions."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "3e7dbb0f-32a1-418e-b14e-34ac1041b25e",
+      "name": "1. Form — Call Recording + Details",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        -64,
+        48
+      ],
+      "webhookId": "54feb604-2da7-44b0-9811-140bdbd18aaa",
+      "parameters": {
+        "options": {},
+        "formTitle": "📞 Sales Call Auto-Summarizer & CRM Updater",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Call Recording URL",
+              "placeholder": "https://zoom.us/rec/xxxxxxx or Google Meet recording link",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Client / Company Name",
+              "placeholder": "e.g. Rahul Sharma / ABC Digital Solutions",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Salesperson Name",
+              "placeholder": "e.g. Deepak Verma",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Product / Service Discussed",
+              "placeholder": "e.g. SEO Package, GEO Services, Social Media Management",
+              "requiredField": true
+            }
+          ]
+        },
+        "formDescription": "Paste your sales call recording URL — AI will extract CRM notes, action items, deal status and next steps automatically."
+      },
+      "typeVersion": 2.2
+    },
+    {
+      "id": "806f5ab9-f206-420b-a3d2-2a9e7e58a5c7",
+      "name": "2. WayinVideo — Submit Transcript",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        208,
+        48
+      ],
+      "parameters": {
+        "url": "https://wayinvideo-api.wayin.ai/api/v2/transcripts",
+        "method": "POST",
+        "options": {},
+        "jsonBody": "={\n  \"video_url\": \"{{ $json['Call Recording URL'] }}\",\n  \"target_lang\": \"en\"\n}",
+        "sendBody": true,
+        "sendHeaders": true,
+        "specifyBody": "json",
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_TOKEN_HERE"
+            },
+            {
+              "name": "x-wayinvideo-api-version",
+              "value": "v2"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "c0a3115c-3a9e-4ff0-abda-e7510736d952",
+      "name": "3. Wait — 45 Seconds",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        448,
+        48
+      ],
+      "webhookId": "wait-sales-45s",
+      "parameters": {
+        "amount": 45
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "b20f63a3-d04d-4038-94a5-e47e16db1b0c",
+      "name": "4. WayinVideo — Get Transcript",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        688,
+        48
+      ],
+      "parameters": {
+        "url": "=https://wayinvideo-api.wayin.ai/api/v2/transcripts/results/{{ $('2. WayinVideo — Submit Transcript').item.json.data.id }}",
+        "options": {},
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer YOUR_TOKEN_HERE"
+            },
+            {
+              "name": "x-wayinvideo-api-version",
+              "value": "v2"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "ce977fdc-6cfa-4d7e-97fd-1ab786a2bee5",
+      "name": "OpenAI Chat Model — GPT-4o-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        1104,
+        256
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {},
+        "builtInTools": {}
+      },
+      "typeVersion": 1.3
+    },
+    {
+      "id": "53ff6e69-aa7f-491c-84a9-c309c1dcc442",
+      "name": "5. IF — Transcript Ready?1",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        896,
+        48
+      ],
+      "parameters": {
+        "options": {},
+        "conditions": {
+          "options": {
+            "version": 3,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "4b631170-4d78-411e-956c-3bc98966bfed",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.data.transcript }}",
+              "rightValue": ""
+            }
+          ]
+        }
+      },
+      "typeVersion": 2.3
+    },
+    {
+      "id": "80d1240d-1c73-4e6f-a5dd-e04ab2d77595",
+      "name": "6. AI Agent — Generate CRM Report1",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        1104,
+        32
+      ],
+      "parameters": {
+        "text": "=You are a CRM specialist. Your job is to analyze a sales call transcript and extract structured CRM data.\n\nIMPORTANT: Speaker 1 is the salesperson. Speaker 2 is the client.\n\nCall Details:\n- Salesperson: {{ $('1. Form — Call Recording + Details').item.json['Salesperson Name'] }}\n- Client / Company: {{ $('1. Form — Call Recording + Details').item.json['Client / Company Name'] }}\n- Product / Service Discussed: {{ $('1. Form — Call Recording + Details').item.json['Product / Service Discussed'] }}\n- Recording URL: {{ $('1. Form — Call Recording + Details').item.json['Call Recording URL'] }}\n\nFull Call Transcript:\n{{ $('4. WayinVideo — Get Transcript').item.json.data.transcript.map(s => '[' + s.speaker + ' | ' + Math.floor(s.start/1000) + 's] ' + s.text).join('\\n') }}\n\nExtract the CRM data and write a structured report using this exact format. Do not skip any section.\n\n=== SALES CALL CRM REPORT ===\n\nDATE: [Today's date]\nSALESPERSON: [Salesperson name from above]\nCLIENT: [Client name from above]\nPRODUCT DISCUSSED: [Product name from above]\nCALL RECORDING: [Recording URL from above]\n\n---\n\nCALL SUMMARY:\n[Write 3 to 4 sentences about what was discussed in the call. Include the main topic, what the client asked, and how the conversation ended.]\n\n---\n\nACTION ITEMS:\n[List every task the salesperson must do after this call. One action per line starting with a dash.]\n- \n- \n- \n\n---\n\nDEAL STATUS:\n[Choose exactly one: Hot Lead / Warm Lead / Cold Lead / Negotiating / Closed Won / Closed Lost]\nReason: [Write 1 sentence explaining why you chose this status]\n\n---\n\nCLIENT OBJECTIONS:\n[List every concern or problem the client raised. One per line starting with a dash. If none, write: None raised.]\n- \n\n---\n\nBUYING SIGNALS:\n[List every positive statement or sign of interest from the client. One per line starting with a dash. If none, write: None detected.]\n- \n\n---\n\nPRICING DISCUSSED:\n[Write any price, budget, or discount mentioned during the call. If nothing was discussed, write: Not discussed.]\n\n---\n\nNEXT FOLLOW-UP:\n[Write the exact date or timeline mentioned for the next step. If nothing was mentioned, write: Not specified.]\n\n---\n\nOVERALL CALL SENTIMENT: [Choose one: Positive / Neutral / Negative]\n\n=== END OF REPORT ===",
+        "options": {},
+        "promptType": "define"
+      },
+      "typeVersion": 3.1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "3. Wait — 45 Seconds": {
+      "main": [
+        [
+          {
+            "node": "4. WayinVideo — Get Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "5. IF — Transcript Ready?1": {
+      "main": [
+        [
+          {
+            "node": "6. AI Agent — Generate CRM Report1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "3. Wait — 45 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "4. WayinVideo — Get Transcript": {
+      "main": [
+        [
+          {
+            "node": "5. IF — Transcript Ready?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model — GPT-4o-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "6. AI Agent — Generate CRM Report1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. WayinVideo — Submit Transcript": {
+      "main": [
+        [
+          {
+            "node": "3. Wait — 45 Seconds",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Form — Call Recording + Details": {
+      "main": [
+        [
+          {
+            "node": "2. WayinVideo — Submit Transcript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "6. AI Agent — Generate CRM Report1": {
+      "main": [
+        []
+      ]
+    }
+  }
+}

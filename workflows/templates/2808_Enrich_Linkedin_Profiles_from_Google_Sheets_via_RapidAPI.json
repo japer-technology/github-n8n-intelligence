@@ -1,0 +1,201 @@
+{
+  "_templateId": 2808,
+  "_templateName": "Enrich Linkedin Profiles from Google Sheets via RapidAPI",
+  "_templateDescription": "LinkedIn Profile Enrichment Workflow\n\nWho is this for?\n\nThis workflow is ideal for recruiters, sales professionals, and marketing teams who need to enrich LinkedIn profiles with additional data for lead generation, talent sourcing, or market research.\n\nWhat problem is this workflow solving?\n\nManually gathering detailed LinkedIn profile information can be time-consuming and prone to errors. This workflow automates the process of enriching profile data from LinkedIn, saving time and ensuring accuracy.\n\nWhat this workflow does\n\nInput: Reads LinkedIn profile URLs from a Google Sheet.\nValidation: Filters out already enriched profiles to avoid redundant processing.\nData Enrichment: Uses RapidAPI's Fresh LinkedIn Profile Data API to retrieve detailed profile information.\nOutput: Updates the Google Sheet with enriched profile data, appending new information efficiently.\n\nSetup\n\nGoogle Sheet: Create a sheet with a column named linkedin_url and populate it with the profile URLs to enrich.\nRapidAPI Account: Sign up at RapidAPI and subscribe to the Real-Time Data Enrichment API.\nAPI Integration: Replace the x-rapidapi-key and x-rapidapi-host values with your credentials from RapidAPI.\nRun the Workflow: Trigger the workflow and monitor the updates to your Google Sheet.\n\nHow to customize this workflow\n\nFilter Criteria**: Modify the filter step to include additional conditions for processing profiles.\nAPI Configuration**: Adjust API parameters to retrieve specific fields or extend usage.\nOutput Format**: Customize how the enriched data is appended to the Google Sheet (e.g., format, column mappings).\nError Handling**: Add steps to handle API rate limits or missing data for smoother automation.\n\nThis workflow streamlines LinkedIn profile enrichment, making it faster and more effective for data-driven decision-making.",
+  "_templateCreatedAt": "2025-01-27T14:52:02.869Z",
+  "_templateTotalViews": 11928,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:02:26.394Z",
+  "nodes": [
+    {
+      "id": "835afb8f-5bb3-42da-9694-d04646a80cef",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "1e85bf4f-52d5-4ec0-8d0b-a1deeb30c9c6",
+      "name": "Call Rapid API",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        880,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "9fa011f4-d1fe-46d2-abda-28ae33929874",
+      "name": "Filter already enriched",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "3f0b5717-38b4-4371-b3fa-9f19acf3e624",
+      "name": "Encode URI",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        660,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "632e2555-5474-4d00-85f0-e95ee984c0dd",
+      "name": "FiIter out all arrays",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1100,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "24b27c51-0f22-400c-bdc3-a09186c74639",
+      "name": "Update the profile",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1320,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "41e0e213-a1f4-47ff-aebd-6cd08df06eae",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        160,
+        -200
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "da28d424-10ce-499d-95c9-81979dab0f6b",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        780,
+        -300
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2bae0a2a-0c88-465b-854d-728280539e90",
+      "name": "Pull linkedin profiles",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "d93a0d4c-1db8-4604-85e1-7d02bbbdcdb8",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -500,
+        -760
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Encode URI": {
+      "main": [
+        [
+          {
+            "node": "Call Rapid API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call Rapid API": {
+      "main": [
+        [
+          {
+            "node": "FiIter out all arrays",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update the profile": {
+      "main": [
+        []
+      ]
+    },
+    "FiIter out all arrays": {
+      "main": [
+        [
+          {
+            "node": "Update the profile",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pull linkedin profiles": {
+      "main": [
+        [
+          {
+            "node": "Filter already enriched",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter already enriched": {
+      "main": [
+        [
+          {
+            "node": "Encode URI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "Pull linkedin profiles",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

@@ -1,0 +1,232 @@
+{
+  "_templateId": 3030,
+  "_templateName": "Real Estate Daily Deals Automation with Zillow API, Google Sheets and Gmail",
+  "_templateDescription": "Daily Real Estate Deal Finder Automation\n\n\nThis automation is aimed to send you daily deals via email every morning at 9AM in real estate markets you are interested in with strict search criteria you provide. It uses ZillowAPI to get up to date listings and RentZestimates. From there it calculates a host of investing metrics such as your Down PMT, Cash on Cash ROI, Monthly Cash Flow, Monthly Maintenance and Vacancy Loss.\n\nPrerequisites\nN8N account\nGoogle account with OAuth setup here's a video for help: https://youtu.be/LTuy83t_Rt4?si=0XdpxM7G48gtFDe6\nGoogle Sheets API enabled\nRapidAPI account with Zillow API credentials \nBlank Google Sheet created with specific columns\n\nStep 1: Create a New Workflow\nCreate a new workflow in N8N\nName it something meaningful like \"Daily Real Estate Deal Finder\"\nCredentials you will need: Google OAuth credentials (here's a video for help: https://www.youtube.com/watch?v=LTuy83t_Rt4&t=22s) Google sheets API enabled, RapidAPI Zillow credentials\n\nStep 2: Configure Search Parameters in Set Parameters Node\nDefine your real estate search criteria as key-value pairs: Example location: \"Austin, TX\" min_bed: 2 min_bath: 2, min_price: 250000, max_price: 400000, propertyType: \"Single Family= True\"\n\nStep 3: Update Google Sheet\nCreate a new Google Sheets\nCreate the following columns Address, Price, Rent Zestimate, Cash onCash RoI, Monthly CashFlow and Down Pmt\nMake sure your google sheets node in N8N is mapping to the correct columns and the correct sheet\n\nTroubleshooting Tips\nIf Zillow API fails, check your API credentials and request limits\nFor calculation errors, verify your formulas in the Code node\nIf Google Sheets node fails, ensure proper column mapping\nAlways test with a small data set before running in production\nHappy Investing please let me know if you have any questions or trouble\n\nThis workflow will now automatically search for real estate deals matching your criteria, calculate investment metrics, update your tracking spreadsheet, and email you a summary each morning. Here is the entire step by step tutorial to set this up: https://www.youtube.com/watch?v=OSeLeKc375Y&t=6s",
+  "_templateCreatedAt": "2025-02-27T19:18:09.189Z",
+  "_templateTotalViews": 2359,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:02:03.089Z",
+  "id": "ckAr5XtI4F2Sg1MM",
+  "meta": {
+    "instanceId": "a5367fea70861552a827c021d90623f5760fca08d12ceabff8df03a6d277df78",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Real Estate Daily Deals",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "fda78c84-e560-4264-8edf-d7cd288c80fa",
+      "name": "9am Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        120,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "5a688d95-8b5b-4f83-aee8-9250d9e66a57",
+      "name": "Set Parameters",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        300,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "d23f492e-1871-4044-888d-9c2996d5645e",
+      "name": "Zillow Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        460,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "09f0f44d-f885-4c13-9124-18d6fe7b8c85",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        620,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "c6a476c4-ab38-4cbe-a632-35e02ece801f",
+      "name": "RentZestimate",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        780,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "b9d10667-e0e2-46cb-9871-9301f1662b0f",
+      "name": "Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        1140,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "51b8473f-8bbe-43d4-a110-aa617962d5f2",
+      "name": "Gmail",
+      "type": "n8n-nodes-base.gmail",
+      "position": [
+        1320,
+        0
+      ],
+      "webhookId": "87e24ad1-8d88-4f4d-b7af-dd19c7b5f759",
+      "parameters": {},
+      "executeOnce": true,
+      "typeVersion": 2.1
+    },
+    {
+      "id": "34e561d4-fbd9-4608-865f-feb9205c74d7",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        40,
+        -380
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e95be0d9-f954-4403-b7a2-7a9f44a6604a",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -980,
+        -740
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a7cd4b99-d195-4872-b311-0203b9538f7b",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1560,
+        -380
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "5a02d10e-fe7c-4bb2-93f0-aaabffec3a15",
+      "name": "Investment Calculator",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "b052a8d1-25ad-4562-b68b-e247a9f69dac",
+  "connections": {
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "RentZestimate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "9am Trigger": {
+      "main": [
+        [
+          {
+            "node": "Set Parameters",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RentZestimate": {
+      "main": [
+        [
+          {
+            "node": "Investment Calculator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Zillow Search": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Parameters": {
+      "main": [
+        [
+          {
+            "node": "Zillow Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Investment Calculator": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

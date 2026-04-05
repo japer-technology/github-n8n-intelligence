@@ -1,0 +1,303 @@
+{
+  "_templateId": 3918,
+  "_templateName": "💾 Backup Automation for n8n Workflows to Google Drive (Daily or Manual)",
+  "_templateDescription": "💾 Backup Automation for n8n Workflows to Google Drive – No Risk, No Stress\n\nHi! I’m Amanda,\nI build automation workflows for n8n and Make.  \nThis ready-to-use workflow is designed to automatically export and back up all your n8n workflows to a designated Google Drive folder, organized by date.\n\nIt’s perfect for agencies, developers, and teams that want to protect their automation assets — without relying on manual exports or risking losing their work.\n\n✅ What this workflow does\n\nFetches all your existing workflows from the n8n API  \nCompiles each workflow as a .json file  \nCreates a new folder in Google Drive using the current date  \nUploads each .json file to that folder  \nCan be triggered manually or automatically via cron (date-time node)\n\n⚙️ How to set it up\n\nConnect your Google Drive in the “Folder Creation” and “Save to Drive” nodes  \nAdd your n8n API Key in the “Search All Workflows” and “Compiles Individual Data” nodes  \nDefine your time zone and execution method:\n   Run manually via the “Manual Trigger” node  \n   Or schedule backups using the “Date & Time” and “Schedule Trigger” nodes  \n(Optional) Change the parent folder ID in the “Folder Creation in Drive” node to set your destination\n\nOnce configured, the workflow will back up your entire workflow list daily — or whenever you run it — and send the files to your Google Drive!\n\n🧰 Nodes & Tech Used\n\nSchedule Trigger + Manual Trigger  \nDate & Time – For timestamp folder naming  \nn8n API – To list and fetch each workflow  \nGoogle Drive – Folder creation and file upload  \nMerge, Move Binary Data, Set – Workflow compilation and formatting  \n\n🧑‍💻 Who this is for\n\nn8n developers who want peace of mind  \nAgencies managing many client automations  \nAnyone worried about losing their workflow work  \nTeams needing version control and backup history\n\n🛠️ Requirements\n\nGoogle Drive OAuth2 credential**  \nn8n API Key** (from your account settings)  \nn8n Cloud or self-hosted instance\n\n🌐 Want to use this workflow?\n\n❤️ Buy workflows: https://iloveflows.com  \n☁️ Try n8n Cloud with my partner link: https://n8n.partnerlinks.io/amanda\n",
+  "_templateCreatedAt": "2025-05-07T11:36:46.111Z",
+  "_templateTotalViews": 511,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:00:39.713Z",
+  "id": "LtV9R8GxBGG8peSx",
+  "meta": {
+    "instanceId": "b79da95dcb1b69eebc3470f6fd833d7e53e389c229c716386bdb8e7c291ad2b9",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "💾 Backup Automation for n8n Workflows to Google Drive (Daily or Manual)",
+  "tags": [
+    {
+      "id": "gopnerJXNBoZBzMX",
+      "name": "iloveflows.com",
+      "createdAt": "2025-05-06T11:24:14.834Z",
+      "updatedAt": "2025-05-06T11:24:14.834Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "cdd22824-2a16-45ea-aff6-6f3c8cc56225",
+      "name": "Move Binary Data",
+      "type": "n8n-nodes-base.moveBinaryData",
+      "position": [
+        -640,
+        180
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "6b40b453-1447-446e-a882-66b26808b63e",
+      "name": "Date & Time",
+      "type": "n8n-nodes-base.dateTime",
+      "position": [
+        -1580,
+        220
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "777bce77-5321-4464-9004-8b8d0068ff47",
+      "name": "Start by Date and Time",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        -1820,
+        140
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "d68353c0-fd0f-4123-81dc-48e476145c82",
+      "name": "Start by Click",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        -1820,
+        300
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "2285b6f9-92fa-49b1-b90d-a167b5443afb",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1900,
+        20
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "b45ad37b-55f2-46fc-8160-a749fc7788c3",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1620,
+        20
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "7763526c-9229-42ec-821a-1a599906585b",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1420,
+        20
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "2307a769-7c07-420c-b478-11da8ca6f52b",
+      "name": "Folder Creation in Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        -1360,
+        220
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "ab7d5597-9825-448e-87dc-ac42af526cb7",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1180,
+        20
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "b3d7065e-e4b7-4d0e-97af-16ae37a9bd97",
+      "name": "Search All Workflows",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        -1120,
+        220
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "46cae300-40fc-4537-9f31-09e1c517959e",
+      "name": "Compiles Individual Data",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        -940,
+        280
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "4c8d937b-76da-43dc-8a00-512ad8ef9cab",
+      "name": "Merge Data",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        -780,
+        180
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "5ca9208c-43d4-4707-9417-a292e49c4a92",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -480,
+        20
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "9954b76b-952e-4e0c-a90c-44536bc00948",
+      "name": "Save to Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        -440,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "f29d9273-6f0a-4135-ada5-18217ad2ae6b",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -1900,
+        -340
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "6289aec5-375b-4637-80f7-fefee827a05a",
+  "connections": {
+    "Merge Data": {
+      "main": [
+        [
+          {
+            "node": "Move Binary Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Folder Creation in Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start by Click": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Move Binary Data": {
+      "main": [
+        [
+          {
+            "node": "Save to Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Search All Workflows": {
+      "main": [
+        [
+          {
+            "node": "Compiles Individual Data",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start by Date and Time": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compiles Individual Data": {
+      "main": [
+        [
+          {
+            "node": "Merge Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Folder Creation in Drive": {
+      "main": [
+        [
+          {
+            "node": "Search All Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

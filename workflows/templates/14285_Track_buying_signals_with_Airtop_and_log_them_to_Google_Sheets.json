@@ -1,0 +1,239 @@
+{
+  "_templateId": 14285,
+  "_templateName": "Track buying signals with Airtop and log them to Google Sheets",
+  "_templateDescription": "This powerful automation helps you stay ahead of the competition by identifying sales opportunities in real-time. Here’s how it works:\n\nReads Your Targets**: It starts by reading a list of target companies and your custom-defined buying signals from a Google Sheet you provide.\nScans Multiple Sources**: For each company, the automation scours the web, pulling data from:\n    LinkedIn Job Postings: To find signals related to team growth, new initiatives, and technology adoption.\n    LinkedIn Company Posts: To catch announcements, product news, and other strategic updates.\n    Web News Articles: To monitor for major events like M&A, funding rounds, and market expansion.\nAI-Powered Analysis**: An advanced AI model acts as an analyst, meticulously evaluating all the collected information against your signal definitions to identify genuine buying intent.\nAvoids Duplicates**: To ensure your signal feed is clean and actionable, the automation intelligently checks if a newly found signal has already been logged recently.\nLogs Opportunities**: New, unique buying signals are instantly recorded in your Google Sheet, creating a dynamic, up-to-date list of warm leads for your sales team.\n\nUsage Ideas\n\nProactive Sales Outreach**: Equip your sales team with timely, relevant reasons to connect with prospects, moving beyond cold calls to value-driven conversations.\nTargeted Marketing Campaigns**: Inform your account-based marketing (ABM) efforts by creating campaigns that speak directly to a target company's recent activities or challenges.\nCompetitive Intelligence**: Monitor your competitors' hiring trends, product announcements, and partnerships to stay informed about their strategic direction.\nCustomer Success & Expansion**: Keep an eye on your existing customers for signals that might indicate an opportunity for upselling, cross-selling, or churn risk.\nInvestment Research**: Track companies in your portfolio or on your watchlist for key developments that could impact their value and growth prospects.\n\nCustomization Ideas\n\nThis template is designed to be highly adaptable to your specific sales and marketing strategy. You can easily customize it to:\n\nDefine Your Ideal Signals**: You have complete control over the buying signals you want to track. Simply add or edit your criteria for hiring, news, or LinkedIn posts in the \"Signals\" tab of your Google Sheet. For example, you could track \"hiring data scientists,\" \"mentions of AI implementation,\" or \"news of European expansion.\"\nManage Your Target List**: Easily add, remove, or update the companies you want to monitor directly in the \"Accounts\" tab of your Google Sheet.\nSelect Your Sources**: Choose which channels to monitor. You can enable or disable the modules for Hiring, LinkedIn Posts, and News at any time to focus on the sources that matter most to you.\nControl the Timeframe**: Adjust how far back the automation should look for information, such as analyzing the last 7 days of company posts or the last 30 days of news articles.\nCustomize the Output**: Since all results are logged to your Google Sheet, you can easily integrate this data into your CRM, build dashboards, or set up custom alerts.",
+  "_templateCreatedAt": "2026-03-24T00:47:22.513Z",
+  "_templateTotalViews": 0,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:03:45.174Z",
+  "meta": {
+    "instanceId": "28a947b92b197fc2524eaba16e57560338657b2b0b5796300b2f1cedc1d0d355",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "1213ff66-e24c-43b7-bf86-104b4e1f6fd4",
+      "name": "When Executed by Another Workflow",
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "workflowInputs": {
+          "values": [
+            {
+              "name": "googleSheetUrl"
+            },
+            {
+              "name": "deduplicationWindowDays",
+              "type": "number"
+            },
+            {
+              "name": "enableHiringModule",
+              "type": "boolean"
+            },
+            {
+              "name": "enableLinkedInPostsModule",
+              "type": "boolean"
+            },
+            {
+              "name": "enableNewsModule",
+              "type": "boolean"
+            },
+            {
+              "name": "maxAccountsToProcess",
+              "type": "number"
+            },
+            {
+              "name": "maxJobPagesPerCompany",
+              "type": "number"
+            },
+            {
+              "name": "maxPostPagesPerCompany",
+              "type": "number"
+            },
+            {
+              "name": "newsDaysBack",
+              "type": "number"
+            },
+            {
+              "name": "postsDaysBack",
+              "type": "number"
+            }
+          ]
+        }
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "34ee1f20-5953-4a23-a9fd-e4c42812ab92",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -464,
+        -128
+      ],
+      "parameters": {
+        "width": 432,
+        "height": 576,
+        "content": "## Track Buying Signals with Airtop\n\nAutomatically monitor target accounts across LinkedIn and news for hiring sprees, product launches, funding rounds, and other buying signals - logged straight to Google Sheets.\n\n### Video Tutorial\n@[youtube](VYD7X3It2v8)\n\n**Important**\nYou need to install the Airtop template [Real-Time Buying Signals Agent](https://www.airtop.ai/templates/multi-source-b2b-buying-signal-monitor?utm_source=n8n-template) in your account before executing this n8n workflow."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "334f531e-dad4-4bde-87de-7bf49c71bec3",
+      "name": "Run \"The Real-Time Buying Signals Agent\"",
+      "type": "n8n-nodes-base.airtop",
+      "position": [
+        208,
+        0
+      ],
+      "parameters": {
+        "agentId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "85d35fb5-0610-4dd0-bb39-9f1ed310d24e",
+          "cachedResultName": "The Real-Time Buying Signals Agent"
+        },
+        "resource": "agent",
+        "agentParameters": {
+          "value": {
+            "newsDaysBack": "={{ $json.newsDaysBack }}",
+            "postsDaysBack": "={{ $json.postsDaysBack }}",
+            "googleSheetUrl": "={{ $json.googleSheetUrl }}",
+            "enableNewsModule": "={{ $json.enableNewsModule }}",
+            "enableHiringModule": "={{ $json.enableHiringModule }}",
+            "maxAccountsToProcess": "={{ $json.maxAccountsToProcess }}",
+            "maxJobPagesPerCompany": "={{ $json.maxJobPagesPerCompany }}",
+            "maxPostPagesPerCompany": "={{ $json.maxPostPagesPerCompany }}",
+            "deduplicationWindowDays": "={{ $json.deduplicationWindowDays }}",
+            "enableLinkedInPostsModule": "={{ $json.enableLinkedInPostsModule }}"
+          },
+          "schema": [
+            {
+              "id": "deduplicationWindowDays",
+              "type": "number",
+              "display": true,
+              "required": false,
+              "displayName": "deduplicationWindowDays",
+              "defaultMatch": false
+            },
+            {
+              "id": "enableHiringModule",
+              "type": "boolean",
+              "display": true,
+              "required": false,
+              "displayName": "enableHiringModule",
+              "defaultMatch": false
+            },
+            {
+              "id": "enableLinkedInPostsModule",
+              "type": "boolean",
+              "display": true,
+              "required": false,
+              "displayName": "enableLinkedInPostsModule",
+              "defaultMatch": false
+            },
+            {
+              "id": "enableNewsModule",
+              "type": "boolean",
+              "display": true,
+              "required": false,
+              "displayName": "enableNewsModule",
+              "defaultMatch": false
+            },
+            {
+              "id": "googleSheetUrl",
+              "type": "string",
+              "display": true,
+              "required": true,
+              "displayName": "googleSheetUrl (required)",
+              "defaultMatch": false
+            },
+            {
+              "id": "maxAccountsToProcess",
+              "type": "number",
+              "display": true,
+              "required": false,
+              "displayName": "maxAccountsToProcess",
+              "defaultMatch": false
+            },
+            {
+              "id": "maxJobPagesPerCompany",
+              "type": "number",
+              "display": true,
+              "required": false,
+              "displayName": "maxJobPagesPerCompany",
+              "defaultMatch": false
+            },
+            {
+              "id": "maxPostPagesPerCompany",
+              "type": "number",
+              "display": true,
+              "required": false,
+              "displayName": "maxPostPagesPerCompany",
+              "defaultMatch": false
+            },
+            {
+              "id": "newsDaysBack",
+              "type": "number",
+              "display": true,
+              "required": false,
+              "displayName": "newsDaysBack",
+              "defaultMatch": false
+            },
+            {
+              "id": "postsDaysBack",
+              "type": "number",
+              "display": true,
+              "required": false,
+              "displayName": "postsDaysBack",
+              "defaultMatch": false
+            }
+          ],
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        }
+      },
+      "credentials": {
+        "airtopApi": {
+          "id": "aNnfz01DNfn7IokQ",
+          "name": "Airtop Templates"
+        }
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "newsDaysBack": 30,
+        "postsDaysBack": 7,
+        "googleSheetUrl": null,
+        "enableNewsModule": true,
+        "enableHiringModule": true,
+        "maxAccountsToProcess": -1,
+        "maxJobPagesPerCompany": 3,
+        "maxPostPagesPerCompany": 1,
+        "deduplicationWindowDays": 7,
+        "enableLinkedInPostsModule": true
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "Run \"The Real-Time Buying Signals Agent\"",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

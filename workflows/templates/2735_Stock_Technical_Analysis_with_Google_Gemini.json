@@ -1,0 +1,176 @@
+{
+  "_templateId": 2735,
+  "_templateName": "Stock Technical Analysis with Google Gemini",
+  "_templateDescription": "The purpose of this workflow, \"Sell: Stock Vision,\" is to create an AI-powered technical analysis agent capable of analyzing financial charts for equity stocks and cryptocurrencies. This workflow provides users with actionable insights into market trends, price movements, candlestick patterns, and technical indicators to support informed trading decisions.\n\nHow It Works\n\nIntegration with TradingView:** The workflow uses the Chart-Img.com API to fetch detailed financial charts for the specified stock or cryptocurrency.\nAI-Powered Analysis:** The workflow employs advanced AI models, including Google's Gemini Chat Model, to analyze the retrieved charts for candlestick patterns, support/resistance levels, and technical indicators like MACD and RSI.\nNews and Sentiment Analysis:** By integrating with SerpAPI, the workflow gathers relevant news about the stock or cryptocurrency to evaluate its potential impact on market movements.\nComprehensive Insights:** It provides detailed trading strategies, including buy/sell recommendations, stop-loss levels, and risk-reward evaluations.\nContinuous Memory:** The AI agent uses buffer memory to retain context for enhanced analysis and continuity.\n\nUse Case\nThis workflow is perfect for traders and analysts who need reliable and AI-powered market analysis to make informed trading decisions efficiently.\n\nTutorial\n\nObtain API keys for Chart-Img.com and SerpAPI.\nConfigure the workflow in your n8n instance by inputting the required API keys and connecting the nodes.\nTrigger the workflow by providing the stock or cryptocurrency symbol, and let the agent do the rest!\n\nhttps://youtu.be/9fR4qNMT5LM\n",
+  "_templateCreatedAt": "2025-01-16T08:21:40.374Z",
+  "_templateTotalViews": 4741,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:02:31.871Z",
+  "id": "RrMRgKuAwdVcuk88",
+  "meta": {
+    "instanceId": "d16fb7d4b3eb9b9d4ad2ee6a7fbae593d73e9715e51f583c2a0e9acd1781c08e"
+  },
+  "name": "Sell: Stock Vision",
+  "tags": [
+    {
+      "id": "XZIQK6NdzGvgbZFd",
+      "name": "Sell",
+      "createdAt": "2025-01-15T12:28:48.424Z",
+      "updatedAt": "2025-01-15T12:28:48.424Z"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "72a9e1f7-58a2-4704-899f-63a37e8342a9",
+      "name": "TradingView Chart",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        220,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "5a52e2f1-6d00-45b3-b273-79f36198f968",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        440,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1.7
+    },
+    {
+      "id": "634f1d9e-15b7-4846-b21b-8b62b09bf8d4",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        200,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "dfcd07b4-bb42-42e1-9d44-dc3c6a81e857",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "position": [
+        340,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1.3
+    },
+    {
+      "id": "2e962b9b-0b45-4098-8722-328dc0f48df1",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "position": [
+        -200,
+        0
+      ],
+      "webhookId": "fd375b9f-d3c4-402a-8de1-7ba718f0b670",
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "f4ecc791-0d20-4bc1-aa3e-18f5ed586809",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        20,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "a94e2169-176a-4070-bb02-16ef971c3cae",
+      "name": "SerpAPI",
+      "type": "@n8n/n8n-nodes-langchain.toolSerpApi",
+      "position": [
+        480,
+        240
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "2af104c3-54f0-4dbf-b756-e94e96f250bd",
+  "connections": {
+    "SerpAPI": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "TradingView Chart",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "TradingView Chart": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

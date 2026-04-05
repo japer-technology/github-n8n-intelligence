@@ -1,0 +1,568 @@
+{
+  "_templateId": 3714,
+  "_templateName": "YouTube Video to AI-Powered Auto Blogging and Affiliate Automation",
+  "_templateDescription": "🚀 YouTube to WordPress AI-Powered Automation\nTransform your YouTube content into professional blog posts automatically!  \nThis n8n template seamlessly converts your YouTube videos into fully-formatted, SEO-optimized WordPress blog posts using AI-powered content generation—all without lifting a finger.\n\n🎯 What This Automation Does\n📺 Monitors your YouTube channel for new video uploads\n🔍 Extracts key video information (title, description, URL, thumbnail)\n🤖 Leverages AI to generate comprehensive blog content based on video material\n✏️ Creates SEO-optimized titles, excerpts, and tags\n🖼️ Formats posts beautifully with embedded videos and proper HTML structure\n📝 Publishes directly to WordPress via secure API connection\n⏱️ Runs on your schedule — daily, weekly, or after each new upload\n\n🧑‍🏫 Step-by-Step Video Tutorial\n🎥 Watch the implementation tutorial:  \n  \n📌 See the complete workflow setup and content transformation in action.\n\n🌐 Useful Links\n🔗 Get started with n8n Cloud:  \n  👉 https://n8n.io/cloud/\n📘 YouTube Data API documentation:  \n  👉 https://developers.google.com/youtube/v3\n📚 WordPress REST API handbook:  \n  👉 https://developer.wordpress.org/rest-api/\n🧠 OpenAI API documentation:  \n  👉 https://platform.openai.com/docs/api-reference\n\n🛠 Prerequisites\n✅ n8n installation (self-hosted or cloud)\n✅ YouTube Data API key\n✅ AI provider API key (OpenAI, Google Gemini, etc.)\n✅ WordPress website with REST API enabled\n✅ WordPress application password for secure authentication\n\n📋 Step-by-Step Implementation\n\n1️⃣ YouTube Video Detection\nYoutube RSS Feedlink to fetch new video automatically\nImplement filtering to process only videos not yet published to WordPress\n\n2️⃣ Content Preparation\nExtract essential video metadata (ID, title, description, thumbnail URL)\nStructure the information for AI processing and WordPress publication\nFormat video thumbnails for use as featured images in blog posts\n\n3️⃣ AI Content Generation\nConfigure your preferred AI provider (OpenAI, Gemini, etc.)\nCreate detailed prompts that instruct the AI to:\n  Maintain your brand voice and writing style\n  Structure content with proper headings and subheadings\n  Creates Internal Links from existing blogposts\n  Creators Extenal links using affilaite links and other link database.\n  Engaging SEO frendly.\n  Automatically monetizes by embedding social PartnerStack Links\n  Include key points from the video\n  Generate SEO-friendly paragraphs and conclusions\n\n4️⃣ Content Enhancement\nFormat the AI-generated content with proper HTML structure\nAdd responsive embedded YouTube player\nInclude attribution links back to original video\nCreate custom intro and conclusion sections\n\n5️⃣ WordPress Publishing\nSecurely connect to WordPress via REST API\nSet post parameters (title, content, excerpt, categories, tags)\nConfigure post status (publish immediately or save as draft)\nAdd featured image using video thumbnail\n\n6️⃣ Notification & Logging\nReceive email or Slack notifications when new posts are published\nLog workflow executions for troubleshooting\nTrack successful publications for reporting\n\n💰 Automatic Affiliate Marketing Integration\n\nTransform your blog posts into passive income generators by automatically embedding relevant affiliate links based on your video content:\n\nPartnerStack Integration\nDynamically fetch relevant affiliate links** from your PartnerStack account\nIntelligently match products** to video content using AI-powered relevance scoring\nAutomatically insert formatted affiliate links** with proper disclosure notices\nTrack performance metrics** for each generated post's affiliate conversions\n\nExample setup: Connect PartnerStack API → Filter relevant products → Insert links in strategic post positions\n\nCustom Affiliate Database via Airtable\nCreate a centralized product-keyword Airtable database:\n  Product name and description\n  Affiliate link with your unique ID\n  Category and keyword triggers\n  Commission rates and expiration dates\nAuto-scan blog content** to identify keyword matches\nInsert highest-converting links** based on historical performance\nRotate affiliate links** to test different products and placements\n\nAdvanced Monetization Features\nAmazon Associates product matching** based on video content\nTime-sensitive promo codes** inserted for limited-time offers\nGeo-targeted affiliate links** based on visitor location\nA/B testing system** to optimize link placement and conversion\nAutomated disclosure statements** to maintain FTC compliance\n\nImplementation Steps\nConnect to your PartnerStack account via API\nCreate an Airtable base with your affiliate product database\nConfigure the AI to identify product-mention opportunities\nAdd a post-processing node to insert relevant affiliate links\nImplement tracking parameters to measure performance\n\nThis integration not only saves time manually adding affiliate links, but also increases conversion rates through intelligent product matching and optimal placement within your automatically generated blog content.\n\n&gt; 💡 Pro Tip: Create separate tracking IDs for your automated YouTube-to-WordPress posts to measure this specific channel's performance in your affiliate dashboards.\n\n💡 Advanced Customizations\n\nContent Templates\nCreate specialized formatting based on video categories:\nTutorial videos**: Step-by-step instructions with timestamps\nReview videos**: Pros/cons sections with ratings\nInterview videos**: Question-answer format with speaker attribution\n\nCategory & Tag Management\nAutomatically organize your WordPress content:\nAssign categories based on video topics or playlists\nGenerate tags from video keywords and descriptions\nCreate custom taxonomies for video series\n\nMulti-Platform Distribution\nExtend your content reach by adding:\nSocial media announcement posts\nEmail newsletter inclusion\nContent syndication to Medium or LinkedIn\n\n⚠️ Troubleshooting\n\n| Issue | Solution |\n|-------|----------|\n| AI generation timeout | Increase timeout settings or use chunked processing |\n| WordPress API errors | Verify application password and user permissions |\n| Missing video embedding | Check oEmbed settings in WordPress |\n| Duplicate posts | Implement content fingerprinting for detection |\n| Poor content quality | Refine AI prompts with better instructions |\n\n🙌 Why Use This Template\n\nContent creators typically spend 2-4 hours converting each video into a quality blog post. This automation:\n\n⏱️ Saves 10+ hours weekly for active YouTube creators\n🔍 Boosts SEO performance with multi-platform content\n🌐 Expands audience reach to text-preferring visitors\n💰 Increases monetization opportunities across platforms\n🧠 Frees creative energy for producing better videos\n\nDon't choose between video and written content—have both automatically!\n\n🚀 Get Started Now\nImport the template → Connect your accounts → Watch your blog grow alongside your channel.\n\n👉 AMJID ALI'S PROFILE  \n👉 website  \n👉 Explore more on youtube\n\nKnowledge Base: youtube-api, wordpress-automation, content-repurposing, ai-blog-generation, n8n-workflow, creator-tools, video-to-text, multi-platform-publishing",
+  "_templateCreatedAt": "2025-04-26T03:05:51.189Z",
+  "_templateTotalViews": 3525,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:00:59.264Z",
+  "meta": {
+    "instanceId": "4359279a248a64f23ddf72d3bc2de4dead8a687e643e9296f8a007dd65120396"
+  },
+  "nodes": [
+    {
+      "id": "fd3b3303-7a74-4a4e-b9fd-c753c4a7b75e",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1100,
+        440
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "98b188e6-a089-4432-a147-bbac337e054c",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        2460,
+        540
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "1effaf4d-193e-4a0f-995d-01e07ccef574",
+      "name": "Get all Posts for AI",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2160,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "1d981012-449e-47c6-8afa-837f883250a4",
+      "name": "RSS Feed Trigger",
+      "type": "n8n-nodes-base.rssFeedReadTrigger",
+      "position": [
+        720,
+        160
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "f7a71864-55a6-41eb-afb0-669c1417eb76",
+      "name": "affiliate_links",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "position": [
+        2640,
+        520
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "573576ea-f188-47c4-9709-9e296d35ad02",
+      "name": "Get Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3700,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "8282a77d-5112-4d79-ad5e-be88e854837b",
+      "name": "Upload Image",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3580,
+        480
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "1aedf15a-0252-4ef0-9f9c-e656f999c028",
+      "name": "Update Image Details",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        3860,
+        480
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "fa6b6529-d86a-4d41-9d9b-3dbc6b1f69c7",
+      "name": "Get Details of Video from Youtube",
+      "type": "n8n-nodes-base.youTube",
+      "position": [
+        720,
+        440
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "0995a039-9982-4594-8935-8e30fc6e01ab",
+      "name": "EGet Video ID",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1100,
+        160
+      ],
+      "parameters": {},
+      "typeVersion": 3.4
+    },
+    {
+      "id": "27634b42-7cc7-4042-a874-218b2050efe5",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "position": [
+        3260,
+        520
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "02cd4b14-e6af-485f-88fd-76782f98c9f5",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        620,
+        -100
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "fd118204-65ae-415f-b4c3-26a11b0a45f5",
+      "name": "Get Post SiteMap",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1580,
+        180
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "172f87dc-fe3c-4cd6-b0aa-c318d893df10",
+      "name": "Conver to JSON",
+      "type": "n8n-nodes-base.xml",
+      "position": [
+        1840,
+        180
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "369febb4-8527-42f1-ace1-c5a86d51697e",
+      "name": "Extract URLs",
+      "type": "n8n-nodes-base.splitOut",
+      "position": [
+        1560,
+        460
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "c46e145f-bad1-4f31-af31-9a82a1cc2c69",
+      "name": "URL Lists",
+      "type": "n8n-nodes-base.aggregate",
+      "position": [
+        1860,
+        460
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "19dd686e-91d4-493d-aa5a-17b4d6001694",
+      "name": "wp_category",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "position": [
+        2800,
+        520
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "2cb60726-74e4-4293-a9d6-6d5243d29cac",
+      "name": "wp_tag",
+      "type": "@n8n/n8n-nodes-langchain.toolHttpRequest",
+      "position": [
+        2940,
+        520
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "f0053c84-b31d-4f2b-bc80-2aaf3da5ac17",
+      "name": "lms",
+      "type": "n8n-nodes-base.airtableTool",
+      "position": [
+        3080,
+        540
+      ],
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "bd81a537-b0c7-4bb0-a711-9b6238737a4d",
+      "name": "Technical Blog Writer",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        2760,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 1.8
+    },
+    {
+      "id": "fe2a12c2-6dc2-4e02-9171-7af3637055df",
+      "name": "Publish Post WP",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        4480,
+        480
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "f288dc11-b5d1-42f1-abe3-ef24d63ac3d0",
+      "name": "BlogPost",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        3500,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "b435a345-2508-4b25-a551-0ea6afd44e4b",
+      "name": "rename image",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        3920,
+        200
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "b79da3ed-b1dc-432f-a009-96e954b7fdbd",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2360,
+        -100
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8fdb46b0-62d7-4f27-8a31-5db673ab45f3",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1440,
+        -100
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "03c4526f-ab38-4a51-acbb-2c006e338cd0",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        3380,
+        -100
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "0a74d7ec-61c8-4d87-9bc5-1bebaf4bb6de",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        4200,
+        -100
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "99e0eb36-d4ba-4537-80c3-27e00ff09233",
+      "name": "Sticky Note11",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -360,
+        -100
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "lms": {
+      "ai_tool": [
+        [
+          {
+            "node": "Technical Blog Writer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wp_tag": {
+      "ai_tool": [
+        [
+          {
+            "node": "Technical Blog Writer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "BlogPost": {
+      "main": [
+        [
+          {
+            "node": "Get Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Image": {
+      "main": [
+        [
+          {
+            "node": "rename image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "URL Lists": {
+      "main": [
+        [
+          {
+            "node": "Get all Posts for AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get Post SiteMap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "wp_category": {
+      "ai_tool": [
+        [
+          {
+            "node": "Technical Blog Writer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract URLs": {
+      "main": [
+        [
+          {
+            "node": "URL Lists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload Image": {
+      "main": [
+        [
+          {
+            "node": "Update Image Details",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "rename image": {
+      "main": [
+        [
+          {
+            "node": "Upload Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "EGet Video ID": {
+      "main": [
+        [
+          {
+            "node": "Get Details of Video from Youtube",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conver to JSON": {
+      "main": [
+        [
+          {
+            "node": "Extract URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "affiliate_links": {
+      "ai_tool": [
+        [
+          {
+            "node": "Technical Blog Writer",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Post SiteMap": {
+      "main": [
+        [
+          {
+            "node": "Conver to JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RSS Feed Trigger": {
+      "main": [
+        [
+          {
+            "node": "EGet Video ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get all Posts for AI": {
+      "main": [
+        [
+          {
+            "node": "Technical Blog Writer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Image Details": {
+      "main": [
+        [
+          {
+            "node": "Publish Post WP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Technical Blog Writer": {
+      "main": [
+        [
+          {
+            "node": "BlogPost",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Technical Blog Writer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Technical Blog Writer",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Details of Video from Youtube": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

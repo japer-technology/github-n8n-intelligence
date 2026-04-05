@@ -1,0 +1,305 @@
+{
+  "_templateId": 3559,
+  "_templateName": "Automated n8n Workflow Backup System with Google Drive and Archiving",
+  "_templateDescription": "Click here to access this Workflow for free.\n\nAutomatically save and archive your workflows\n\n\nThis workflow provides a fully automated system for backing up your n8n workflows to Google Drive. It runs on a schedule (which you can customize) and saves each workflow as a .json file, named after the workflow itself. All active workflows are backed up by default and stored in a specified Google Drive folder of your choice.\n\nA special feature of this workflow is its ability to archive and clean up old workflows. If you tag a workflow with ARCHIVE (case-sensitive), the workflow will be backed up into a designated Archive subfolder inside your main Google Drive folder — and then automatically deleted from your n8n instance. This keeps your workspace clean and reduces clutter while ensuring everything is safely stored.\n\nRequirements\n\nA Google Drive account connected to n8n (via OAuth2 or preferred method)\nAn n8n instance with access to your workflows\nA folder in Google Drive for storing backups\n  Inside this folder, create a subfolder named Archive\nFolder IDs for both the main and archive folders* (Find it in folder's URL e.g. https://drive.google.com/drive/u/0/folders/1F7Exr2xkZQFvmHmjdFD43K0jfd*)\n\nSetup\n\nIn your Google Drive, create a main folder for storing backups.\nInside it, create a subfolder called Archive.\nRetrieve the folder IDs for both folders\nIn n8n, connect your Google Drive credentials.\nOpen the workflow and insert the folder IDs in the appropriate nodes.\nOptionally, edit the schedule trigger to set your preferred backup frequency.\n\nUsage\n\nOnce configured, the workflow will:\nRun automatically on the defined schedule\nBack up all existing workflows into your Drive\nFor workflows tagged with ARCHIVE:\n  Save them into the Archive subfolder\n  Delete them from your n8n instance\n\nThe workflow ensures your automation logic is safely versioned, with optional cleanup for outdated or unused flows.\n\nCustomization\n\nYou can modify the schedule to run daily, weekly, or at any custom interval using the built-in Cron node.\n\nYou can also change the folder structure or naming conventions in the Google Drive nodes to match your personal or team preferences.\n\nWorkflows are archived only if they are explicitly tagged with ARCHIVE — this tag is case-sensitive.\n\nIf you need any help, or have any question, feel free to come discuss about it on Telegram ",
+  "_templateCreatedAt": "2025-04-15T09:32:46.476Z",
+  "_templateTotalViews": 433,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:01:20.330Z",
+  "meta": {
+    "instanceId": "ff93c7924b638fb6ca7815d8ed0b9e89bc1a4b863863649bb0ed513cdccf1946",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "bf1cea33-3efe-431b-a6c8-9020c0536be1",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "position": [
+        1460,
+        460
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "af03b7b7-88c6-46f8-978f-f68a98a7ebda",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [
+        2560,
+        460
+      ],
+      "parameters": {},
+      "typeVersion": 2.2
+    },
+    {
+      "id": "ed067034-d89b-4092-9012-3b0f5cba98fd",
+      "name": "Sticky Note9",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1360,
+        300
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "49dcc174-3a3e-4330-968a-7e1ba7dcfe6c",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2080,
+        300
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f13d2f9e-a203-4ab8-823d-be460d9d053b",
+      "name": "Create to date folder",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1840,
+        460
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "e6d9afa6-c9c8-4190-ac08-bc53083deda1",
+      "name": "GET Workflows",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        2220,
+        460
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "9f30aaf6-2805-4971-b526-d17deca8510b",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2480,
+        40
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e8a26016-c67e-4053-a303-23703162f02b",
+      "name": "Convert to JSON",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        2780,
+        580
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "d35a31b3-67d4-4d40-ad61-c4ff7829c265",
+      "name": "Convert to JSON'",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        2780,
+        340
+      ],
+      "parameters": {},
+      "typeVersion": 1.1
+    },
+    {
+      "id": "a3810775-cedb-4be3-9638-8db62909849e",
+      "name": "Save 'ARCHIVE' Workflows",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        3100,
+        340
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "2415e60f-a43d-455a-b63f-125a635e0537",
+      "name": "Save all other Workflows",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        3100,
+        580
+      ],
+      "parameters": {},
+      "typeVersion": 3
+    },
+    {
+      "id": "4e74bd48-f91d-45d2-a692-782d0f1bb209",
+      "name": "Delete 'ARCHIVE' Workflows",
+      "type": "n8n-nodes-base.n8n",
+      "position": [
+        3420,
+        340
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "b25ffe3e-85d5-454e-8181-1cb8f7f4a615",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1500,
+        -380
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ae2f0355-af85-4397-a7ab-a0a232203c01",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1340,
+        20
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "dc181336-ffad-4563-81e6-69e259598b09",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1380,
+        60
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "adb0cdba-c762-418b-a077-241c65aeec6b",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2980,
+        180
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "dab308c4-3919-420d-9594-f2adb9e093a6",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1700,
+        300
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Convert to JSON'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Convert to JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "GET Workflows": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to JSON": {
+      "main": [
+        [
+          {
+            "node": "Save all other Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to JSON'": {
+      "main": [
+        [
+          {
+            "node": "Save 'ARCHIVE' Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Create to date folder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create to date folder": {
+      "main": [
+        [
+          {
+            "node": "GET Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save 'ARCHIVE' Workflows": {
+      "main": [
+        [
+          {
+            "node": "Delete 'ARCHIVE' Workflows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

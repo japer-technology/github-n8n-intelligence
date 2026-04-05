@@ -1,0 +1,438 @@
+{
+  "_templateId": 13523,
+  "_templateName": "Enrich and score B2B company leads with Clearbit, Hunter.io, and Gemini AI",
+  "_templateDescription": "Enrich and score company leads with Clearbit, Hunter.io, and Gemini AI\n\nWho is this for?\n\nSales teams and B2B marketers who spend hours researching leads manually. If you've looked at Clay but didn't want the $149/month price tag, this workflow does the same job as a one-time n8n template.\n\nWhat problem does this solve?\n\nResearching a single lead — finding the right contact, checking the company's reputation, figuring out their tech stack — takes 15-30 minutes per company. Multiply that by 20 leads a day and you've lost your whole afternoon.\n\nThis workflow takes a company domain and automatically pulls data from 5 sources, scores the lead with AI, and alerts your team when something promising comes through. What used to take 30 minutes now takes about 15 seconds.\n\nHow it works\n\nWeb form — A sales rep submits a company domain, picks the industry, and sets a priority level\nClearbit enrichment — Pulls company firmographics: industry, employee count, revenue range, tech stack, social profiles, and location\nHunter.io lookup — Finds up to 5 verified email contacts at the company and identifies decision-makers (CEO, VP, Director) by seniority\nGoogle Maps check — Fetches the company's Google rating, review count, and business status\nWebsite scrape — Hits the company homepage and extracts phone numbers, detects tech stack usage (11 technologies), checks for hiring pages and pricing pages, and pulls social media links\nGemini AI analysis — Takes all collected data, scores the lead 0–100, assesses ICP fit, writes a personalized outreach opener, and recommends the next action\nGoogle Sheets — Saves the complete lead record (35+ fields) for pipeline tracking\nSlack alert — If the lead scores 75 or higher, sends an instant notification with the full intelligence report\n\nWhat's in the workflow\n\n17 nodes** across 8 services: Form trigger, Clearbit (HTTP), Hunter.io (HTTP), Google Maps (HTTP), website scraper (HTTP), code nodes for data processing, Google Gemini AI for scoring, Google Sheets for storage, filter node for hot leads, and Slack for alerts\n8 sticky notes** documenting each stage of the pipeline\n5 code nodes** handling: company data parsing and size classification, contact ranking by seniority, reputation scoring, website HTML analysis (phone/tech/hiring/pricing extraction), and final data merging with AI response parsing\nTrust score system** — 120-point weighted score across domain presence, contacts, revenue data, reputation, and web signals\nError handling** — Website scrape continues on failure; AI parsing has fallback defaults\n\nSetup\n\nAdd Clearbit credentials (Header Auth with Bearer token)\nAdd Hunter.io credentials (Query Auth with api_key)\nAdd Google Maps API key (Places API enabled)\nConnect Google Sheets (OAuth2) and point to your spreadsheet\nConnect your Slack workspace and pick the alert channel\nSet your Google Gemini API key\nActivate and share the form URL with your sales team\n\nKey details\n\nCompany size is classified automatically: Startup / SMB / Mid-Market / Enterprise\nThe contact finder prioritizes C-level and VP-level contacts by confidence score\nWebsite tech detection covers: AWS, GCP, Azure, React, Next.js, Python, AI/ML, Kubernetes, SaaS, API, Blockchain\nHiring signals (careers page, \"we're hiring\") indicate growth and budget availability\nPricing page detection suggests the company sells a product — useful for partnership or vendor qualification\nThe hot lead threshold (75) is adjustable in the filter node\nGemini temperature is set to 0.3 for consistent scoring across leads\n",
+  "_templateCreatedAt": "2026-02-19T15:05:40.863Z",
+  "_templateTotalViews": 0,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:07:21.255Z",
+  "meta": {
+    "instanceId": "0fd24758e45cbed1f63c03b9ca7326acab4b855985945af441ee95f8874d3e22",
+    "templateCredsSetupCompleted": true
+  },
+  "nodes": [
+    {
+      "id": "9b6a8247-1ef4-4bd7-8e4b-2864d5a9c1cf",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        0,
+        368
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "ddf0578e-7dd6-4aee-bec5-b4a8ea06804f",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        560,
+        368
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "7c292157-d7f5-4e41-b6a1-c2054742d592",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        864,
+        368
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "f996fc30-095c-41ca-91b6-01d4a6f9b5b9",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        368
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "630b0447-fbae-4703-b5f8-c2d61c52db6b",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1376,
+        368
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4a2620d7-f033-4a7f-b06b-3d9eb63c73f2",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1648,
+        368
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a9019378-4cd6-4753-a196-5b846b9f8408",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1920,
+        368
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8682ca95-f8b7-4fe0-b960-94bf23909706",
+      "name": "Sticky Note7",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        2496,
+        368
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "b807a6dc-ff1d-4069-a7ff-fe2289540341",
+      "name": "Lead Input Form",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [
+        656,
+        736
+      ],
+      "webhookId": "c120ca6d-782e-4ed5-80d1-6186c6c8fc87",
+      "parameters": {},
+      "typeVersion": 2.1
+    },
+    {
+      "id": "b0706420-c5c0-4cb4-8fc1-650b7b5266ae",
+      "name": "Clearbit Enrichment",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        944,
+        736
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "22c47c72-781a-47f7-a655-c0a98e200730",
+      "name": "Parse Company Data",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        944,
+        944
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "04059822-6c64-4fd2-91b2-754ade63c77e",
+      "name": "Hunter.io Contacts",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1184,
+        736
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "7f0b410a-efab-43fb-b62b-30cf5d547f93",
+      "name": "Merge Contact Data",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1184,
+        944
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "2fe9903f-85f9-4e4d-9a2d-f7f7f16dd827",
+      "name": "Google Maps Reputation",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        1456,
+        736
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "9d5cd497-5bb0-4ecd-8703-5b0566a91262",
+      "name": "Merge Reputation Data",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1440,
+        944
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "f9fb32ae-611c-4f57-bb15-91ca4ab217d4",
+      "name": "Fetch Company Website",
+      "type": "n8n-nodes-base.httpRequest",
+      "onError": "continueRegularOutput",
+      "position": [
+        1712,
+        736
+      ],
+      "parameters": {},
+      "typeVersion": 4.2
+    },
+    {
+      "id": "bb17767b-9e42-4614-b471-90fecb6e47f5",
+      "name": "Extract Website Intel",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1728,
+        944
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "26eb7bb0-405d-42d4-9760-0244ffda1e98",
+      "name": "AI Lead Scorer",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "position": [
+        1952,
+        704
+      ],
+      "parameters": {},
+      "typeVersion": 1.4
+    },
+    {
+      "id": "f5e167cc-516e-4cc5-b810-ddb76c89cf2c",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "position": [
+        1952,
+        880
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "0ee08b41-11fb-49a1-aa9b-2c6571880de0",
+      "name": "Prepare Final Output",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        2240,
+        704
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "9e9c3e38-c95e-4fda-b2fa-49cfb110ff16",
+      "name": "Save to Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2640,
+        608
+      ],
+      "parameters": {},
+      "typeVersion": 4.5
+    },
+    {
+      "id": "5079a29e-fb79-47b9-949c-339e248ce5ef",
+      "name": "Hot Lead Filter",
+      "type": "n8n-nodes-base.filter",
+      "position": [
+        2640,
+        800
+      ],
+      "parameters": {},
+      "typeVersion": 2
+    },
+    {
+      "id": "ee1226cd-6856-4d52-b130-fabfc3f64dc1",
+      "name": "Slack Hot Lead Alert",
+      "type": "n8n-nodes-base.slack",
+      "position": [
+        2816,
+        800
+      ],
+      "webhookId": "42eed3e3-482c-47e4-8d3c-f2ceda4b9183",
+      "parameters": {},
+      "typeVersion": 2.2
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "AI Lead Scorer": {
+      "main": [
+        [
+          {
+            "node": "Prepare Final Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hot Lead Filter": {
+      "main": [
+        [
+          {
+            "node": "Slack Hot Lead Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Lead Input Form": {
+      "main": [
+        [
+          {
+            "node": "Clearbit Enrichment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hunter.io Contacts": {
+      "main": [
+        [
+          {
+            "node": "Merge Contact Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Contact Data": {
+      "main": [
+        [
+          {
+            "node": "Google Maps Reputation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse Company Data": {
+      "main": [
+        [
+          {
+            "node": "Hunter.io Contacts",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clearbit Enrichment": {
+      "main": [
+        [
+          {
+            "node": "Parse Company Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Final Output": {
+      "main": [
+        [
+          {
+            "node": "Save to Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Hot Lead Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Website Intel": {
+      "main": [
+        [
+          {
+            "node": "AI Lead Scorer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch Company Website": {
+      "main": [
+        [
+          {
+            "node": "Extract Website Intel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge Reputation Data": {
+      "main": [
+        [
+          {
+            "node": "Fetch Company Website",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Maps Reputation": {
+      "main": [
+        [
+          {
+            "node": "Merge Reputation Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Lead Scorer",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

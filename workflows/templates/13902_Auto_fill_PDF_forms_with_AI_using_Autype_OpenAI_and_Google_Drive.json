@@ -1,0 +1,417 @@
+{
+  "_templateId": 13902,
+  "_templateName": "Auto-fill PDF forms with AI using Autype, OpenAI, and Google Drive",
+  "_templateDescription": "\n\nImportant: This workflow uses the Autype community node and requires a self-hosted n8n instance.\n\nThis workflow downloads a fillable PDF form from a URL, extracts all form field names and types using Autype, sends the field list to an AI Agent (OpenAI) together with applicant data, and uses the AI response to fill the form automatically. The AI is instructed to return raw JSON only, and a Code node validates the response before filling. The filled PDF is flattened (non-editable) and saved to Google Drive.\n\nWho is this for?\n\nCompanies that regularly submit the same types of PDF form applications -- permit renewals, tax filings, compliance questionnaires, insurance claims, customs declarations, or any recurring government/regulatory paperwork. Instead of manually filling the same form fields every quarter or year, the AI reads the form structure and fills it with the correct data automatically.\n\nConcrete example: A manufacturing company must renew its operating permit every year by submitting a multi-page PDF application to the local regulatory authority. The form asks for company name, registration number, address, contact person, business type, employee count, and more. With this workflow, the company stores its data once in the AI Agent prompt, and every renewal period they simply run the workflow to get a completed, flattened PDF ready for submission.\n\nThis also works as an additional skill for an AI agent. Instead of a manual trigger, connect the workflow to a webhook or chat trigger so an agent can call it when a user asks \"fill out the permit renewal form for Q2 2026.\"\n\nWhat this workflow does\n\nOn manual trigger, the workflow fetches a fillable PDF from a URL (e.g. a government portal, internal document server, or S3 bucket). It uploads the PDF to Autype and calls Get Form Fields to extract every field name, type (text, checkbox, dropdown, radio), current value, available options, and read-only status. The field list is passed directly to an AI Agent via an inline expression (no separate prompt-building Code node needed). The AI's system message instructs it to return only raw JSON. A Code node validates and parses the response before Autype fills the form, flattens it, and the result is saved to Google Drive.\n\nShowcase\n\nHow it works\n\nRun Workflow -- Manual trigger starts the pipeline.\nDownload PDF Form -- An HTTP Request node fetches the fillable PDF from a URL (the sample uses a registration form with 7 fields).\nUpload PDF Form -- Uploads the PDF binary to Autype Tools to get a file ID.\nGet Form Fields -- Autype extracts all form fields and returns them as metadata. Each field includes: name, type (text/checkbox/dropdown/radio/optionlist), value (current), options (for dropdowns/radio), and isReadOnly. No output file is created.\nAI Agent -- Receives the field list and applicant data directly in its prompt via an n8n expression. The system message instructs the AI to return only a raw JSON object mapping field names to values (strings for text/dropdown/radio, booleans for checkboxes).\nPrepare Fill Data -- A Code node parses and validates the AI JSON response (strips markdown fences if present), then pairs it with the Autype file ID.\nFill PDF Form -- Autype fills every form field with the AI-generated values. Fields are flattened (non-editable) so the output is a clean, final PDF.\nSave Filled PDF to Drive -- The completed form is uploaded to Google Drive as filled-form-YYYY-MM-DD.pdf.\n\nSetup\n\nInstall the Autype community node (n8n-nodes-autype) via Settings &gt; Community Nodes.\nCreate an Autype API credential with your API key from app.autype.com. See API Keys in Settings.\nCreate an OpenAI API credential with your key from platform.openai.com.\nCreate a Google Drive OAuth2 credential and connect your Google account.\nImport this workflow and assign your credentials to each node (including the OpenAI Chat Model sub-node).\nThe sample form URL is pre-configured. To use your own form, replace the URL in the \"Download PDF Form\" node.\nEdit the applicant data directly in the AI Agent node prompt (the \"Prompt (User Message)\" field).\nSet YOUR_FOLDER_ID in the \"Save Filled PDF to Drive\" node to your target Google Drive folder.\nClick Test Workflow to run the pipeline.\n\nNote: This is a community node, so you need a self-hosted n8n instance to use community nodes.\n\nRequirements\n\nSelf-hosted n8n instance (community nodes are not available on n8n Cloud)\nAutype account with API key (free tier available)\nn8n-nodes-autype community node installed\nOpenAI API key (gpt-4o-mini or any chat model)\nGoogle Drive account with OAuth2 credentials (optional, can replace with other output)\n\nHow to customize\n\nChange applicant data:** Edit the prompt text directly in the \"AI Agent\" node. Replace the example person/company info with your own.\nUse a different AI model:** Swap the OpenAI Chat Model sub-node for Anthropic Claude, Google Gemini, or any LangChain-compatible chat model.\nConnect to an AI agent:** Replace the Manual Trigger with a Webhook or Chat Trigger so an AI agent can call this workflow as a tool (e.g. \"fill the Q2 permit renewal form\").\nSkip flattening:** Set flatten to false in the \"Fill PDF Form\" node if you want the fields to remain editable after filling.\nAdd watermark:** Insert an Autype Watermark step after Fill Form to stamp \"DRAFT\" or \"SUBMITTED\" on every page before saving.\nAdd password protection:** Insert an Autype Protect step after filling to encrypt the PDF before uploading to Drive.\nChange output destination:** Replace the Google Drive node with Email (SMTP), S3, Slack, or any other n8n output node.\nPull data from a database:** Instead of hardcoding data in the AI Agent prompt, query a database (Postgres, MySQL, Airtable) or CRM (HubSpot, Salesforce) to dynamically fill different forms for different entities.\n",
+  "_templateCreatedAt": "2026-03-05T19:39:40.896Z",
+  "_templateTotalViews": 0,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:05:38.247Z",
+  "id": "",
+  "meta": {
+    "instanceId": "",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Auto-fill PDF forms with AI using Autype and OpenAI",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "fdee74d8-7a0f-4b7f-8c2b-2bf2936eab99",
+      "name": "Run Workflow",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        416,
+        848
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "d00a35ac-3e97-4a5c-9cd7-48fb0d7743ac",
+      "name": "Download PDF Form",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        656,
+        848
+      ],
+      "parameters": {
+        "url": "https://drive.google.com/uc?export=download&id=19FEbkEjFA1H8jFcqHcDb5yGrJoiOe7-u",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "a20f6ae9-4030-4698-aa10-fafd740d5027",
+      "name": "Upload PDF Form",
+      "type": "n8n-nodes-autype.autype",
+      "position": [
+        896,
+        848
+      ],
+      "parameters": {
+        "resource": "file"
+      },
+      "credentials": {
+        "autypeApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Autype account"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "8094144a-4eb9-4077-a1a7-e437ce4200e2",
+      "name": "Get Form Fields",
+      "type": "n8n-nodes-autype.autype",
+      "position": [
+        1136,
+        848
+      ],
+      "parameters": {
+        "fileId": "={{ $json.id }}",
+        "resource": "documentTools",
+        "operation": "formFields"
+      },
+      "credentials": {
+        "autypeApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Autype account"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "e0cccee6-0888-4f06-9b0e-3c9ec40bc645",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "position": [
+        704,
+        1280
+      ],
+      "parameters": {
+        "text": "=Fill out a PDF registration form.\n\nPerson/company data:\n- Full Name: Maria Schmidt\n- ID Number: 1234560001\n- Gender: Female\n- Married: yes\n- City: Berlin\n- Preferred Language: German\n- Notes: Submitted via automated workflow on {{ $now.format('yyyy-MM-dd') }}\n\nThe PDF form has these fields (from Autype Get Form Fields):\n\n{{ $json.metadata.fields.map(f => '- \"' + f.name + '\" (' + f.type + ')' + (f.options && f.options.length > 0 ? ' [options: ' + f.options.join(', ') + ']' : '') + (f.isReadOnly ? ' [read-only, skip]' : '')).join('\\n') }}\n\nMap each field name to the correct value from the data above.",
+        "options": {
+          "maxIterations": 3,
+          "systemMessage": "You are a precise form-filling assistant. You receive applicant data and a list of PDF form fields with their types and allowed options. Return a JSON object mapping each field name to its value. Use exact option strings for dropdowns and radio groups. Use booleans for checkboxes. Skip read-only fields."
+        },
+        "promptType": "define"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "395304b3-96cf-4681-8817-487f0803e96a",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        704,
+        1488
+      ],
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini",
+          "cachedResultName": "gpt-5-mini"
+        },
+        "options": {}
+      },
+      "credentials": {
+        "openAiApi": {
+          "id": "YOUR_OPENAI_CREDENTIAL_ID",
+          "name": "OpenAI account"
+        }
+      },
+      "typeVersion": 1.2
+    },
+    {
+      "id": "abefa7ee-b65b-4993-8f8b-159176b65dd0",
+      "name": "Prepare Fill Data",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        1024,
+        1280
+      ],
+      "parameters": {
+        "jsCode": "const raw = $json.output;\nconst fileId = $('Upload PDF Form').first().json.id;\n\n// The AI Agent returns a JSON string — parse and re-stringify to validate\nlet fields;\ntry {\n  fields = typeof raw === 'string' ? JSON.parse(raw) : raw;\n} catch (e) {\n  // Strip markdown fences if present and retry\n  let cleaned = raw.replace(/^```(?:json)?\\n?/, '').replace(/\\n?```$/, '');\n  fields = JSON.parse(cleaned);\n}\n\nreturn [{ json: { fields: JSON.stringify(fields), fileId } }];"
+      },
+      "typeVersion": 2
+    },
+    {
+      "id": "b0c18c27-1a8d-40a0-86df-f402d14dcc6d",
+      "name": "Fill PDF Form",
+      "type": "n8n-nodes-autype.autype",
+      "position": [
+        1264,
+        1280
+      ],
+      "parameters": {
+        "fields": "={{ $json.fields }}",
+        "fileId": "={{ $json.fileId }}",
+        "flatten": true,
+        "resource": "documentTools",
+        "operation": "fillForm",
+        "downloadOutput": true
+      },
+      "credentials": {
+        "autypeApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Autype account"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "4c0773d0-6d26-41ba-aa16-9b3f5ad36e41",
+      "name": "Save Filled PDF to Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "position": [
+        1472,
+        1280
+      ],
+      "parameters": {
+        "name": "=filled-form-{{ $now.format('yyyy-MM-dd') }}.pdf",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "options": {},
+        "folderId": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_FOLDER_ID"
+        }
+      },
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "YOUR_GOOGLE_CREDENTIAL_ID",
+          "name": "Google Drive account"
+        }
+      },
+      "typeVersion": 3
+    },
+    {
+      "id": "220b9eb1-0b10-4a3b-bef3-be632309c441",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -208,
+        464
+      ],
+      "parameters": {
+        "width": 576,
+        "height": 992,
+        "content": "## Auto-Fill PDF Forms with AI Using Autype and OpenAI\n### This workflow downloads a fillable PDF form from a URL, extracts all form fields using Autype, sends the field list to an AI Agent (OpenAI) together with applicant data, and uses the structured AI response to fill the form automatically. The filled PDF is flattened (non-editable) and saved to Google Drive.\n\n**The sample form has these fields:**\n- FullName (text)\n- ID (text)\n- Gender (radio: Male / Female)\n- Married (checkbox: true / false)\n- City (dropdown: e.g. New York, Berlin, ...)\n- Language (optionlist: e.g. English, German, ...)\n- Notes (text)\n\n**Use Case:** A company that regularly fills the same government or compliance PDF forms -- permit applications, registrations, insurance declarations. The AI reads whatever fields the form has and maps the right values automatically.\n\nClick \"Test Workflow\" to run it once with the sample form.\n\n### How it works\n1. **Download PDF Form** -- Fetches the fillable PDF from a URL.\n2. **Upload PDF Form** -- Uploads it to Autype Tools.\n3. **Get Form Fields** -- Autype extracts field names, types, options, read-only flags as metadata.\n4. **AI Agent** -- Receives the field list and applicant data as a prompt. The system message instructs the AI to return raw JSON only.\n5. **Prepare Fill Data** -- Parses and validates the AI JSON output, pairs it with the file ID.\n6. **Fill PDF Form** -- Autype fills all fields and flattens them (non-editable).\n7. **Save Filled PDF to Drive** -- Uploads the completed PDF to Google Drive.\n\n### Requirements\n* **Autype account** -- [app.autype.com](https://app.autype.com) > Settings > API Keys\n* **OpenAI account** -- API key from [platform.openai.com](https://platform.openai.com)\n* **Google Drive** -- OAuth2 credential in n8n (optional)\n* **n8n-nodes-autype** -- Install via Settings > Community Nodes\n\n> Community node: requires self-hosted n8n. Not available on n8n Cloud."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "5b4bdb7b-c445-4d14-88d9-3331961c939d",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        608,
+        656
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 972,
+        "height": 368,
+        "content": "### 1. Download & Extract Form Fields\nDownloads the PDF form from a URL and uploads it to Autype. The Get Form Fields operation returns all field names, types, current values, and options as metadata (no output file). The field info flows directly into the AI Agent prompt via an expression."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "cb3cdc91-7371-445b-a87b-5043d040bc27",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        608,
+        1088
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 548,
+        "height": 368,
+        "content": "### 2. AI Agent Fills Fields\nThe AI Agent node receives the form fields and applicant data directly in its prompt (no separate Code node needed). The system message instructs the AI to return only a raw JSON object. The Prepare Fill Data code node validates and parses the response. Edit the applicant data directly in the AI Agent prompt."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a814d65f-433c-43f7-b78e-0d0a4181baea",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        1088
+      ],
+      "parameters": {
+        "color": 7,
+        "width": 576,
+        "height": 336,
+        "content": "### 3. Fill Form & Save\nThe Prepare Fill Data code node parses and validates the AI JSON, then passes it to the Autype Fill Form operation. Fields are flattened (non-editable). The result is saved to Google Drive. Replace the Drive node with Email, S3, Slack, or any other output."
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "244791c0-c74a-4c66-abef-92f001778d13",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        1280,
+        848
+      ],
+      "webhookId": "",
+      "parameters": {
+        "amount": 10
+      },
+      "typeVersion": 1.1
+    },
+    {
+      "id": "cfcbc604-e525-4c19-8338-6e58cddc9177",
+      "name": "Get tool job status",
+      "type": "n8n-nodes-autype.autype",
+      "position": [
+        1440,
+        848
+      ],
+      "parameters": {
+        "jobId": "={{ $('Get Form Fields').item.json.id }}",
+        "resource": "documentTools",
+        "operation": "getJobStatus"
+      },
+      "credentials": {
+        "autypeApi": {
+          "id": "YOUR_CREDENTIAL_ID",
+          "name": "Autype account"
+        }
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "binaryMode": "separate",
+    "availableInMCP": false,
+    "executionOrder": "v1"
+  },
+  "versionId": "",
+  "connections": {
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Get tool job status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Prepare Fill Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run Workflow": {
+      "main": [
+        [
+          {
+            "node": "Download PDF Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fill PDF Form": {
+      "main": [
+        [
+          {
+            "node": "Save Filled PDF to Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Form Fields": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Upload PDF Form": {
+      "main": [
+        [
+          {
+            "node": "Get Form Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download PDF Form": {
+      "main": [
+        [
+          {
+            "node": "Upload PDF Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Fill Data": {
+      "main": [
+        [
+          {
+            "node": "Fill PDF Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get tool job status": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

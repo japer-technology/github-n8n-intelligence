@@ -1,0 +1,193 @@
+{
+  "_templateId": 3873,
+  "_templateName": "Merge Multiple PDF Files with CustomJS API",
+  "_templateDescription": "\nThis n8n template demonstrates how to download multiple PDF files from public URLs and merge them into a single PDF using the PDF Toolkit from www.customjs.space.\n\n@custom-js/n8n-nodes-pdf-toolkit\n\nNotice\n\nCommunity nodes can only be installed on self-hosted instances of n8n.\n\nWhat this workflow does\n\nDownloads** each PDF using an HTTP Request.\nPopulates* files into an array with *Merge** node from n8n.\nMerges** all downloaded PDFs using the Merge PDF node from the @custom-js/n8n-nodes-pdf-toolkit.\nWrites** the final merged PDF to disk.\n\nRequirements\n\nSelf-hosted** n8n instance\nCustomJS API key** for merging multiple PDF files.\nPDF files to be merged** to be converted into a PDF\n\nWorkflow Steps:\n\nManual Trigger:\n\n   Runs with user interaction.\n\nHTTP Request Node For PDF Download:\n\n   Pass urls for PDF files to merge.\n\nMerge Node For Array Population:\n\n   Just populates two files into an array.\n\nMerge PDF files:\n   Uses the CustomJS node to merge the incoming PDF files into a single PDF file.\n   If size of PDF files exceeds 6MB, you can simply pass an array of URLs for PDF files.\n\nUsage\n\nGet API key from customJS\n\nSign up to customJS platform.\nNavigate to your profile page\nPress \"Show\" button to get API key\nSet Credentials for CustomJS API on n8n\n\nCopy and paste your API key generated from CustomJS here.\n\nDesign workflow\n\nA Manual Trigger for starting workflow.\nTwo HTTP Request Nodes for downloading PDF files.\nA Merge Node for populating files as an array.\nMerge PDFs node for merging files\nWrite to Disk node for saving merged PDF file.\n\nYou can replace logic for triggering and returning results.\nFor example, you can trigger this workflow by calling a webhook and get a result as a response from webhook. Simply replace Manual Trigger and Write to Disk nodes.\n\nPerfect for\n\nBundling reports or invoices.\nGenerating document sets from external sources.\nAutomating PDF handling without writing custom code\n",
+  "_templateCreatedAt": "2025-05-05T10:54:50.369Z",
+  "_templateTotalViews": 394,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:00:43.099Z",
+  "id": "MVPlLz3CiQok6rXy",
+  "meta": {
+    "instanceId": "7599ed929ea25767a019b87ecbc83b90e16a268cb51892887b450656ac4518a2",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "Merge PDFs",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "282b146b-ee58-4089-9ee6-94b153024bfa",
+      "name": "When clicking ‘Test workflow’",
+      "type": "n8n-nodes-base.manualTrigger",
+      "position": [
+        740,
+        -40
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "39a37abd-924f-474c-8dde-7536170797f2",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        960,
+        -140
+      ],
+      "parameters": {
+        "url": "=https://www.intewa.com/fileadmin/documents/pdf-file.pdf",
+        "options": {}
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "b2359766-896f-4966-873e-b2dc0ee4f684",
+      "name": "HTTP Request2",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        960,
+        60
+      ],
+      "parameters": {
+        "url": "=https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+        "options": {}
+      },
+      "typeVersion": 4.2
+    },
+    {
+      "id": "7f70b25c-a171-4a7c-8067-141ce3275226",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1180,
+        -40
+      ],
+      "parameters": {},
+      "typeVersion": 3.1
+    },
+    {
+      "id": "183b90b4-5f22-4ff8-b47f-96b7c4d522d7",
+      "name": "Merge PDF1",
+      "type": "@custom-js/n8n-nodes-pdf-toolkit.mergePdfs",
+      "position": [
+        1400,
+        -40
+      ],
+      "parameters": {},
+      "credentials": {
+        "customJsApi": {
+          "id": "credential-id",
+          "name": "customJsApi Credential"
+        }
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "131474f2-c6ca-4d1f-ba49-1f2f6d91394a",
+      "name": "Read/Write Files from Disk",
+      "type": "n8n-nodes-base.readWriteFile",
+      "position": [
+        1620,
+        -40
+      ],
+      "parameters": {
+        "options": {},
+        "fileName": "test.pdf",
+        "operation": "write"
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "a86ddc41-60aa-482c-90f2-8eacc6bb0a9b",
+      "name": "Read/Write Files from Disk4",
+      "type": "n8n-nodes-base.readWriteFile",
+      "position": [
+        1840,
+        -40
+      ],
+      "parameters": {
+        "options": {},
+        "fileSelector": "test.pdf"
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "02f73022-a678-4660-ab1d-3531e4848cba",
+  "connections": {
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Merge PDF1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge PDF1": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Read/Write Files from Disk": {
+      "main": [
+        [
+          {
+            "node": "Read/Write Files from Disk4",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Test workflow’": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

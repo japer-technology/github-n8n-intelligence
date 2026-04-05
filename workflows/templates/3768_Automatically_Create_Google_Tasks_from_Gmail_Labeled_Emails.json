@@ -1,0 +1,85 @@
+{
+  "_templateId": 3768,
+  "_templateName": "Automatically Create Google Tasks from Gmail Labeled Emails",
+  "_templateDescription": "Automatically create Google Tasks from new Gmail emails labeled \"To-Do\".\n\nWho is this for?\nThis template is perfect for individuals and teams who want to boost their productivity by automatically converting important emails into actionable tasks in Google Tasks.\n\nWhat problem is this workflow solving?\nManually managing emails and creating tasks can be tedious. This workflow ensures you never miss a follow-up by instantly turning important emails into tasks without switching between apps.\n\nWhat this workflow does?\nWatches for new emails in Gmail with the label \"To-Do\".\nCreates a new Google Task with the email subject as the task title and the email snippet as notes.\nSets the task due date to 24 hours after the email is received.\n\nSetup\nCreate a label \"To-Do\" in your Gmail account if it doesn't already exist.\nConnect your Gmail and Google Tasks accounts to n8n using OAuth2 credentials.\nImport the workflow into n8n and activate it.\n\nHow to customize this workflow to your needs?\nChange the Gmail label to a different one (e.g., \"Important\", \"Follow-up\").\nModify the due date logic in the expression if you want more/less time to complete tasks:\n{{ $now.add(2, 'days').toISOString() }}\nAdd additional Gmail filters (like only unread emails) to refine which emails create tasks.\n\n",
+  "_templateCreatedAt": "2025-04-28T08:08:03.684Z",
+  "_templateTotalViews": 601,
+  "_templateCategory": [],
+  "_fetchedAt": "2026-04-05T05:00:55.838Z",
+  "id": "z0C6H2kYSgML2dib",
+  "meta": {
+    "instanceId": "2ac84bf1f440a0e879aa6d91666aa16b413615a793da24a417a70de20243c4ba",
+    "templateCredsSetupCompleted": true
+  },
+  "name": "📦 New Email ➔ Create Google Task",
+  "tags": [],
+  "nodes": [
+    {
+      "id": "fdba3386-940b-4ca4-81a9-c76e363a7227",
+      "name": "Gmail Trigger",
+      "type": "n8n-nodes-base.gmailTrigger",
+      "position": [
+        60,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1.2
+    },
+    {
+      "id": "6973ee87-995d-40b2-aab3-12af2a34ea7e",
+      "name": "Google Tasks",
+      "type": "n8n-nodes-base.googleTasks",
+      "position": [
+        280,
+        0
+      ],
+      "parameters": {},
+      "typeVersion": 1
+    },
+    {
+      "id": "d5f1c380-04dc-4638-8d8f-59535a5ea531",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -60,
+        -100
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    },
+    {
+      "id": "b0ac6967-b805-4f72-981f-51270cb17dbe",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -60,
+        200
+      ],
+      "parameters": {
+        "content": ""
+      },
+      "typeVersion": 1
+    }
+  ],
+  "active": false,
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "16d1e0a6-b60b-4190-a74b-c5bd7626cfdb",
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Google Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
